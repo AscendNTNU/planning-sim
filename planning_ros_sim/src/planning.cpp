@@ -3,11 +3,11 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/Pose2D.h"
-#include "../../../devel/include/planning_ros_sim/groundRobotList.h" 
+#include "../../../devel/include/planning_ros_sim/groundRobotList.h"
 #include "../../../devel/include/planning_ros_sim/groundRobot.h"
 #include "../../../devel/include/planning_ros_sim/droneCmd.h"
 #define SIM_IMPLEMENTATION
-#include "sim.h"
+#include "ai-sim/sim.h"
 #include <stdio.h>
 
  planning_ros_sim::groundRobotList GroundRobots;
@@ -22,7 +22,7 @@ void groundRobot_chatterCallback(planning_ros_sim::groundRobotList msg)
 	GroundRobots.groundRobot[i].theta = msg.groundRobot[i].theta;
 	std::cout << "Ground robot " << i << ": "<< msg.groundRobot[i].x<< "x position. " << std::endl;
 
-} 
+}
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
@@ -35,7 +35,7 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
 };
 
 
-/* 
+/*
 enum sim_CommandType
 {
     sim_CommandType_NoCommand = 0,   // continue doing whatever you are doing
@@ -54,7 +54,7 @@ struct sim_Command
     int i;
     int reward;
     float heatmap[pixels_each_meter*pixels_each_meter*20*20];
-    
+
 };*/
 
 planning_ros_sim::droneCmd drone_action(planning_ros_sim::droneCmd drone_pos)
@@ -74,7 +74,7 @@ planning_ros_sim::droneCmd drone_action(planning_ros_sim::droneCmd drone_pos)
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "planning");
-  
+
   ros::NodeHandle l;
   ros::NodeHandle m;
   ros::NodeHandle n;
@@ -93,8 +93,7 @@ int main(int argc, char **argv)
 
 	ros::spinOnce();
   }
-  
+
 
   return 0;
 }
-
