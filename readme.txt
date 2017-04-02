@@ -3,6 +3,7 @@ The nodes doesn't start until the gui is running. Start the gui from catkin_ws/s
 It's important that the gui is started from inside the planning_ros_sim folder.
 
 TO DO:
+- some of the files needed for gui (such as sim.h) are saved twice. Delete does who is excessive and make sure they're still included correct.
 - Merge the algorithm with this ros code. The algorithm should be run from only the planning node.
 - Use actionlib?
 - Find all the bugs and solve them
