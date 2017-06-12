@@ -6,9 +6,13 @@
 #include "../../../devel/include/planning_ros_sim/groundRobotList.h"
 #include "../../../devel/include/planning_ros_sim/groundRobot.h"
 #include "../../../devel/include/planning_ros_sim/droneCmd.h"
+#include <actionlib/client/simple_action_client.h>
+
 #include <stdio.h>
 #include "AI/AI.h"
 #include "AI/structs.h"
+
+
 
 using namespace std;
 
@@ -66,35 +70,6 @@ int main(int argc, char **argv)
   sim_Command command;
   
   target_id = None
-  std::stack<action_t> current_action_stack = ai->getActionArrayBestTarget()
-  std::stack<action_t> updated_target_actions = ai->getActionArrayBestTarget()
-  std::stack<action_t> updated_general_actions = ai->getActionArrayBestTarget()
-
-
-
-  //Update observationsobservation_t observation = this->updateObservation();
-  //Send search command
-
-  //While action not done wait
-
-  //Wait for correct time to act -> here we should adjust based on what we've seen
-
-  //Observe
-
-  while(observation.elapsed_time-action_Start <= action.when_To_Act){
-    if(observed_state.target_x[action.target] > 20 || observed_state.target_x[action.target] < 0 ||
-      observed_state.target_y[action.target] > 20 || observed_state.target_y[action.target] < 0) {
-      std::cout << "Target removed before we could do action. Choose target again." << std::endl;
-      return false;
-    }
-    //Observe
-  }
-
-  //If target is not turning act, if not dont do anything(most likely a stupid action if timer is wrong)
-  // if(action.target.isMoving()){
-  //    Send Land command
-
-  //While action not done wait
 
   action_t current_action;
   std::stack<action_t> current_action_stack;
