@@ -2,8 +2,8 @@
 #include "structs.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
-#include "../../sim.h"
-#include "../../gui.h"
+#include "../ai-sim/sim.h"
+#include "../ai-sim/gui.h"
 
 class SimSim{
 private:

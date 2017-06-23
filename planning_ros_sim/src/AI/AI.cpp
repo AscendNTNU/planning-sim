@@ -6,21 +6,21 @@ AI::AI(){
 
 std::stack<action_t> AI::getBestGeneralActionStack(){
     Robot* target = chooseTarget(10);
-    return getBestActionStack(target)
+    return getBestActionStack(target);
 
 }
 
 std::stack<action_t> AI::getBestActionStack(Robot* target_id){
     
-    action_t best_Action = chooseTarget(target);
+    action_t best_Action = chooseAction(target_id);
     action_t search_Action = best_Action;
-    search_action.type = search;
+    search_Action.type = search;
 
 
-    std::stack<int> action_Stack;
-    action_Stack.push(best_Atcion);
+    std::stack<action_t> action_Stack;
+    action_Stack.push(best_Action);
     action_Stack.push(search_Action);
-    return action_Stack
+    return action_Stack;
 }
 
 Robot* AI::chooseTarget(int num_Robots){
