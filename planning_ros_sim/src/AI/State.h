@@ -18,4 +18,6 @@ public:
 	float getTimeStamp();
 
 	bool updateState(observation_t observation);
+	bool updateDroneState(observation_t observation);
+	bool updateRobotState(observation_t observation);
 };

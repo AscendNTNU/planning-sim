@@ -14,7 +14,7 @@
 #include <sstream>
   
 
-sim_CommandType to_Sim_ActionType(action_Type_t action){
+sim_CommandType to_Sim_ActionType(int action){
   switch(action){
 
     case land_On_Top_Of:

@@ -154,6 +154,13 @@ action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, act
 }
 
 bool AI::update(observation_t observation) {
-    this->state->updateState(observation);
-    return true;
+    return this->state->updateState(observation);
+}
+
+bool AI::updateRobot(observation_t observation){
+    return this->state->updateRobotState(observation);
+}
+
+bool AI::updateDrone(observation_t observation){
+    return this->state->updateDroneState(observation);
 }

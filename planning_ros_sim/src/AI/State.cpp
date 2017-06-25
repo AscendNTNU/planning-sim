@@ -29,8 +29,18 @@ float State::getTimeStamp(){
 
 
 bool State::updateState(observation_t observation){
-	point_t position = point_Zero;
+	bool drone_Updated = updateDroneState(observation);
+	bool robot_Updated = updateRobotState(observation);
+	return (drone_Updated and robot_Updated);
+}
+
+bool State::updateDroneState(observation_t observation){
 	this->drone->update(observation);
+	return true;
+}
+
+bool State::updateRobotState(observation_t observation){
+	point_t position = point_Zero;
 	for(int i = 0; i < 10; i++){
 		position = (point_t){.x = observation.robot_x[i], .y = observation.robot_y[i]};
 		this->robots[i]->update(i, position, observation.robot_q[i]);
