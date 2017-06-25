@@ -10,6 +10,7 @@
 #include "AI/structs.h"
 
 
+
 const float SIMILARITY_THRESHOLD = 10;
 
 
@@ -17,6 +18,7 @@ planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 AI* ai = new AI();
+World* world;
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
@@ -86,11 +88,11 @@ int main(int argc, char **argv)
   int target_id = -1;
   Robot* target = ai->state->getRobot(1);
   bool action_done = true;
-
+  world = new World(0);
   action_t current_action;
   std::stack<action_t> current_action_stack;
   std::stack<action_t> updated_action_stack;
-
+  world->startTimer();
   while (ros::ok()){
 
     if(action_done){

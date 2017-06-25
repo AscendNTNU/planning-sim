@@ -35,6 +35,7 @@ int main(){
 	float compass_orientation = 0.0;
 	
 	world = new World(compass_orientation);
+	
 	AI* ai = new AI();
 
 	switch(world_Type){
