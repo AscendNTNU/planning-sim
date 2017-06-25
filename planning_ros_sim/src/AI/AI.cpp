@@ -16,7 +16,6 @@ std::stack<action_t> AI::getBestActionStack(Robot* target_id){
     action_t search_Action = best_Action;
     search_Action.type = search;
 
-
     std::stack<action_t> action_Stack;
     action_Stack.push(best_Action);
     action_Stack.push(search_Action);

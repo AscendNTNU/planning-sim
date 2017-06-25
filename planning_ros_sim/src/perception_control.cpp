@@ -9,18 +9,39 @@
 #define SIM_CLIENT_CODE
 #include "ai-sim/sim.h"
 #include "ai-sim/gui.h"
+#include "AI/structs.h"
 #include <stdio.h>
 #include <sstream>
-using namespace std;
+  
+
+sim_CommandType to_Sim_ActionType(action_Type_t action){
+  switch(action){
+
+    case land_On_Top_Of:
+      return sim_CommandType_LandOnTopOf;
+    break;
+    case land_In_Front_Of:
+      return sim_CommandType_LandInFrontOf;
+    break;
+    case land_At_Point:
+      return sim_CommandType_NoCommand;
+    break;
+    case search:
+      return sim_CommandType_Search;
+    break;
+    default:
+      return sim_CommandType_NoCommand;
+    break;
+  }
+}
 
 void droneCmd_chatterCallback(planning_ros_sim::droneCmd droneCmd_msg)
 {
   sim_Command command;
   command.x = droneCmd_msg.x;
   command.y = droneCmd_msg.y;
-  command.type = (sim_CommandType) droneCmd_msg.cmd;
+  command.type = to_Sim_ActionType(droneCmd_msg.cmd);
   sim_send_cmd(&command);
-
 }
 
 

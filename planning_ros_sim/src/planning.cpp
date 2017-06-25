@@ -9,7 +9,6 @@
 #include "AI/AI.h"
 #include "AI/structs.h"
 
-using namespace std;
 
 const float SIMILARITY_THRESHOLD = 10;
 
@@ -18,18 +17,6 @@ planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 AI* ai = new AI();
-
-//This must correspond to sim.h
- enum sim_CommandType
- {
-     sim_CommandType_NoCommand = 0,   // continue doing whatever you are doing
-     sim_CommandType_LandOnTopOf,     // trigger one 45 deg turn of robot (i)
-     sim_CommandType_LandInFrontOf,   // trigger one 180 deg turn of robot (i)
-     sim_CommandType_Track,           // follow robot (i) at a constant height
-     sim_CommandType_Search,          // ascend to 3 meters and go to (x, y)
-     sim_CommandType_Land,
-     sim_CommandType_Debug
- };
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
@@ -43,13 +30,16 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
   ai->update(msg)
 }
 
-planning_ros_sim::droneCmd drone_action(planning_ros_sim::droneCmd drone_action)
+planning_ros_sim::droneCmd to_ROS_Command(action_t action)
 {
-	drone_pos.x = 10;
-	drone_pos.y = 10;
-	drone_pos.z = 1;
-	action_t command;  
-  return drone_pos;
+  planning_ros_sim::droneCmd command{
+    .x = action.where_To_Act.x,
+    .y = action.where_To_Act.y,
+    .cmd = action.type,
+    .target_id = action.target
+  };
+  
+  return command;
 }
 
 bool is_nearby(point_t currentWhereToAct, point_t target) {
@@ -60,6 +50,15 @@ bool is_nearby(point_t currentWhereToAct, point_t target) {
 	
 	double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);
 	return dist < SIMILARITY_THRESHOLD;
+}
+
+float similarity(action_t action1 ,action_t action2){
+  if(is_nearby(action1.where_To_Act, action2.where_To_Act)){
+    return 1;
+  }
+  else{
+    return 0;
+  }
 }
 
 int main(int argc, char **argv)
@@ -74,10 +73,10 @@ int main(int argc, char **argv)
   ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
   planning_ros_sim::droneCmd drone_action;
-  sim_Command command;
   
   int target_id = -1;
-  Robot target = AI->State->getRobot(1); //Maybe best to have some error handling in case of no robot chosen
+  Robot* target = AI->State->getRobot(1);
+  action_done = true;
 
   action_t current_action;
   std::stack<action_t> current_action_stack;
@@ -88,9 +87,10 @@ int main(int argc, char **argv)
     if(action_done){
 
       //If we've finished our stack get a new one!
-      if(chosen_action_stack.empty()){
+      if(current_action_stack.empty()){
         current_action_stack = ai->getBestGeneralActionStack();
         target_id = current_action_stack.top().target;
+        target = AI->State->getRobot(target_id);
       }
  
       //If we are waiting on the ground robot(ie the robot isn't
@@ -101,18 +101,18 @@ int main(int argc, char **argv)
       }
 
       current_action = current_action_stack.pop(); 
-      drone_action = drone_action(current_action);
+      drone_action = to_ROS_Command(current_action);
       command_pub.publish(drone_action);
 
     }
     //returns a stack of the best actions based on the current observation
-    updated_action_stack = ai->getBestActionStack(target_id);
+    updated_action_stack = ai->getBestActionStack(target);
 
     //If the action we are currently doing is significantly different
     //from the best possible action, abort.
     if(similarity(current_action ,updated_action_stack.top())  > SIMILARITY_THRESHOLD){
       current_action_stack = ai->getBestGeneralActionStack();
-      cancle_actionlib_action();
+      //cancle_actionlib_action();
     }
 
     ros::spinOnce();

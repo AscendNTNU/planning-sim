@@ -21,7 +21,7 @@ catkin_package(CATKIN_DEPENDS message_runtime )
 
 
 
-
+set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(perception_control src/perception_control.cpp)
