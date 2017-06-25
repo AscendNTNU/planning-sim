@@ -13,6 +13,7 @@ using namespace std;
 
 const float SIMILARITY_THRESHOLD = 10;
 
+
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
@@ -51,6 +52,16 @@ planning_ros_sim::droneCmd drone_action(planning_ros_sim::droneCmd drone_action)
   return drone_pos;
 }
 
+bool is_nearby(point_t currentWhereToAct, point_t target) {
+	double x1 = currentWhereToAct.x;
+	double y1 = currentWhereToAct.y;
+	double x2 = target.x;
+	double y2 = target.y;
+	
+	double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);
+	return dist < SIMILARITY_THRESHOLD;
+}
+
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "planning");
@@ -65,7 +76,8 @@ int main(int argc, char **argv)
   planning_ros_sim::droneCmd drone_action;
   sim_Command command;
   
-  target_id = -1;
+  int target_id = -1;
+  Robot target = AI->State->getRobot(1); //Maybe best to have some error handling in case of no robot chosen
 
   action_t current_action;
   std::stack<action_t> current_action_stack;
@@ -84,7 +96,7 @@ int main(int argc, char **argv)
       //If we are waiting on the ground robot(ie the robot isn't
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
-      if(!nearby(current_action.where_to_act, target)){
+      if(!is_nearby(current_action.where_to_act, AI->State->getRobot(target_id).getPosition())){
         current_action_stack = updated_action_stack;
       }
 
