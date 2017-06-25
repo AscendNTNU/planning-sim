@@ -41,19 +41,19 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
 
 planning_ros_sim::droneCmd to_ROS_Command(action_t action)
 {
-  planning_ros_sim::droneCmd command{
-    .x = action.where_To_Act.x,
-    .y = action.where_To_Act.y,
-    .cmd = action.type,
-    .target_id = action.target
-  };
-  
+  planning_ros_sim::droneCmd command;
+  command.x = action.where_To_Act.x;
+  command.y = action.where_To_Act.x;
+  command.z = 0;
+  command.cmd = (int)action.type;
+  command.target_id = action.target;
+
   return command;
 }
 
-bool is_nearby(point_t currentWhereToAct, point_t target) {
-	double x1 = currentWhereToAct.x;
-	double y1 = currentWhereToAct.y;
+bool is_nearby(point_t current_Where_To_Act, point_t target) {
+	double x1 = current_Where_To_Act.x;
+	double y1 = current_Where_To_Act.y;
 	double x2 = target.x;
 	double y2 = target.y;
 	
@@ -84,8 +84,8 @@ int main(int argc, char **argv)
   planning_ros_sim::droneCmd drone_action;
   
   int target_id = -1;
-  Robot* target = AI->State->getRobot(1);
-  action_done = true;
+  Robot* target = ai->state->getRobot(1);
+  bool action_done = true;
 
   action_t current_action;
   std::stack<action_t> current_action_stack;
@@ -99,17 +99,17 @@ int main(int argc, char **argv)
       if(current_action_stack.empty()){
         current_action_stack = ai->getBestGeneralActionStack();
         target_id = current_action_stack.top().target;
-        target = AI->State->getRobot(target_id);
+        target = ai->state->getRobot(target_id);
       }
  
       //If we are waiting on the ground robot(ie the robot isn't
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
-      if(!is_nearby(current_action.where_to_act, AI->State->getRobot(target_id).getPosition())){
+      if(!is_nearby(current_action.where_To_Act, ai->state->getRobot(target_id)->getPosition())){
         current_action_stack = updated_action_stack;
       }
-			
-			
+      
+      
       current_action = current_action_stack.top();
       current_action_stack.pop();
       drone_action = to_ROS_Command(current_action);
