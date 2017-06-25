@@ -21,13 +21,22 @@ AI* ai = new AI();
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
   //Probably need a msg to observation_t function
-  ai->update(msg);
+  observation_t robotObs;
+  for(int i = 0; i < 10; i++) {
+  	robotObs.robot_x[i] = msg.groundRobot[i].x;
+  	robotObs.robot_y[i] = msg.groundRobot[i].y;
+  	robotObs.robot_q[i] = msg.groundRobot[i].theta;
+  }
+  ai->updateRobot(robotObs);
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
 {
   //Probably need a msg to observation_t function
-  ai->update(msg)
+  observation_t droneObs;
+  droneObs.drone_x = msg.x;
+  droneObs.drone_y = msg.y;
+  ai->updateDrone(droneObs);
 }
 
 planning_ros_sim::droneCmd to_ROS_Command(action_t action)
