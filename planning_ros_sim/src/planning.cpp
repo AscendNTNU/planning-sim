@@ -99,8 +99,10 @@ int main(int argc, char **argv)
       if(!is_nearby(current_action.where_to_act, AI->State->getRobot(target_id).getPosition())){
         current_action_stack = updated_action_stack;
       }
-
-      current_action = current_action_stack.pop(); 
+			
+			
+      current_action = current_action_stack.top();
+      current_action_stack.pop();
       drone_action = to_ROS_Command(current_action);
       command_pub.publish(drone_action);
 
