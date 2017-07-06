@@ -17,7 +17,7 @@ public:
     std::stack<action_t> getBestGeneralActionStack();
     std::stack<action_t> getBestActionStack(Robot* target_id);
 
-    bool update(observation_t observation);
-    bool updateDrone(observation_t observation);
-    bool updateRobot(observation_t observation);
+    bool update(observation_t observation, float elapsed_time);
+    bool updateDrone(observation_t observation, float elapsed_time);
+    bool updateRobot(observation_t observation, float elapsed_time);
 };

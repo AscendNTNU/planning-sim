@@ -28,18 +28,19 @@ float State::getTimeStamp(){
 }
 
 
-bool State::updateState(observation_t observation){
+bool State::updateState(observation_t observation, float elapsed_time){
 	bool drone_Updated = updateDroneState(observation);
 	bool robot_Updated = updateRobotState(observation);
 	return (drone_Updated and robot_Updated);
 }
 
-bool State::updateDroneState(observation_t observation){
+bool State::updateDroneState(observation_t observation, float elapsed_time){
 	this->drone->update(observation);
+	this->time_Stamp = observation.elapsed_time;
 	return true;
 }
 
-bool State::updateRobotState(observation_t observation){
+bool State::updateRobotState(observation_t observation, float elapsed_time){
 	point_t position = point_Zero;
 	this->time_Stamp = observation.elapsed_time;
 	for(int i = 0; i < 10; i++){

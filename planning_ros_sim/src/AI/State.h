@@ -17,7 +17,7 @@ public:
 	Robot* getObstacle(int index);
 	float getTimeStamp();
 
-	bool updateState(observation_t observation);
-	bool updateDroneState(observation_t observation);
-	bool updateRobotState(observation_t observation);
+	bool updateState(observation_t observation, float elapsed_time);
+	bool updateDroneState(observation_t observation, float elapsed_time);
+	bool updateRobotState(observation_t observation, float elapsed_time);
 };

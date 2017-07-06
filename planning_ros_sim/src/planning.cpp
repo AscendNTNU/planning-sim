@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Float32.h"
 #include "geometry_msgs/Pose2D.h"
 #include "../../../devel/include/planning_ros_sim/groundRobotList.h"
 #include "../../../devel/include/planning_ros_sim/groundRobot.h"
@@ -17,8 +18,14 @@ const float SIMILARITY_THRESHOLD = 10;
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
+float elapsed_time = 0;
+
 AI* ai = new AI();
 World* world;
+
+void elapsed_time_chatterCallback(const std_msgs::Float32 &msg){
+  elapsed_time = msg;
+}
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
@@ -29,7 +36,7 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
   	robotObs.robot_y[i] = msg.groundRobot[i].y;
   	robotObs.robot_q[i] = msg.groundRobot[i].theta;
   }
-  ai->updateRobot(robotObs);
+  ai->updateRobot(robotObs, elapsed_time);
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
@@ -38,7 +45,7 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
   observation_t droneObs;
   droneObs.drone_x = msg.x;
   droneObs.drone_y = msg.y;
-  ai->updateDrone(droneObs);
+  ai->updateDrone(droneObs, elapsed_time);
 }
 
 planning_ros_sim::droneCmd to_ROS_Command(action_t action)
@@ -78,7 +85,9 @@ int main(int argc, char **argv)
   ros::NodeHandle ground_robot_node;
   ros::NodeHandle drone_node;
   ros::NodeHandle command_node;
+  ros::NodeHandle time_sub;
 
+  ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
   ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
   ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
   ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
