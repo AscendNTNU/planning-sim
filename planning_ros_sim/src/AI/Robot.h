@@ -11,11 +11,12 @@ private:
 	float orientation;
 	point_t old_Position;
 	float old_Orientation;
-	float time_After_Turn;
+	float time_After_Turn_Start;
 	float speed;	
 public:
 	//constructors
 	Robot();
+	Robot(int index);
 	Plank* current_Plank;
 
 	//get
@@ -33,6 +34,6 @@ public:
 	//methods
 	action_t chooseAction(Robot target);
 	bool isMoving();
-	void update(int index, point_t position,float q);
+	void update(int index, point_t position,float q, float elapsed_time);
 	friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

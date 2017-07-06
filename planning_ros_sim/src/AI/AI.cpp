@@ -35,6 +35,7 @@ Robot* AI::chooseTarget(int num_Robots){
         Robot* robot = this->state->robots[i];
         if (!robot->isMoving()) {
             std::cout << "Robot is turning. Do we have correct angle?" << std::endl;
+            continue;
         }
 
 		if(robot->current_Plank->willExitGreen()) {
@@ -51,7 +52,8 @@ Robot* AI::chooseTarget(int num_Robots){
     }
 	if(!robotChosen) {
         std::cout << "No target chosen! Error" << std::endl;
-        target = this->state->robots[0];
+        Robot* dummy = new Robot(-1);
+        target = dummy;
 		std::cout << "Found no target! What to do?" << std::endl;
 	}
     return target;
@@ -94,16 +96,20 @@ action_t AI::chooseAction(Robot* target){
                 angle += MATH_PI;
             }
         }
-        step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
-        // std::cout << "Iteration: " << i << std::endl;
-        // std::cout << "Step point: " << step_Point << std::endl;
-        // std::cout << *(target->current_Plank) << std::endl;
-        // std::cout << "Step action: " << std::endl << step_Action << std::endl;
-        if (step_Action.reward > best_Action.reward) {
-            best_Action = step_Action;
-            best_Action.when_To_Act = time_after_interception;// + interception.travel_Time; Denne skal kanskje være globalt tispunkt etter start?
-        }
-        if (backwards) {
+		else {
+			step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
+			// std::cout << "Iteration: " << i << std::endl;
+			// std::cout << "Step point: " << step_Point << std::endl;
+			// std::cout << *(target->current_Plank) << std::endl;
+			// std::cout << "Step action: " << std::endl << step_Action << std::endl;
+			if (step_Action.reward > best_Action.reward) {
+				best_Action = step_Action;
+				best_Action.when_To_Act = time_after_interception;// + interception.travel_Time; Denne skal kanskje være globalt tispunkt etter start?
+			}
+		}
+        
+		
+		if (backwards) {
             step_Point.x = step_Point.x-step_x;
             step_Point.y = step_Point.y-step_y;
             i -= 1;
@@ -124,12 +130,12 @@ action_t AI::getBestActionAtPosition(Robot* target, point_t position, float time
     int num_Iterations = 5; // Number of iterations when summing along a plank
     action_t action;
     action.where_To_Act = position;
-    float time_After_Turn = fmod(this->state->getTimeStamp() + position.travel_Time + time_after_interception, 20);
+    float time_After_Turn_Start = fmod(this->state->getTimeStamp() + position.travel_Time + time_after_interception, 20);
 
     Plank* plank_On_Top = new Plank(position, fmod(target->getOrientation() + (MATH_PI/4), 2*MATH_PI), 
-                                    time_After_Turn, num_Iterations);
+                                    time_After_Turn_Start, num_Iterations);
     Plank* plank_In_Front = new Plank(position, fmod(target->getOrientation() + MATH_PI, 2*MATH_PI), 
-                                    time_After_Turn, num_Iterations);
+                                    time_After_Turn_Start, num_Iterations);
 
     return actionWithMaxReward(plank_On_Top->getReward(), plank_In_Front->getReward(), action);
 }

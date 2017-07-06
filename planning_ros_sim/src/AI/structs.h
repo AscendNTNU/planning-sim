@@ -2,7 +2,6 @@
 
 #include <queue>
 #include <iostream>
-
 static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
@@ -52,6 +51,7 @@ struct observation_t
     float drone_x;
     float drone_y;
     bool  drone_cmd_done;
+    int num_Targets;
 
     float robot_x[10];
     float robot_y[10];

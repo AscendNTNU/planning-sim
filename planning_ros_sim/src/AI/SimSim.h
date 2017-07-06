@@ -2,8 +2,8 @@
 #include "structs.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
-#include "../ai-sim/sim.h"
-#include "../ai-sim/gui.h"
+#include "../../sim.h"
+#include "../../gui.h"
 
 class SimSim{
 private:
@@ -58,21 +58,6 @@ sim_CommandType aiActionConverter(action_Type_t action){
 	}
 }
 
-	// {
-	//     no_Command = 0,   // continue doing whatever you are doing
-	//     land_On_Top_Of,     // trigger one 45 deg turn of robot (i)
-//     land_In_Front_Of,   // trigger one 180 deg turn of robot (i),
-//     land_At_Point,	 // land at a given point
-//     track,           // follow robot (i) at a constant height
-//     search           // ascend to 3 meters and go to (x, y)
-// };
-
-
-    // sim_CommandType_NoCommand = 0,   // continue doing whatever you are doing
-    // sim_CommandType_LandOnTopOf,     // trigger one 45 deg turn of robot (i)
-    // sim_CommandType_LandInFrontOf,   // trigger one 180 deg turn of robot (i)
-    // sim_CommandType_Track,           // follow robot (i) at a constant height
-    // sim_CommandType_Search,          // ascend to 3 meters and go to (x, y)
 
 bool SimSim::sendCommand(action_t action){
 
@@ -129,6 +114,8 @@ observation_t SimSim::updateObservation(){
 	observation.drone_y = this->observed_state.drone_y;
 
 	observation.drone_cmd_done = this->observed_state.drone_cmd_done;
+
+	observation.num_Targets = this->observed_state.num_Targets;
 
 	for(int i = 0; i < 10; i++){
 		observation.robot_x[i] = this->observed_state.target_x[i];
