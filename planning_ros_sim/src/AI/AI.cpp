@@ -160,13 +160,13 @@ action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, act
 }
 
 bool AI::update(observation_t observation,float elapsed_time) {
-    return this->state->updateState(observation);
+    return this->state->updateState(observation, elapsed_time);
 }
 
 bool AI::updateRobot(observation_t observation,float elapsed_time){
-    return this->state->updateRobotState(observation);
+    return this->state->updateRobotState(observation, elapsed_time);
 }
 
 bool AI::updateDrone(observation_t observation,float elapsed_time){
-    return this->state->updateDroneState(observation);
+    return this->state->updateDroneState(observation, elapsed_time);
 }

@@ -23,8 +23,8 @@ float elapsed_time = 0;
 AI* ai = new AI();
 World* world;
 
-void elapsed_time_chatterCallback(const std_msgs::Float32 &msg){
-  elapsed_time = msg;
+void time_chatterCallback(std_msgs::Float32 msg){
+  elapsed_time = (float)msg.data;
 }
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
   ros::NodeHandle ground_robot_node;
   ros::NodeHandle drone_node;
   ros::NodeHandle command_node;
-  ros::NodeHandle time_sub;
+  ros::NodeHandle time_node;
 
   ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
   ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);

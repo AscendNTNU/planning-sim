@@ -65,6 +65,7 @@ int main(int argc, char **argv)
   ros::NodeHandle o;
   planning_ros_sim::groundRobotList groundrobot_msg;
   geometry_msgs::Pose2D drone_msg;
+  std_msgs::Float32 time_msg; 
   ros::Publisher ground_robots_pub = l.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 1000);
   ros::Publisher drone_pub = m.advertise<geometry_msgs::Pose2D>("drone_chatter", 1000);
   ros::Subscriber droneCmd_sub = n.subscribe("drone_cmd_chatter", 1000, droneCmd_chatterCallback);
@@ -86,8 +87,12 @@ int main(int argc, char **argv)
     drone_msg.x = obs_state.drone_x;
     drone_msg.y = obs_state.drone_y;
     ground_robots_pub.publish(groundrobot_msg);
+
+
     drone_pub.publish(drone_msg);
-    elapsed_time_pub.publish(obs_state.elapsed_time)
+
+    time_msg.data = obs_state.elapsed_time;
+    elapsed_time_pub.publish(time_msg);
     ros::spinOnce();
   }
 
