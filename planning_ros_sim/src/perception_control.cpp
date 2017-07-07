@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {
-    std::cout << "kommer hit " <<std::endl;
+    std::cout << "kommer hit " << std::endl;
     sim_recv_state(&state);
     sim_Observed_State obs_state = sim_observe_state(state);
 

@@ -10,13 +10,18 @@ std::stack<action_t> AI::getBestGeneralActionStack(){
 
 }
 
-std::stack<action_t> AI::getBestActionStack(Robot* target_id){
+std::stack<action_t> AI::getBestActionStack(Robot* target){
     
-    action_t best_Action = chooseAction(target_id);
+    std::stack<action_t> action_Stack;
+
+    if(target->getIndex() == -1){
+        return action_Stack;
+    }
+
+    action_t best_Action = chooseAction(target);
     action_t search_Action = best_Action;
     search_Action.type = search;
 
-    std::stack<action_t> action_Stack;
     action_Stack.push(best_Action);
     action_Stack.push(search_Action);
     return action_Stack;
@@ -33,13 +38,14 @@ Robot* AI::chooseTarget(int num_Robots){
 
     for(int i = 0; i < num_Robots; i++){
         Robot* robot = this->state->robots[i];
+        std::cout << robot->getPosition().x << std::endl;
         if (!robot->isMoving()) {
-            std::cout << "Robot is turning. Do we have correct angle?" << std::endl;
+            // std::cout << "Robot is turning. Do we have correct angle?" << std::endl;
             continue;
         }
 
 		if(robot->current_Plank->willExitGreen()) {
-            std::cout <<  "Robot will exit green line. Ignoring it" << std::endl;
+            // std::cout <<  "Robot will exit green line. Ignoring it" << std::endl;
 			continue;
 		}
 

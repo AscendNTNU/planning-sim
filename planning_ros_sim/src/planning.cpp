@@ -109,6 +109,10 @@ int main(int argc, char **argv)
       //If we've finished our stack get a new one!
       if(current_action_stack.empty()){
         current_action_stack = ai->getBestGeneralActionStack();
+        //If no target found
+        if(current_action_stack.empty()){
+          continue;
+        }
         target_id = current_action_stack.top().target;
         target = ai->state->getRobot(target_id);
       }
