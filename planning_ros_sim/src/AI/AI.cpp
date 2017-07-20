@@ -5,7 +5,9 @@ AI::AI(){
 }
 
 std::stack<action_t> AI::getBestGeneralActionStack(){
+    std::cout << "Choosing target" << std::endl;
     Robot* target = chooseTarget(10);
+    std::cout << "entering best action stack" << std::endl;
     return getBestActionStack(target);
 
 }
@@ -14,11 +16,18 @@ std::stack<action_t> AI::getBestActionStack(Robot* target){
     
     std::stack<action_t> action_Stack;
 
-    if(target->getIndex() == -1){
+    if(target->current_Plank->getReward() == -20000){
+        action_Stack.push(action_Empty);
         return action_Stack;
     }
 
     action_t best_Action = chooseAction(target);
+
+    if(best_Action.reward == -20000){
+        action_Stack.push(action_Empty);
+        return action_Stack;
+    }
+
     action_t search_Action = best_Action;
     search_Action.type = search;
 
@@ -28,7 +37,7 @@ std::stack<action_t> AI::getBestActionStack(Robot* target){
 }
 
 Robot* AI::chooseTarget(int num_Robots){
-    float max_reward = -300000;
+    float max_reward = -20000;
     float reward = 0;
 	bool robotChosen = false;
     Robot* target = NULL;
@@ -38,18 +47,11 @@ Robot* AI::chooseTarget(int num_Robots){
 
     for(int i = 0; i < num_Robots; i++){
         Robot* robot = this->state->robots[i];
-        std::cout << robot->getPosition().x << std::endl;
-        if (!robot->isMoving()) {
-            // std::cout << "Robot is turning. Do we have correct angle?" << std::endl;
-            continue;
-        }
-
 		if(robot->current_Plank->willExitGreen()) {
-            // std::cout <<  "Robot will exit green line. Ignoring it" << std::endl;
 			continue;
 		}
-
         reward = robot->current_Plank->getReward();
+        std::cout << "REWARD IS  " << reward << std::endl;
         if(reward > max_reward){
             max_reward = reward;
             target = robot;
@@ -57,22 +59,19 @@ Robot* AI::chooseTarget(int num_Robots){
         }
     }
 	if(!robotChosen) {
-        std::cout << "No target chosen! Error" << std::endl;
         Robot* dummy = new Robot(-1);
         target = dummy;
-		std::cout << "Found no target! What to do?" << std::endl;
 	}
+    std::cout << "returning" << std::endl;
     return target;
 }
+
 action_t AI::chooseAction(Robot* target){
     point_t interception = this->state->drone->getInterceptPoint(target);
     point_t step_Point = {
         .x = interception.x, 
         .y = interception.y
     };
-    std::cout << "Intercept: " << step_Point << std::endl;
-    std::cout << "Target: " << std::endl;
-    std::cout << *target << std::endl;
 
     float time_after_interception = 0;
 
@@ -90,11 +89,19 @@ action_t AI::chooseAction(Robot* target){
     action_t step_Action;
     bool backwards = false;
     int i = 1;
-    while (i > 0) {
+    int counter = 0;
+    while (1) {
+        counter++;
         if (target->current_Plank->pointIsOutsideOfPlank(step_Point)) {
             if (backwards) {
+                if(best_Action.reward == -200000){
+                    std::cout<< "Action is empty!!!!!!!!" << std::endl;
+                    std::cout<<target->getPosition().x << " " <<target->getPosition().y << std::endl;
+                    std::cout<<target->getOrientation() <<  std::endl;
+                    std::cout<<*(target->getCurrentPlank())<<std::endl;
+                }
+
                 best_Action.target = target->getIndex();
-                // std::cout << "Best action: "<< std::endl << best_Action << std::endl;
                 return best_Action;
             } else {
                 i = n+1;
@@ -104,10 +111,6 @@ action_t AI::chooseAction(Robot* target){
         }
 		else {
 			step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
-			// std::cout << "Iteration: " << i << std::endl;
-			// std::cout << "Step point: " << step_Point << std::endl;
-			// std::cout << *(target->current_Plank) << std::endl;
-			// std::cout << "Step action: " << std::endl << step_Action << std::endl;
 			if (step_Action.reward > best_Action.reward) {
 				best_Action = step_Action;
 				best_Action.when_To_Act = time_after_interception;// + interception.travel_Time; Denne skal kanskje være globalt tispunkt etter start?
@@ -127,7 +130,7 @@ action_t AI::chooseAction(Robot* target){
         time_after_interception = time_after_interception + (step_size)/target->getSpeed();
 
     }
-    
+    std::cout<<"HERE||||||||||||||||||||||||||||||||||?"<<counter<<std::endl;
     best_Action.target = target->getIndex();
     return best_Action;
 }

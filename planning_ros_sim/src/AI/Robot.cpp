@@ -12,13 +12,15 @@ Robot::Robot(){
 }
 
 Robot::Robot(int index){
+
 	this->index = index;
 	this->position = point_Zero;
 	this->old_Position = point_Zero;
 	this->orientation = 0;
-	this->speed = 0.33;
+	this->speed = 0.33;	
 	this->current_Plank = new Plank();
 	this->time_After_Turn_Start = 0;
+
 }
 
 
@@ -56,10 +58,12 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
 	this->old_Orientation = this->orientation;
 	this->index = index;
 	this->position = new_Position;
-	this->orientation = fmod(new_Orientation, 2*MATH_PI);
 	this->time_After_Turn_Start = fmod(elapsed_time, 20);
+	this->orientation = fmod(new_Orientation, 2*MATH_PI);
+    if(time_After_Turn_Start < 2){
+        this->orientation = this->orientation - (MATH_PI/2) * (1/(2-time_After_Turn_Start));
+    }
 	this->current_Plank->updatePlank(this->position, this->orientation, this->time_After_Turn_Start, 10);
-
 }
 
 void Robot::setPositionOrientation(point_t position, float q){

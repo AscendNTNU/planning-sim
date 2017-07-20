@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
+#include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
 #include "../../../devel/include/planning_ros_sim/groundRobotList.h"
 #include "../../../devel/include/planning_ros_sim/groundRobot.h"
@@ -9,16 +10,16 @@
 #include <stdio.h>
 #include "AI/AI.h"
 #include "AI/structs.h"
-
-
+#include <assert.h>
 
 const float SIMILARITY_THRESHOLD = 10;
-
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
+
+bool action_done = true;
 
 AI* ai = new AI();
 World* world;
@@ -30,6 +31,7 @@ void time_chatterCallback(std_msgs::Float32 msg){
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
   //Probably need a msg to observation_t function
+
   observation_t robotObs;
   for(int i = 0; i < 10; i++) {
   	robotObs.robot_x[i] = msg.groundRobot[i].x;
@@ -46,6 +48,10 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
   droneObs.drone_x = msg.x;
   droneObs.drone_y = msg.y;
   ai->updateDrone(droneObs, elapsed_time);
+}
+
+void command_done_chatterCallback(std_msgs::Bool msg){
+  action_done = (bool)msg.data;
 }
 
 planning_ros_sim::droneCmd to_ROS_Command(action_t action)
@@ -86,62 +92,75 @@ int main(int argc, char **argv)
   ros::NodeHandle drone_node;
   ros::NodeHandle command_node;
   ros::NodeHandle time_node;
+  ros::NodeHandle command_done_node;
 
   ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
   ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
   ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
+  ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
   ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
   planning_ros_sim::droneCmd drone_action;
   
-  int target_id = -1;
+  int target_id = 0;
   Robot* target = ai->state->getRobot(1);
-  bool action_done = true;
   world = new World(0);
   action_t current_action;
   std::stack<action_t> current_action_stack;
   std::stack<action_t> updated_action_stack;
+
+  updated_action_stack.pop();
   world->startTimer();
+
+  while (ros::ok() and ai->state->getRobot(0)->getPosition().x == 0){
+    ros::Duration(0.2).sleep();
+    ros::spinOnce();
+  }
+
   while (ros::ok()){
-
+    ros::Duration(0.2).sleep();
+    ros::spinOnce();
     if(action_done){
-
+      std::cout << "action_done" << std::endl;
       //If we've finished our stack get a new one!
-      if(current_action_stack.empty()){
+      if(current_action_stack.empty() or current_action.reward == -20000){
         current_action_stack = ai->getBestGeneralActionStack();
-        //If no target found
-        if(current_action_stack.empty()){
-          continue;
-        }
+        updated_action_stack = ai->getBestGeneralActionStack();
+
         target_id = current_action_stack.top().target;
         target = ai->state->getRobot(target_id);
+        continue;
       }
- 
       //If we are waiting on the ground robot(ie the robot isn't
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
-      if(!is_nearby(current_action.where_To_Act, ai->state->getRobot(target_id)->getPosition())){
-        current_action_stack = updated_action_stack;
+      else if(!is_nearby(current_action.where_To_Act, target->getPosition()) and current_action.type != search){
+        std::cout<<"is nearby" <<std::endl;
+        current_action_stack.push(ai->getBestActionStack(target).top());  
       }
-      
-      
-      current_action = current_action_stack.top();
-      current_action_stack.pop();
-      drone_action = to_ROS_Command(current_action);
-      command_pub.publish(drone_action);
-
+      if(current_action.reward != -20000) 
+        std::cout << "sending command" << std::endl;
+        std::cout << "target is " << current_action_stack.top().target << std::endl;
+        current_action = current_action_stack.top();
+        drone_action = to_ROS_Command(current_action);
+        command_pub.publish(drone_action);
+        current_action_stack.pop();
     }
-    //returns a stack of the best actions based on the current observation
-    updated_action_stack = ai->getBestActionStack(target);
+    // else if(!similarity(current_action ,updated_action_stack.top())){
+    //   current_action_stack = updated_action_stack;
+    // }
+    // if(target_id > 0 and target_id < 10){
+    //   //returns a stack of the best actions based on the current observation
+    //   // while(!updated_action_stack.empty()){
+    //   //   updated_action_stack.pop();
+    //   // }
+    //   updated_action_stack = ai->getBestActionStack(target);
+    // }
 
     //If the action we are currently doing is significantly different
     //from the best possible action, abort.
-    if(similarity(current_action ,updated_action_stack.top())  > SIMILARITY_THRESHOLD){
-      current_action_stack = ai->getBestGeneralActionStack();
-      //cancle_actionlib_action();
-    }
+    
 
-    ros::spinOnce();
   }
 
   return 0;

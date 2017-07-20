@@ -50,6 +50,7 @@ bool Plank::willExitRed(){
 }
 
 float Plank::calculateReward(int n){
+
     float step_tot = this->length/n;
     float step_x = step_tot*cos(this->angle);
     float step_y = step_tot*sin(this->angle);
@@ -67,20 +68,19 @@ float Plank::calculateReward(int n){
 }
 
 void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start, int num_Iterations){
-	
+    
     this->angle = angle;
-	if(time_After_Turn_Start < 2){
-		angle = -1* (MATH_PI/2) * (2-time_After_Turn_Start);
-		this->endpoint_1.x = position.x;
-		this->endpoint_1.y = position.y;
-	}
-	else {
-		this->endpoint_1.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cos(angle);
-		this->endpoint_1.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sin(angle);
-	}
-	this->endpoint_2.x = this->endpoint_1.x - (20-2)*ROBOT_SPEED*cos(angle); // Subtracting 2.5 because of turn time (no translation)
-	this->endpoint_2.y = this->endpoint_1.y - (20-2)*ROBOT_SPEED*sin(angle);
-	
+    if(time_After_Turn_Start < 2){
+        this->endpoint_1.x = position.x;
+        this->endpoint_1.y = position.y;
+    }
+    else {
+        this->endpoint_1.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cos(angle);
+        this->endpoint_1.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sin(angle);
+    }
+    this->endpoint_2.x = this->endpoint_1.x - (20-2)*ROBOT_SPEED*cos(this->angle); // Subtracting 2.5 because of turn time (no translation)
+    this->endpoint_2.y = this->endpoint_1.y - (20-2)*ROBOT_SPEED*sin(this->angle);
+    
 
     float dx = this->endpoint_2.x - this->endpoint_1.x;
     float dy = this->endpoint_2.y - this->endpoint_1.y;
@@ -91,10 +91,11 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
 }
 
 bool Plank::pointIsOutsideOfPlank(point_t point){
-	if ((point.x > this->endpoint_1.x && point.x > this->endpoint_2.x) || 
-		(point.x < this->endpoint_1.x && point.x < this->endpoint_2.x) ||
-	    (point.y > this->endpoint_1.y && point.y > this->endpoint_2.y) || 
-	    (point.y < this->endpoint_1.y && point.y < this->endpoint_2.y)) {
+    float tol = 0.001;
+	if ((point.x > (this->endpoint_1.x + tol) && point.x > (this->endpoint_2.x + tol)) || 
+		(point.x < (this->endpoint_1.x - tol) && point.x < (this->endpoint_2.x - tol)) ||
+	    (point.y > (this->endpoint_1.y + tol) && point.y > (this->endpoint_2.y + tol)) || 
+	    (point.y < (this->endpoint_1.y - tol) && point.y < (this->endpoint_2.y - tol))) {
 	    return true;
 	} else {
 	    return false;
@@ -107,7 +108,7 @@ std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
     << "Endpoint 1: "   << plank.endpoint_1 << std::endl
     << "Endpoint 2: "   << plank.endpoint_2 << std::endl
     << "Reward: "       << plank.reward     << std::endl
-    << "Angle: "        << plank.angle*360/MATH_PI << " (deg)"<< std::endl
+    << "Angle: "        << plank.angle << std::endl//plank.angle*360/MATH_PI << " (deg)"<< std::endl
     << "Length: "       << plank.length     << std::endl;
     return strm;
 };
