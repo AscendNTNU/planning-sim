@@ -21,14 +21,14 @@ catkin_package(CATKIN_DEPENDS message_runtime )
 
 
 
-
+set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(perception_control src/perception_control.cpp)
 target_link_libraries(perception_control ${catkin_LIBRARIES})
 add_dependencies(perception_control planning_ros_sim_generate_messages_cpp)
 
-add_executable(planning src/planning.cpp)
+add_executable(planning src/planning.cpp src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/State.cpp src/AI/AI.cpp )
 target_link_libraries(planning ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp)
 

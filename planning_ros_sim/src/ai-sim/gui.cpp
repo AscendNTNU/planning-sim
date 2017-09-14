@@ -387,7 +387,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
     persist bool flag_Paused            = false;
     persist bool flag_Recording         = false;
     persist bool flag_SetupRecord       = false;
-    persist bool flag_probability_distribution = true;
+    persist bool flag_probability_distribution = false;
     persist bool flag_custom_drone_text = false;
     persist bool flag_custom_target_text = false;
     persist bool flag_view_target_text = false;
