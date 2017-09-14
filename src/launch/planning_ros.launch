@@ -1,0 +1,10 @@
+<launch>
+  <node pkg="planning_ros_sim" type="planning_node" name="planning"/>
+  
+  <param name="groundrobots_info" value="groundrobot_chatter" />
+  <param name="drone_info" value="drone_chatter" />
+  <!-- These two might be sent in the same message/topic from perception -->
+  
+  <param name="drone_cmd" value="drone_cmd_chatter" />
+
+</launch>
