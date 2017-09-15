@@ -108,7 +108,7 @@ std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
     << "Endpoint 1: "   << plank.endpoint_1 << std::endl
     << "Endpoint 2: "   << plank.endpoint_2 << std::endl
     << "Reward: "       << plank.reward     << std::endl
-    << "Angle: "        << plank.angle << std::endl//plank.angle*360/MATH_PI << " (deg)"<< std::endl
+    << "Angle: "        << plank.angle      << std::endl//plank.angle*360/MATH_PI << " (deg)"<< std::endl
     << "Length: "       << plank.length     << std::endl;
     return strm;
 };
