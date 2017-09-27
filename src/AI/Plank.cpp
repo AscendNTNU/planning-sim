@@ -24,21 +24,27 @@ float Plank::getLength(){
 }
 
 point_t Plank::getPoint(int i){
-
     if(i==2){
         return this->endpoint_2;
     }
     return this->endpoint_1;
 }
-bool Plank::willExitGreen(){
 
-    if(this->endpoint_1.y > 20){
+bool Plank::willExitGreen(){
+    //:rtype: boolean
+    //Returns true if the robot will cross the green line given it's current motion.
+
+    if(this->endpoint_1.y > 20 || this->endpoint_2.y > 20 ){
         std::cout << "Plank will cross green using temporary solution" << std::endl;
         return true;
     }
 	return false; //Fix this
 }
+
 bool Plank::willExitRed(){
+    //:rtype: boolean
+    //Returns true if the robot will cross any red line given it's current motion.
+
     std::cout << "Robot will cross red using temporary solution" << std::endl;
 	if(this->endpoint_1.y < 0 || this->endpoint_1.x > 20 || this->endpoint_1.x  < 0){
         return true;
@@ -50,6 +56,9 @@ bool Plank::willExitRed(){
 }
 
 float Plank::calculateReward(int n){
+    //:n: number of integration steps
+    //:rtype: float
+    //Returns true if the robot will cross any red line given it's current motion.
 
     float step_tot = this->length/n;
     float step_x = step_tot*cos(this->angle);
@@ -68,7 +77,12 @@ float Plank::calculateReward(int n){
 }
 
 void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start, int num_Iterations){
-    
+    //:position: position of ground robot
+    //:angle: angle of ground robot
+    //:time_After_Turn_Start: time passed since the robot started turning
+    //:num_Iterations: number of integration steps for value calculation
+    //Updates the plank given the ground robots state.
+
     this->angle = angle;
     if(time_After_Turn_Start < 2){
         this->endpoint_1.x = position.x;
@@ -91,6 +105,11 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
 }
 
 bool Plank::pointIsOutsideOfPlank(point_t point){
+    //:point: a point
+    //:rtype: boolean
+    //Returns true if the point is outside of the plank
+
+
     float tol = 0.001;
 	if ((point.x > (this->endpoint_1.x + tol) && point.x > (this->endpoint_2.x + tol)) || 
 		(point.x < (this->endpoint_1.x - tol) && point.x < (this->endpoint_2.x - tol)) ||

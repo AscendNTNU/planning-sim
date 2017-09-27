@@ -8,6 +8,7 @@
 extern World* world;
 
 class Plank{
+//This class creates the plank describing a ground robots motion. It is responisble for setting value on a ground robots position.
 private:
     point_t endpoint_1; //First endpoint robot meets
     point_t endpoint_2; //Second endpoint robot meets
