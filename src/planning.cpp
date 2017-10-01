@@ -98,6 +98,7 @@ int main(int argc, char **argv)
   ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
   ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
   ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
+  
   ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
   planning_ros_sim::droneCmd drone_action;
@@ -105,7 +106,9 @@ int main(int argc, char **argv)
   int target_id = 0;
   Robot* target = ai->state->getRobot(1);
   world = new World(0);
+
   action_t current_action;
+
   std::stack<action_t> current_action_stack;
   std::stack<action_t> updated_action_stack;
 
@@ -122,6 +125,7 @@ int main(int argc, char **argv)
     ros::spinOnce();
 
     if(action_done){
+      
       //If we've finished our stack get a new one!
       if(current_action_stack.empty() or current_action.reward == -20000){
         current_action_stack = ai->getBestGeneralActionStack();
@@ -137,12 +141,10 @@ int main(int argc, char **argv)
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
       else if(!is_nearby(current_action.where_To_Act, target->getPosition()) and current_action.type != search){
-        std::cout<<"is nearby" <<std::endl;
-        current_action_stack.push(ai->getBestActionStack(target).top());  
+        current_action_stack.push(ai->getBestActionStack(target).top()); 
       }
+
       if(current_action.reward != -20000){
-        std::cout << "sending command" << std::endl;
-        std::cout << "target is " << current_action_stack.top().target << std::endl;
         current_action = current_action_stack.top();
         drone_action = to_ROS_Command(current_action);
         command_pub.publish(drone_action);
