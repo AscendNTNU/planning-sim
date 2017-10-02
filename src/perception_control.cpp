@@ -9,8 +9,8 @@
 #include "../../../devel/include/planning_ros_sim/droneCmd.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
-#include "ai-sim/sim.h"
-#include "ai-sim/gui.h"
+#include "../../ai-sim/sim.h"
+#include "../../ai-sim/gui.h"
 #include "AI/structs.h"
 #include <stdio.h>
 #include <sstream>
