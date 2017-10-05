@@ -26,7 +26,6 @@ Robot::Robot(int index){
 int Robot::getIndex(){
 	return this->index;
 }
-
 point_t Robot::getPosition(){
 	return this->position;
 }
@@ -62,7 +61,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
 	
     if(this->time_After_Turn_Start < 2){
         estimated_orientation = this->orientation - MATH_PI * this->time_After_Turn_Start/2;
-    	this->current_Plank->updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, 10);
+    	this->current_Plank->updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, 10); //Will this make Plank construct a plank which the robot never will follow
     }
     else{
     	this->orientation = fmod(new_Orientation, 2*MATH_PI);

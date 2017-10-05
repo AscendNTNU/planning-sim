@@ -36,4 +36,7 @@ add_dependencies(planning planning_ros_sim_generate_messages_cpp)
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 target_link_libraries(Plank libAI ${catkin_LIBRARIES})
 
+catkin_add_gtest(Robot src/test/robot_test.cpp)
+target_link_libraries(Robot libAI ${catkin_LIBRARIES})
+
 # %EndTag(FULLTEXT)%
