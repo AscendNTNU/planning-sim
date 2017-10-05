@@ -1,4 +1,3 @@
-#include "World.h"
 #include "Robot.h"
 
 Robot::Robot(){
@@ -54,16 +53,22 @@ bool Robot::isMoving(){
 }
 
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time){
+	float estimated_orientation = 0;
 	this->old_Position = this->position;
 	this->old_Orientation = this->orientation;
 	this->index = index;
 	this->position = new_Position;
 	this->time_After_Turn_Start = fmod(elapsed_time, 20);
-	this->orientation = fmod(new_Orientation, 2*MATH_PI);
-    if(time_After_Turn_Start < 2){
-        this->orientation = this->orientation - (MATH_PI/2) * (1/(2-time_After_Turn_Start));
+	
+    if(this->time_After_Turn_Start < 2){
+        estimated_orientation = this->orientation - MATH_PI * this->time_After_Turn_Start/2;
+    	this->current_Plank->updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, 10);
     }
-	this->current_Plank->updatePlank(this->position, this->orientation, this->time_After_Turn_Start, 10);
+    else{
+    	this->orientation = fmod(new_Orientation, 2*MATH_PI);
+    	this->current_Plank->updatePlank(this->position, this->orientation, this->time_After_Turn_Start, 10);
+    }
+	
 }
 
 void Robot::setPositionOrientation(point_t position, float q){
