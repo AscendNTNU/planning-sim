@@ -14,6 +14,7 @@ public:
 
 TEST (testFixture, ConstructorTest) {
 	World* world = new World(3.14);
+	world->startTimer();
 	EXPECT_EQ(world->getOrigin().x, point_Zero.x);
 	EXPECT_EQ(world->getOrigin().y, point_Zero.y);
 	EXPECT_NEAR(world->getCurrentTime(), 0, 0.1);

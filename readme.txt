@@ -19,6 +19,8 @@ catkin_make
 
 Fix any build errors before continuing.
 
+run roscore
+
 Terminal window 3:
 Run: 
 rosrun planning_ros_sim perception_control
@@ -27,3 +29,10 @@ Terminal window 4:
 Run:
 rosrun planning_ros_sim planning
 
+TESTS:
+Make tests in the planning_sim/src/test directory
+
+Add the test to the CMakeLists.txt in the planning_sim directory
+
+from catkin_ws run:
+catkin_make run_tests
