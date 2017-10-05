@@ -45,6 +45,30 @@ TEST (DroneTest, DistanceToPointTest) {
 	EXPECT_NEAR(drone->getDistanceToPoint(point), 995340462.62581f, 0.0001f);
 }
 
+
+struct observation_t observer_Zero
+{
+	.elapsed_time = 0.0f;
+	.drone_x = 0.0f;
+	.drone_y = 0.0f;
+	.drone_cmd_done = true;
+	.num_Targets = 1;
+
+	.robot_x[10] = 0.0f;
+	.robot_y[10] = 0.0f;
+	.robot_q[10] = 0.0f;
+
+	.obstacle_x[4] = 0.0f;
+	.obstacle_y[4] = 0.0f;
+	.obstacle_q[4] = 0.0f;
+};
+
+TEST (DroneTest, UpdateDroneTest) {
+	Drone* drone = new Drone();
+	observation_t observer = observer_Zero;
+	// ...
+}
+
 int main(int argc, char **argv){
 	testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
