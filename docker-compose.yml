@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  nodes:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    volumes:
+      - ./run-docker.sh:/build.sh:ro
+      - .:/catkin_ws/src/planning-sim/:rw
+  tests:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    command: bash -c "cd catkin_ws && catkin_make run_tests"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
