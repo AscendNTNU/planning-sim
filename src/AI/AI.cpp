@@ -16,14 +16,14 @@ std::stack<action_t> AI::getBestActionStack(Robot* target){
     
     std::stack<action_t> action_Stack;
 
-    if(target->current_Plank->getReward() == -20000){
+    if(target->current_Plank->getReward() == -200000){
         action_Stack.push(action_Empty);
         return action_Stack;
     }
 
     action_t best_Action = chooseAction(target);
 
-    if(best_Action.reward == -20000){
+    if(best_Action.reward == -200000){
         action_Stack.push(action_Empty);
         return action_Stack;
     }
@@ -37,7 +37,7 @@ std::stack<action_t> AI::getBestActionStack(Robot* target){
 }
 
 Robot* AI::chooseTarget(int num_Robots){
-    float max_reward = -20000;
+    float max_reward = -200000;
     float reward = 0;
 	bool robotChosen = false;
     Robot* target = NULL;
