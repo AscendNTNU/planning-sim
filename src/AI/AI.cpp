@@ -5,9 +5,7 @@ AI::AI(){
 }
 
 std::stack<action_t> AI::getBestGeneralActionStack(){
-    std::cout << "Choosing target" << std::endl;
     Robot target = chooseTarget(10);
-    std::cout << "entering best action stack" << std::endl;
     return getBestActionStack(target);
 }
 
@@ -71,13 +69,6 @@ action_t AI::chooseAction(Robot target){
         counter++;
         if (target.current_Plank.pointIsOutsideOfPlank(step_Point)) {
             if (backwards) {
-                if(best_Action.reward == -200000){
-                    std::cout<< "Action is empty!!!!!!!!" << std::endl;
-                    std::cout<<target.getPosition().x << " " <<target.getPosition().y << std::endl;
-                    std::cout<<target.getOrientation() <<  std::endl;
-                    std::cout<<(target.getCurrentPlank())<<std::endl;
-                }
-
                 best_Action.target = target.getIndex();
                 return best_Action;
             } else {
@@ -107,7 +98,6 @@ action_t AI::chooseAction(Robot target){
         time_after_interception = time_after_interception + (step_size)/target.getSpeed();
 
     }
-    std::cout<<"HERE||||||||||||||||||||||||||||||||||?"<<counter<<std::endl;
     best_Action.target = target.getIndex();
     return best_Action;
 }
@@ -131,17 +121,9 @@ action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, act
     if(reward_On_Top > reward_In_Front){
         action.type = land_On_Top_Of;
         action.reward = reward_On_Top;
-    } else if (reward_On_Top < reward_In_Front){
+    } else{
         action.type = land_In_Front_Of;
         action.reward = reward_In_Front;
-    } else if (reward_On_Top == reward_In_Front){
-        // Return in front because it is easier?
-        action.type = land_In_Front_Of;
-        action.reward = reward_In_Front;
-    } else {
-        // Will it ever get here?
-        action.type = no_Command;
-        action.reward = 0;
     }
     return action;
 }

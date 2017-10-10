@@ -40,7 +40,7 @@
 #define Num_max_text_length (256) // Maximum number of bytes for each target text
 
 
-#define pixels_each_meter (6) //for heatmap
+#define pixels_each_meter (1) //for heatmap
 
 enum sim_CommandType
 {
