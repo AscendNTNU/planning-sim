@@ -1,5 +1,12 @@
-#pragma once
+/**
+@class AI
+@brief AI class
 
+This class handles all AI functions. This includes the choice of target and the choice of target.
+*/
+
+
+#pragma once
 #include "Robot.h"
 #include "State.h"
 #include "Plank.h"
@@ -7,15 +14,62 @@
 
 class AI{
 public:
+    ///AI constructor
     AI();
-    State state;
-    Robot chooseTarget(int num_Robots);
-    action_t chooseAction(Robot target);
 
-    action_t getBestActionAtPosition(Robot target, point_t position, float time_after_interception);
+    ///Current State
+    State* state;
+
+    /**
+    @brief Returns best target based on current planks.
+    @param num_Robots Number of robots in game.
+    @return The robot with best current plank.
+    Loops through the robots in current state to find the robot with the highest
+    value plank. Returns this robot if found, otherwise returns an empty Robot.
+    */
+    Robot* chooseTarget(int num_Robots);
+
+
+    /**
+    @brief Returns best action along the plank of a target robot
+    @param target Target robot.
+    @return The best action.
+    Given a robot, returns the action from different points on the plank that gives best value.
+    If none found, returns an empty action, ie at (0,0)
+    */
+    action_t chooseAction(Robot* target);
+
+    /**
+    @brief Gets the best action for a robot at a given position and time
+    @param target Target robot.
+    @param position Position for calculation.
+    @param time_after_interception How long to wait after the drone arrives at position
+    @return The best action.
+    */
+    action_t getBestActionAtPosition(Robot* target, point_t position, float time_after_interception);
+
+    /**
+    @brief Returns best action given rewards
+    @param reward_On_Top Reward of resultant plank from landing on top of the robot
+    @param reward_In_Front Reward of resultant plank from landing in front of the robot
+    @return The best action.
+    Compares landing ontop to landing in front and returns an action_t with the action of highest reward
+    */
     action_t actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action);
+
+    /**
+    @brief Returns action stack for the best action over all robots.
+    @return Best possible action stack.
+    Checks the best action for each robot and returns the action stack for performing the action with best reward/
+    */
     std::stack<action_t> getBestGeneralActionStack();
-    std::stack<action_t> getBestActionStack(Robot target_id);
+
+    /**
+    @brief Returns action stack for the best action for a target robot.
+    @return Best possible action stack.
+    Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
+    */
+    std::stack<action_t> getBestActionStack(Robot* target_id);
 
     bool update(observation_t observation, float elapsed_time);
     bool updateDrone(observation_t observation, float elapsed_time);

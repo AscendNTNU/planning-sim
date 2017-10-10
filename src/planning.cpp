@@ -98,6 +98,7 @@ int main(int argc, char **argv)
   ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
   ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
   ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
+  
   ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
   planning_ros_sim::droneCmd drone_action;
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
   int target_id = 0;
   Robot target = ai.state.getRobot(1);
   action_t current_action;
+
   std::stack<action_t> current_action_stack;
   std::stack<action_t> updated_action_stack;
 
@@ -119,8 +121,9 @@ int main(int argc, char **argv)
   while (ros::ok()){
     ros::Duration(0.2).sleep();
     ros::spinOnce();
+
     if(action_done){
-      std::cout << "action_done" << std::endl;
+      
       //If we've finished our stack get a new one!
       if(current_action_stack.empty() or current_action.reward == -20000){
         current_action_stack = ai.getBestGeneralActionStack();
@@ -130,6 +133,8 @@ int main(int argc, char **argv)
         target = ai.state.getRobot(target_id);
         continue;
       }
+
+
       //If we are waiting on the ground robot(ie the robot isn't
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
@@ -137,14 +142,15 @@ int main(int argc, char **argv)
         std::cout<<"is nearby" <<std::endl;
         current_action_stack.push(ai.getBestActionStack(target).top());  
       }
-      if(current_action.reward != -20000) 
-        std::cout << "sending command" << std::endl;
-        std::cout << "target is " << current_action_stack.top().target << std::endl;
+
+      if(current_action.reward != -20000){
         current_action = current_action_stack.top();
         drone_action = to_ROS_Command(current_action);
         command_pub.publish(drone_action);
         current_action_stack.pop();
+      }
     }
+
     // else if(!similarity(current_action ,updated_action_stack.top())){
     //   current_action_stack = updated_action_stack;
     // }
@@ -155,7 +161,6 @@ int main(int argc, char **argv)
     //   // }
     //   updated_action_stack = ai.getBestActionStack(target);
     // }
-
     //If the action we are currently doing is significantly different
     //from the best possible action, abort.
     

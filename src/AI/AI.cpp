@@ -9,7 +9,6 @@ std::stack<action_t> AI::getBestGeneralActionStack(){
     Robot target = chooseTarget(10);
     std::cout << "entering best action stack" << std::endl;
     return getBestActionStack(target);
-
 }
 
 std::stack<action_t> AI::getBestActionStack(Robot target){
@@ -42,9 +41,6 @@ Robot AI::chooseTarget(int num_Robots){
 	bool robotChosen = false;
     Robot target = NULL;
 
-    // get this from 20 - target.getTimeAfterTurn() if needed
-    // float timeToTurn = 20 - fmod(this->state.getTimeStamp(),20);
-
     for(int i = 0; i < num_Robots; i++){
         Robot robot = this->state.robots[i];
 		if(robot.current_Plank.willExitGreen()) {
@@ -62,7 +58,6 @@ Robot AI::chooseTarget(int num_Robots){
         Robot dummy = Robot(-1);
         target = dummy;
 	}
-    std::cout << "returning" << std::endl;
     return target;
 }
 
@@ -150,6 +145,7 @@ action_t AI::getBestActionAtPosition(Robot target, point_t position, float time_
 }
 
 action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action){
+
     if(reward_On_Top > reward_In_Front){
         action.type = land_On_Top_Of;
         action.reward = reward_On_Top;
