@@ -15,49 +15,31 @@ std::stack<action_t> AI::getBestActionStack(Robot target){
     
     std::stack<action_t> action_Stack;
 
-    if(target.current_Plank.getReward() == -20000){
-        action_Stack.push(action_Empty);
-        return action_Stack;
-    }
-
     action_t best_Action = chooseAction(target);
-
-    if(best_Action.reward == -20000){
-        action_Stack.push(action_Empty);
-        return action_Stack;
-    }
 
     action_t search_Action = best_Action;
     search_Action.type = search;
 
     action_Stack.push(best_Action);
     action_Stack.push(search_Action);
+
     return action_Stack;
 }
 
 Robot AI::chooseTarget(int num_Robots){
-    float max_reward = -20000;
-    float reward = 0;
-	bool robotChosen = false;
-    Robot target = NULL;
-
+    Robot robot;
+    Robot target;
+    float best_reward;
     for(int i = 0; i < num_Robots; i++){
-        Robot robot = this->state.robots[i];
+        robot = this->state.robots[i];
 		if(robot.current_Plank.willExitGreen()) {
 			continue;
 		}
-        reward = robot.current_Plank.getReward();
-        std::cout << "REWARD IS  " << reward << std::endl;
-        if(reward > max_reward){
-            max_reward = reward;
+        if(robot.current_Plank.getReward() > best_reward){
+            best_reward = robot.current_Plank.getReward();
             target = robot;
-			robotChosen = true;
         }
     }
-	if(!robotChosen) {
-        Robot dummy = Robot(-1);
-        target = dummy;
-	}
     return target;
 }
 
