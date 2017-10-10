@@ -63,7 +63,7 @@ struct sim_Command
     float heatmap[pixels_each_meter*pixels_each_meter*20*20];
     char text[Num_max_text_length*Num_Targets+Num_max_text_length];
 
-    int reward;
+    float reward;
 
 };
 

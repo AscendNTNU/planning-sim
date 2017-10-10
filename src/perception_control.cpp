@@ -47,6 +47,7 @@ void droneCmd_chatterCallback(planning_ros_sim::droneCmd droneCmd_msg)
   command.y = droneCmd_msg.y;
   command.i = droneCmd_msg.target_id;
   command.type = to_Sim_ActionType(droneCmd_msg.cmd);
+  command.reward = droneCmd_msg.reward;
   std::cout<< "Sending drone command " << command.i << std::endl;
   sim_send_cmd(&command);
 }

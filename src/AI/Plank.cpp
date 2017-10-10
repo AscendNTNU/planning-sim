@@ -104,11 +104,11 @@ bool Plank::pointIsOutsideOfPlank(point_t point){
 std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
 
     strm << std::endl << "--- Plank ---" << std::endl
-    << "Endpoint 1: "   << plank.endpoint_1 << std::endl
-    << "Endpoint 2: "   << plank.endpoint_2 << std::endl
-    << "Reward: "       << plank.reward     << std::endl
-    << "Angle: "        << plank.angle      << std::endl//plank.angle*360/MATH_PI << " (deg)"<< std::endl
-    << "Length: "       << plank.length     << std::endl;
+                      << "Endpoint 1: "   << plank.endpoint_1 << std::endl
+                      << "Endpoint 2: "   << plank.endpoint_2 << std::endl
+                      << "Reward: "       << plank.reward     << std::endl
+                      << "Angle: "        << plank.angle      << std::endl
+                      << "Length: "       << plank.length     << std::endl;
     return strm;
 };
 

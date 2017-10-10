@@ -862,7 +862,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Land:
                 {
@@ -870,7 +870,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("%.2f", cmd_i.x); ImGui::NextColumn();
                     ImGui::Text("%.2f", cmd_i.y); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_LandOnTopOf:
                 {
@@ -878,7 +878,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Track:
                 {
@@ -886,7 +886,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Search:
                 {
@@ -894,7 +894,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("%.2f", cmd_i.x); ImGui::NextColumn();
                     ImGui::Text("%.2f", cmd_i.y); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Debug:
                 {
