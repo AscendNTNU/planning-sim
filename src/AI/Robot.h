@@ -17,7 +17,7 @@ public:
 	//constructors
 	Robot();
 	Robot(int index);
-	Plank* current_Plank;
+	Plank current_Plank;
 
 	//get
 	int getIndex();
@@ -25,7 +25,7 @@ public:
 	float getOrientation();
 	float getTimeAfterTurn();
 	float getSpeed();
-	Plank* getCurrentPlank();
+	Plank getCurrentPlank();
 
 	//set
 	void setPositionOrientation(point_t position, float q);

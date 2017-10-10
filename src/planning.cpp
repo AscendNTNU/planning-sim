@@ -21,8 +21,8 @@ float elapsed_time = 0;
 
 bool action_done = true;
 
-AI* ai = new AI();
-World* world;
+AI ai = AI();
+World world = World(0);
 
 void time_chatterCallback(std_msgs::Float32 msg){
   elapsed_time = (float)msg.data;
@@ -38,7 +38,7 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
   	robotObs.robot_y[i] = msg.groundRobot[i].y;
   	robotObs.robot_q[i] = msg.groundRobot[i].theta;
   }
-  ai->updateRobot(robotObs, elapsed_time);
+  ai.updateRobot(robotObs, elapsed_time);
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
@@ -47,7 +47,7 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg)
   observation_t droneObs;
   droneObs.drone_x = msg.x;
   droneObs.drone_y = msg.y;
-  ai->updateDrone(droneObs, elapsed_time);
+  ai.updateDrone(droneObs, elapsed_time);
 }
 
 void command_done_chatterCallback(std_msgs::Bool msg){
@@ -103,16 +103,15 @@ int main(int argc, char **argv)
   planning_ros_sim::droneCmd drone_action;
   
   int target_id = 0;
-  Robot* target = ai->state->getRobot(1);
-  world = new World(0);
+  Robot target = ai.state.getRobot(1);
   action_t current_action;
   std::stack<action_t> current_action_stack;
   std::stack<action_t> updated_action_stack;
 
   updated_action_stack.pop();
-  world->startTimer();
+  world.startTimer();
 
-  while (ros::ok() and ai->state->getRobot(0)->getPosition().x == 0){
+  while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0){
     ros::Duration(0.2).sleep();
     ros::spinOnce();
   }
@@ -124,19 +123,19 @@ int main(int argc, char **argv)
       std::cout << "action_done" << std::endl;
       //If we've finished our stack get a new one!
       if(current_action_stack.empty() or current_action.reward == -20000){
-        current_action_stack = ai->getBestGeneralActionStack();
-        updated_action_stack = ai->getBestGeneralActionStack();
+        current_action_stack = ai.getBestGeneralActionStack();
+        updated_action_stack = ai.getBestGeneralActionStack();
 
         target_id = current_action_stack.top().target;
-        target = ai->state->getRobot(target_id);
+        target = ai.state.getRobot(target_id);
         continue;
       }
       //If we are waiting on the ground robot(ie the robot isn't
       //nearby our landing location) we might aswell update our
       //where_to_act on our current observations.
-      else if(!is_nearby(current_action.where_To_Act, target->getPosition()) and current_action.type != search){
+      else if(!is_nearby(current_action.where_To_Act, target.getPosition()) and current_action.type != search){
         std::cout<<"is nearby" <<std::endl;
-        current_action_stack.push(ai->getBestActionStack(target).top());  
+        current_action_stack.push(ai.getBestActionStack(target).top());  
       }
       if(current_action.reward != -20000) 
         std::cout << "sending command" << std::endl;
@@ -154,7 +153,7 @@ int main(int argc, char **argv)
     //   // while(!updated_action_stack.empty()){
     //   //   updated_action_stack.pop();
     //   // }
-    //   updated_action_stack = ai->getBestActionStack(target);
+    //   updated_action_stack = ai.getBestActionStack(target);
     // }
 
     //If the action we are currently doing is significantly different

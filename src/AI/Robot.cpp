@@ -7,7 +7,7 @@ Robot::Robot(){
 	this->old_Position = point_Zero;
 	this->orientation = 0;
 	this->speed = 0.33;
-	this->current_Plank = new Plank();
+	this->current_Plank = Plank();
 	this->time_After_Turn_Start = 0;
 }
 
@@ -18,7 +18,7 @@ Robot::Robot(int index){
 	this->old_Position = point_Zero;
 	this->orientation = 0;
 	this->speed = 0.33;	
-	this->current_Plank = new Plank();
+	this->current_Plank = Plank();
 	this->time_After_Turn_Start = 0;
 
 }
@@ -40,7 +40,7 @@ float Robot::getTimeAfterTurn(){
 float Robot::getSpeed(){
 	return this->speed;
 }
-Plank* Robot::getCurrentPlank(){
+Plank Robot::getCurrentPlank(){
 	return this->current_Plank;
 }
 
@@ -63,7 +63,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     if(time_After_Turn_Start < 2){
         this->orientation = this->orientation - (MATH_PI/2) * (1/(2-time_After_Turn_Start));
     }
-	this->current_Plank->updatePlank(this->position, this->orientation, this->time_After_Turn_Start, 10);
+	this->current_Plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start, 10);
 }
 
 void Robot::setPositionOrientation(point_t position, float q){
@@ -85,7 +85,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Old orient.: "  << robot.old_Orientation	<< std::endl
     << "Time after: "	<< robot.time_After_Turn_Start<< std::endl
     << "Speed: " 		<< robot.speed 				<< std::endl
-    << "Current plank: "<< *robot.current_Plank
+    << "Current plank: "<< robot.current_Plank
     << "-------------"								<< std::endl;
     return strm;
 };

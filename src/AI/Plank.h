@@ -5,7 +5,7 @@
 #include "structs.h"
 #include "World.h"
 
-extern World* world;
+extern World world;
 
 class Plank{
 //This class creates the plank describing a ground robots motion. It is responisble for setting value on a ground robots position.
