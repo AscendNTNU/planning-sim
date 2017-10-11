@@ -1,8 +1,8 @@
 #include "Plank.h"
 
 Plank::Plank(){
-	this->endpoint_1 = point_Zero;
-	this->endpoint_2 = point_Zero;
+	this->end_point = point_Zero;
+	this->start_point = point_Zero;
     this->angle = 0;
     this->length = 0;
     this->reward = -200000;
@@ -24,64 +24,72 @@ float Plank::getLength(){
 }
 
 point_t Plank::getPoint(int i){
-    if(i==2){
-        return this->endpoint_2;
+    if(i==0){
+        return this->start_point;
     }
-    return this->endpoint_1;
+    else if(i==11){
+        return this->end_point;
+    }
+    return this->plank_points[i]
 }
 
 bool Plank::willExitGreen(){
-    if(this->endpoint_1.y > 20 || this->endpoint_2.y > 20 ){
+    if(this->end_point.y > 20 || this->start_point.y > 20 ){
         return true;
     }
 	return false; //Fix this
 }
 
 bool Plank::willExitRed(){
-	if(this->endpoint_1.y < 0 || this->endpoint_1.x > 20 || this->endpoint_1.x  < 0){
+	if(this->end_point.y < 0 || this->end_point.x > 20 || this->end_point.x  < 0){
         return true;
     }
-    if(this->endpoint_2.y < 0 || this->endpoint_2.x > 20 || this->endpoint_2.x  < 0){
+    if(this->start_point.y < 0 || this->start_point.x > 20 || this->start_point.x  < 0){
         return true;
     }
     return false; //Fix this
 }
 
-float Plank::calculateReward(int n){
+void Plank::calculateAllPlankPoints(){
+    float step_length = this->length/10;
+    float step_x = step_length*cos(this->angle);
+    float step_y = step_length*sin(this->angle);
 
-    float step_tot = this->length/n;
-    float step_x = step_tot*cos(this->angle);
-    float step_y = step_tot*sin(this->angle);
-
-    float area = 0.0;  // signed area
-    float x = 0.0;
-    float y = 0.0;
- 
     for (int i = 0; i < n; i++) {
-        x = this->endpoint_1.x + (i + 0.5) * step_x;
-        y = this->endpoint_1.y + (i + 0.5) * step_y;
-        area += world->getGridValue(x, y) * step_tot; // sum up each small rectangle
+        this->plank_points[i].x = this->end_point.x + (i + 0.5) * step_x;
+        this->plank_points[i].y = this->end_point.x + (i + 0.5) * step_x;
     }
-    return area;
+}
+
+float Plank::calculateReward(int n){
+    float step_length = this->length/10;
+    float reward = 0.0;
+    float value = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        value = world.getGridValue(this->plank_points[i].x, this->plank_points[i].y)
+        reward += value * step_length;
+    }
+    return reward;
 }
 
 void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start, int num_Iterations){
 
     this->angle = angle;
     if(time_After_Turn_Start < 2){
-        this->endpoint_1.x = position.x;
-        this->endpoint_1.y = position.y;
+        this->end_point.x = position.x;
+        this->end_point.y = position.y;
     }
     else {
-        this->endpoint_1.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cos(angle);
-        this->endpoint_1.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sin(angle);
+        this->end_point.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cos(angle);
+        this->end_point.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sin(angle);
     }
-    this->endpoint_2.x = this->endpoint_1.x - (20-2)*ROBOT_SPEED*cos(this->angle); // Subtracting 2.5 because of turn time (no translation)
-    this->endpoint_2.y = this->endpoint_1.y - (20-2)*ROBOT_SPEED*sin(this->angle);
+    this->start_point.x = this->end_point.x - (20-2)*ROBOT_SPEED*cos(this->angle); // Subtracting 2.5 because of turn time (no translation)
+    this->start_point.y = this->end_point.y - (20-2)*ROBOT_SPEED*sin(this->angle);
     
 
-    float dx = this->endpoint_2.x - this->endpoint_1.x;
-    float dy = this->endpoint_2.y - this->endpoint_1.y;
+    float dx = this->start_point.x - this->end_point.x;
+    float dy = this->start_point.y - this->end_point.y;
     
     this->length = sqrt(dx*dx + dy*dy);
 
@@ -91,10 +99,10 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
 bool Plank::pointIsOutsideOfPlank(point_t point){
 
     float tol = 0.001;
-	if ((point.x > (this->endpoint_1.x + tol) && point.x > (this->endpoint_2.x + tol)) || 
-		(point.x < (this->endpoint_1.x - tol) && point.x < (this->endpoint_2.x - tol)) ||
-	    (point.y > (this->endpoint_1.y + tol) && point.y > (this->endpoint_2.y + tol)) || 
-	    (point.y < (this->endpoint_1.y - tol) && point.y < (this->endpoint_2.y - tol))) {
+	if ((point.x > (this->end_point.x + tol) && point.x > (this->start_point.x + tol)) || 
+		(point.x < (this->end_point.x - tol) && point.x < (this->start_point.x - tol)) ||
+	    (point.y > (this->end_point.y + tol) && point.y > (this->start_point.y + tol)) || 
+	    (point.y < (this->end_point.y - tol) && point.y < (this->start_point.y - tol))) {
 	    return true;
 	} else {
 	    return false;
@@ -104,11 +112,11 @@ bool Plank::pointIsOutsideOfPlank(point_t point){
 std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
 
     strm << std::endl << "--- Plank ---" << std::endl
-    << "Endpoint 1: "   << plank.endpoint_1 << std::endl
-    << "Endpoint 2: "   << plank.endpoint_2 << std::endl
-    << "Reward: "       << plank.reward     << std::endl
-    << "Angle: "        << plank.angle      << std::endl//plank.angle*360/MATH_PI << " (deg)"<< std::endl
-    << "Length: "       << plank.length     << std::endl;
+                      << "Endpoint 1: "   << plank.end_point << std::endl
+                      << "Endpoint 2: "   << plank.start_point << std::endl
+                      << "Reward: "       << plank.reward     << std::endl
+                      << "Angle: "        << plank.angle      << std::endl
+                      << "Length: "       << plank.length     << std::endl;
     return strm;
 };
 

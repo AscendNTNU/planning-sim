@@ -203,49 +203,48 @@ void draw_robot(sim_Robot robot)
 
 void draw_drone(float radius,float x,float y){
     glBegin(GL_LINES);
-    float propel_radius = radius /3.0;
-    draw_circle(x,y,radius);
+    float propel_radius = radius/3.0;
+    draw_circle(x,y,radius/2);
+
+    // //propel 1
+    // float propel_1_x = x + sin(PI/4.0)*radius;
+    // float propel_1_y = y + cos(PI/4.0)*radius;
+    // draw_line(propel_1_x-propel_radius,propel_1_y,propel_1_x+propel_radius,propel_1_y);
+    // draw_line(propel_1_x,propel_1_y-propel_radius,propel_1_x,propel_1_y+propel_radius);
+    // draw_circle(propel_1_x,propel_1_y,propel_radius);
+
+    // //propel 2
+    // float propel_2_x = x - sin(PI/4.0)*radius;
+    // float propel_2_y = y - cos(PI/4.0)*radius;
+    // draw_line(propel_2_x-propel_radius,propel_2_y,propel_2_x+propel_radius,propel_2_y);
+    // draw_line(propel_2_x,propel_2_y-propel_radius,propel_2_x,propel_2_y+propel_radius);
+    // draw_circle(propel_2_x,propel_2_y,propel_radius);
 
 
-    //propel 1
-    float propel_1_x = x + sin(PI/4.0)*radius;
-    float propel_1_y = y + cos(PI/4.0)*radius;
-    draw_line(propel_1_x-propel_radius,propel_1_y,propel_1_x+propel_radius,propel_1_y);
-    draw_line(propel_1_x,propel_1_y-propel_radius,propel_1_x,propel_1_y+propel_radius);
-    draw_circle(propel_1_x,propel_1_y,propel_radius);
+    // //propel 3
+    // float propel_3_x = x + sin(PI/4.0)*radius;
+    // float propel_3_y = y - cos(PI/4.0)*radius;
+    // draw_line(propel_3_x-propel_radius,propel_3_y,propel_3_x+propel_radius,propel_3_y);
+    // draw_line(propel_3_x,propel_3_y-propel_radius,propel_3_x,propel_3_y+propel_radius);
+    // draw_circle(propel_3_x,propel_3_y,propel_radius);
 
-    //propel 2
-    float propel_2_x = x - sin(PI/4.0)*radius;
-    float propel_2_y = y - cos(PI/4.0)*radius;
-    draw_line(propel_2_x-propel_radius,propel_2_y,propel_2_x+propel_radius,propel_2_y);
-    draw_line(propel_2_x,propel_2_y-propel_radius,propel_2_x,propel_2_y+propel_radius);
-    draw_circle(propel_2_x,propel_2_y,propel_radius);
-
-
-    //propel 3
-    float propel_3_x = x + sin(PI/4.0)*radius;
-    float propel_3_y = y - cos(PI/4.0)*radius;
-    draw_line(propel_3_x-propel_radius,propel_3_y,propel_3_x+propel_radius,propel_3_y);
-    draw_line(propel_3_x,propel_3_y-propel_radius,propel_3_x,propel_3_y+propel_radius);
-    draw_circle(propel_3_x,propel_3_y,propel_radius);
-
-    //propel 4
-    float propel_4_x = x - sin(PI/4.0)*radius;
-    float propel_4_y = y + cos(PI/4.0)*radius;
-    draw_line(propel_4_x-propel_radius,propel_4_y,propel_4_x+propel_radius,propel_4_y);
-    draw_line(propel_4_x,propel_4_y-propel_radius,propel_4_x,propel_4_y+propel_radius);
-    draw_circle(propel_4_x,propel_4_y,propel_radius);
-
-    glEnd();
-    glBegin(GL_TRIANGLES);
-    //draw body
-    fill_square(x-radius/4,y-radius*0.7,x+radius/4,y+radius*0.7);
-
-
-    fill_square(x-radius/3,y+radius*0.8,x+radius/3,y+radius*0.6);
-    fill_square(x-radius/3,y-radius*0.8,x+radius/3,y-radius*0.6);
+    // //propel 4
+    // float propel_4_x = x - sin(PI/4.0)*radius;
+    // float propel_4_y = y + cos(PI/4.0)*radius;
+    // draw_line(propel_4_x-propel_radius,propel_4_y,propel_4_x+propel_radius,propel_4_y);
+    // draw_line(propel_4_x,propel_4_y-propel_radius,propel_4_x,propel_4_y+propel_radius);
+    // draw_circle(propel_4_x,propel_4_y,propel_radius);
 
     glEnd();
+    // glBegin(GL_TRIANGLES);
+    // //draw body
+    // fill_square(x-radius/4,y-radius*0.7,x+radius/4,y+radius*0.7);
+
+
+    // fill_square(x-radius/3,y+radius*0.8,x+radius/3,y+radius*0.6);
+    // fill_square(x-radius/3,y-radius*0.8,x+radius/3,y-radius*0.6);
+
+    // glEnd();
 }
 
 void draw_planks(sim_Robot robot)
@@ -421,7 +420,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
     #define RGBA(C) C.r, C.g, C.b, C.a
 
     persist float send_timer = 0.0f;
-    persist float send_interval = 1.0f; // In simulation time units
+    persist float send_interval = 0.2f; // In simulation time units
 
     NDC_SCALE_X = (mode.height / (r32)mode.width) / 12.0f;
     NDC_SCALE_Y = 1.0f / 12.0f;
@@ -863,7 +862,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Land:
                 {
@@ -871,7 +870,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("%.2f", cmd_i.x); ImGui::NextColumn();
                     ImGui::Text("%.2f", cmd_i.y); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_LandOnTopOf:
                 {
@@ -879,7 +878,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Track:
                 {
@@ -887,7 +886,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
                     ImGui::Text("%d", cmd_i.i); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Search:
                 {
@@ -895,7 +894,7 @@ void gui_tick(VideoMode mode, r32 gui_time, r32 gui_dt,int k)
                     ImGui::Text("%.2f", cmd_i.x); ImGui::NextColumn();
                     ImGui::Text("%.2f", cmd_i.y); ImGui::NextColumn();
                     ImGui::Text("-"); ImGui::NextColumn();
-                    ImGui::Text("%d", cmd_i.reward); ImGui::NextColumn();
+                    ImGui::Text("%f", cmd_i.reward); ImGui::NextColumn();
                 } break;
                 case sim_CommandType_Debug:
                 {

@@ -18,7 +18,7 @@ public:
     AI();
 
     ///Current State
-    State* state;
+    State state;
 
     /**
     @brief Returns best target based on current planks.
@@ -27,7 +27,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot* chooseTarget(int num_Robots);
+    Robot chooseTarget(int num_Robots);
 
 
     /**
@@ -37,7 +37,7 @@ public:
     Given a robot, returns the action from different points on the plank that gives best value.
     If none found, returns an empty action, ie at (0,0)
     */
-    action_t chooseAction(Robot* target);
+    action_t chooseAction(Robot target);
 
     /**
     @brief Gets the best action for a robot at a given position and time
@@ -46,7 +46,7 @@ public:
     @param time_after_interception How long to wait after the drone arrives at position
     @return The best action.
     */
-    action_t getBestActionAtPosition(Robot* target, point_t position, float time_after_interception);
+    action_t getBestActionAtPosition(Robot target, point_t position, float time_after_interception);
 
     /**
     @brief Returns best action given rewards
@@ -69,7 +69,7 @@ public:
     @return Best possible action stack.
     Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
     */
-    std::stack<action_t> getBestActionStack(Robot* target_id);
+    std::stack<action_t> getBestActionStack(Robot target_id);
 
     bool update(observation_t observation, float elapsed_time);
     bool updateDrone(observation_t observation, float elapsed_time);

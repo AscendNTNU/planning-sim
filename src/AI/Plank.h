@@ -10,12 +10,14 @@ movement. It is responisble for setting value on a ground robots position.
 #include <iostream>
 #include "structs.h"
 #include "World.h"
-extern World* world;
+
+extern World world;
 
 class Plank{
 	private:
-	    point_t endpoint_1; //First endpoint robot meets
-	    point_t endpoint_2; //Second endpoint robot meets
+	    point_t end_point; //First endpoint robot meets
+	    point_t start_point; //Second endpoint robot meets
+	    point_t[10] plank_points; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;
@@ -35,7 +37,8 @@ class Plank{
 		///Get length of current plank
 		float getLength();
 
-		///Get the start or end point of the plank
+		///@brief Get a point on the plank
+		///There are 12 points on the plank. The start point 0, the end point 11 and 10 points between
 		point_t getPoint(int i);
 		
 		/**
@@ -51,6 +54,14 @@ class Plank{
 	    Returns true if the robot will cross any red line given it's current motion.
 		*/
 		bool willExitRed();
+
+		/**
+		@brief Calculate position of 10 equispaced points on the plank
+	    Splits the plank into 10 points that are equally spaced. This is for reward calculation
+	    and for iterating through the plank for decision making.
+		*/		
+		void calculateAllPlankPoints()
+
 
 		/**
 		@brief Calculate the reward of a plank
