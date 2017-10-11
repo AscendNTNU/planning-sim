@@ -121,13 +121,13 @@ int main(int argc, char **argv)
   }
 
   while (ros::ok()){
-    ros::Duration(0.2).sleep();
+    ros::Duration(2).sleep();
     ros::spinOnce();
 
     if(action_done){
       
       //If we've finished our stack get a new one!
-      if(current_action_stack.empty() or current_action.reward == -20000){
+      if(current_action_stack.empty() or current_action.reward == -200000){
         current_action_stack = ai->getBestGeneralActionStack();
         updated_action_stack = ai->getBestGeneralActionStack();
 
@@ -143,8 +143,9 @@ int main(int argc, char **argv)
       else if(!is_nearby(current_action.where_To_Act, target->getPosition()) and current_action.type != search){
         current_action_stack.push(ai->getBestActionStack(target).top()); 
       }
-
-      if(current_action.reward != -20000){
+      if(current_action.reward != -200000) {
+        std::cout << "sending command" << std::endl;
+        std::cout << "target is " << current_action_stack.top().target << std::endl;
         current_action = current_action_stack.top();
         drone_action = to_ROS_Command(current_action);
         command_pub.publish(drone_action);
