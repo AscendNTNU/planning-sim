@@ -27,21 +27,31 @@ float State::getTimeStamp(){
 	return this->time_Stamp;
 }
 
-
 bool State::updateState(observation_t observation, float elapsed_time){
+	//:observation: struct containing an observation of the robots.
+	//:elapsed_time: float timestamp for when the observation was collected.
+	//:rtype: boolean
+	//Returns true if the state of the drone and robots are successfully updated.
 	bool drone_Updated = updateDroneState(observation, elapsed_time);
 	bool robot_Updated = updateRobotState(observation, elapsed_time);
 	return (drone_Updated and robot_Updated);
 }
 
 bool State::updateDroneState(observation_t observation, float elapsed_time){
-
+	//:observation: struct containing an observation of the robots.
+	//:elapsed_time: float timestamp for when the observation was collected.
+	//:rtype: boolean
+	//Returns true if drone state is successfully updated.
 	this->time_Stamp = elapsed_time;
 	this->drone->update(observation);
 	return true;
 }
 
 bool State::updateRobotState(observation_t observation, float elapsed_time){
+	//:observation: struct containing an observation of the robots.
+	//:elapsed_time: float timestamp for when the observation was collected.
+	//:rtype: boolean
+	//Returns true if all robots are successfully updated.
 	point_t position = point_Zero;
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < 10; i++){
