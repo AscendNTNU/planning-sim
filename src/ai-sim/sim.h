@@ -40,7 +40,7 @@
 #define Num_max_text_length (256) // Maximum number of bytes for each target text
 
 
-#define pixels_each_meter (6) //for heatmap
+#define pixels_each_meter (1) //for heatmap
 
 enum sim_CommandType
 {
@@ -63,7 +63,7 @@ struct sim_Command
     float heatmap[pixels_each_meter*pixels_each_meter*20*20];
     char text[Num_max_text_length*Num_Targets+Num_max_text_length];
 
-    int reward;
+    float reward;
 
 };
 

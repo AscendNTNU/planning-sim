@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+#  nodes:
+#    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+#    tty: true
+#    volumes:
+#      - ./run-docker.sh:/build.sh:ro
+#      - .:/catkin_ws/src/planning-sim/:rw
+  master:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    container_name: master
+    command: bash -c "cd catkin_ws && roscore"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+  planning:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    container_name: planning
+    environment:
+      - "ROS_HOSTNAME=planning"
+      - "ROS_MASTER_URI=http://master:11311"
+    command: bash -c "cd catkin_ws && catkin_make && source devel/setup.bash && rosrun planning_ros_sim planning"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+  pc:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    ports:
+      - "127.0.0.1:22334:22334/udp"
+    expose:
+      - "22334/udp"
+      - "22335/udp"
+    container_name: pc
+    environment:
+      - "ROS_HOSTNAME=pc"
+      - "ROS_MASTER_URI=http://master:11311"
+    command: bash -c "cd catkin_ws && catkin_make && source devel/setup.bash && rosrun planning_ros_sim perception_control"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+#  tests:
+#    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+#    tty: true
+#    command: bash -c "cd catkin_ws && catkin_make run_tests"
+#    volumes:
+#      - .:/catkin_ws/src/planning-sim/:rw
