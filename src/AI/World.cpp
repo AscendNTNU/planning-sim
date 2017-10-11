@@ -29,13 +29,7 @@ bounds_t World::getBounds(){
 	return this->bounds;
 }
 
-/*
-    2D function of grid value. Determined using value iteration.
 
-    @param x - The x position on the field
-    @param y - The y position on the field
-    @return the points value at the (x, y) position given
-*/
 float World::getGridValue(float X, float Y){
     float value = (-9.995004e+02)+(9.976812e+01)*X+(-1.004701e+02)*Y
         +(-5.785388e+01)*pow(X,2)+(1.161562e+01)*X*Y+(5.477725e+01)*pow(Y,2)
