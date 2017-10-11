@@ -17,7 +17,7 @@ class Plank{
 	private:
 	    point_t end_point; //First endpoint robot meets
 	    point_t start_point; //Second endpoint robot meets
-	    point_t[10] plank_points; //Points between endpoints
+	    point_t plank_points[10]; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;
@@ -60,7 +60,7 @@ class Plank{
 	    Splits the plank into 10 points that are equally spaced. This is for reward calculation
 	    and for iterating through the plank for decision making.
 		*/		
-		void calculateAllPlankPoints()
+		void calculateAllPlankPoints();
 
 
 		/**

@@ -30,7 +30,7 @@ point_t Plank::getPoint(int i){
     else if(i==11){
         return this->end_point;
     }
-    return this->plank_points[i]
+    return this->plank_points[i];
 }
 
 bool Plank::willExitGreen(){
@@ -55,7 +55,7 @@ void Plank::calculateAllPlankPoints(){
     float step_x = step_length*cos(this->angle);
     float step_y = step_length*sin(this->angle);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < 10; i++) {
         this->plank_points[i].x = this->end_point.x + (i + 0.5) * step_x;
         this->plank_points[i].y = this->end_point.x + (i + 0.5) * step_x;
     }
@@ -67,7 +67,7 @@ float Plank::calculateReward(int n){
     float value = 0.0;
 
     for (int i = 0; i < n; i++) {
-        value = world.getGridValue(this->plank_points[i].x, this->plank_points[i].y)
+        value = world.getGridValue(this->plank_points[i].x, this->plank_points[i].y);
         reward += value * step_length;
     }
     return reward;
