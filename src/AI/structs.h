@@ -6,6 +6,13 @@ static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
 
+/**
+@brief Struct describing a point on the course.
+@param x X coordinate
+@param y Y coordinate
+@param z Z coordinate
+@param travel_Time Travel time to the point
+*/
 struct point_t{
 	float x;
 	float y;
@@ -13,10 +20,11 @@ struct point_t{
 	float travel_Time;
 };
 
+
 static point_t point_Zero = {
-	.x = 0.0, 
-	.y = 0.0, 
-	.z = 0.0, 
+	.x = 0.0,
+	.y = 0.0,
+	.z = 0.0,
 	.travel_Time = 0.0
 };
 
@@ -25,6 +33,11 @@ inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
     return strm;
 };
 
+/**
+@brief Struct describing the size of the course.
+@param x X coordinate
+@param y Y coordinate
+*/
 struct bounds_t{
 	int x_Max;
 	int y_Max;
@@ -45,6 +58,20 @@ enum drone_State_t
 	terminate
 };
 
+/**
+@brief Struct describing the current state.
+@param elapsed_time Time since start of the game
+@param drone_x X coordinate of drone
+@param drone_y Y coordinate of drone
+@param drone_cmd_done If drone is doing an action or not
+@param num_Targets Number of targets in the game
+@param robot_x X coordinate of a robot
+@param robot_y Y coordinate of a robot
+@param robot_q Angle of a robot in radians
+@param obstacle_x X coordinate of an obstacle
+@param obstacle_y Y coordinate of an obstacle
+@param obstacle_q Angle of an obstacle in radians
+*/
 struct observation_t
 {
     float elapsed_time;
