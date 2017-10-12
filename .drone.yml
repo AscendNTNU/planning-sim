@@ -1,0 +1,11 @@
+pipeline:
+  main-build:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    when:
+      event: push
+    commands:
+      - ls
+
+workspace:
+  base: /catkin_ws
+  path: src/

@@ -39,9 +39,9 @@ services:
     command: bash -c "cd catkin_ws && catkin_make && source devel/setup.bash && rosrun planning_ros_sim perception_control"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
-#  tests:
-#    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
-#    tty: true
-#    command: bash -c "cd catkin_ws && catkin_make run_tests"
-#    volumes:
-#      - .:/catkin_ws/src/planning-sim/:rw
+  tests:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    tty: true
+    command: bash -c "cd catkin_ws && catkin_make run_tests"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
