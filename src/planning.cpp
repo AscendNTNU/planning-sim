@@ -118,7 +118,7 @@ int main(int argc, char **argv)
             target = ai.state.getRobot(target_id);
             //If we've finished our stack get a new one!
             if(current_action_stack.empty()){
-                current_action_stack = ai.getBestGeneralActionStack();
+                current_action_stack = ai.getBestGeneralActionStack(10);
                 target_id = current_action_stack.top().target;
                 target = ai.state.getRobot(target_id);
                 std::cout << "1" << std::endl;
@@ -129,7 +129,6 @@ int main(int argc, char **argv)
             else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
                 current_action_stack.push(ai.getBestActionStack(target).top());
                 std::cout << "2" << std::endl;
-
             }
 
             current_action = current_action_stack.top();

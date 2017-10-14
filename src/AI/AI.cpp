@@ -4,7 +4,7 @@ AI::AI(){
     this->state = State();
 }
 
-std::stack<action_t> AI::getBestGeneralActionStack(){
+std::stack<action_t> AI::getBestGeneralActionStack(int num_Robots){
     Robot target = chooseTarget(10);
     return getBestActionStack(target);
 }
@@ -27,7 +27,7 @@ std::stack<action_t> AI::getBestActionStack(Robot target){
 Robot AI::chooseTarget(int num_Robots){
     Robot robot;
     Robot target;
-    float best_reward;
+    float best_reward = -1000000;
     for(int i = 0; i < num_Robots; i++){
         robot = this->state.robots[i];
 		if(robot.current_Plank.willExitGreen()) {

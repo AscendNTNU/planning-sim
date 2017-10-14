@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include "../AI/Drone.h"
 #include "../AI/World.h"
-#include "../AI/structs.h"
 
 World world = World(0);
 
