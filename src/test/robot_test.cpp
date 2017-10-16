@@ -2,7 +2,7 @@
 #include "../AI/Robot.h"
 #include "../AI/World.h" // trenger jeg denne?
 
-World* world = new World(0);
+World world = World(0);
 
 class RobotTest: public ::testing::Test { 
 public: 
@@ -11,26 +11,26 @@ public:
 	} 
 	void SetUp( ) {
 
-		world->startTimer();
+		world.startTimer();
 	}
  };
 
 
 TEST (RobotTest, addToTimerTest) {
-	Robot* robot = new Robot(); // kan også addes til Setup
+	Robot robot = Robot(); // kan også addes til Setup
 
-	robot->addToTimer(10);
-	EXPECT_EQ(robot->getTimeAfterTurn(), 10);
+	robot.addToTimer(10);
+	EXPECT_EQ(robot.getTimeAfterTurn(), 10);
 }
 
 TEST (RobotTest, updateTest) {
-	Robot* robot = new Robot();
+	Robot robot = Robot();
 
-	robot->update(0, point_Zero, MATH_PI, 1); // test with 21 og 22
-	EXPECT_EQ(robot->getOrientation(), 0);
+	robot.update(0, point_Zero, MATH_PI, 1); // test with 21 og 22
+	EXPECT_EQ(robot.getOrientation(), 0);
 	
-	robot->update(0, point_Zero, MATH_PI, 3);
-	EXPECT_EQ(robot->getOrientation(), MATH_PI);
+	robot.update(0, point_Zero, MATH_PI, 3);
+	EXPECT_EQ(robot.getOrientation(), MATH_PI);
 
 
 }
@@ -43,16 +43,16 @@ static point_t point_Updated = {
 };
 
 TEST (RobotTest, isMoving) {
-	Robot* robot = new Robot();
+	Robot robot = Robot();
 
-	robot->update(0, point_Zero, MATH_PI, 1); // is moving, false even if robot is turning
-	EXPECT_EQ(robot->isMoving(),false);
+	robot.update(0, point_Zero, MATH_PI, 1); // is moving, false even if robot is turning
+	EXPECT_EQ(robot.isMoving(),false);
 
-	robot->update(0, point_Zero, MATH_PI, 3);
-	EXPECT_EQ(robot->isMoving(),false);
+	robot.update(0, point_Zero, MATH_PI, 3);
+	EXPECT_EQ(robot.isMoving(),false);
 
-	robot->update(0, point_Updated, MATH_PI, 3);
-	EXPECT_EQ(robot->isMoving(),true);
+	robot.update(0, point_Updated, MATH_PI, 3);
+	EXPECT_EQ(robot.isMoving(),true);
 }
 
 
