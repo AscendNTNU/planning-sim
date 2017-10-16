@@ -33,16 +33,26 @@ public:
 	int getIndex();
 
 	/**
-	@brief Gets the current position for the robot
+	@brief Gets the current position for the robot.
 	@return The current position
 	*/
 	point_t getPosition();
 
 	/**
-	@brief Gets the current orientation
+	@brief Gets the robots current orientation relative to the grid.
+	@return Orientation of the robot
 	*/
 	float getOrientation();
+
+	/**
+	@brief Gets the elapsed time passed since it last started turning/rotating.
+	@return Time passed since last turn started
+	*/
 	float getTimeAfterTurn();
+
+	/**
+	
+	*/
 	float getSpeed();
 	Plank getCurrentPlank();
 
