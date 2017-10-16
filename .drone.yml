@@ -4,7 +4,7 @@ pipeline:
     when:
       event: push
     commands:
-      - catkin_make run_tests
+      - /ros_entrypoint.sh catkin_make run_tests"
 
 workspace:
   base: /catkin_ws
