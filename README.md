@@ -1,5 +1,7 @@
 # Planning sim
 
+[![Build Status](https://drone.ascendntnu.no/api/badges/AscendNTNU/planning-sim/status.svg)](https://drone.ascendntnu.no/AscendNTNU/planning-sim)
+
 ## Setup
 
 Add this repo in your `catkin_ws/src` and it's ready to run.
