@@ -28,7 +28,7 @@ public:
 
 	/**
 	@brief Gets the index associated with the robot instance.
-	@preturn The robot index
+	@return The robot index
 	*/
 	int getIndex();
 
