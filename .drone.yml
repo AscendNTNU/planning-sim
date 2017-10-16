@@ -1,0 +1,12 @@
+pipeline:
+  tests:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    when:
+      event: push
+    commands:
+      - cd /catkin_ws
+      - /ros_entrypoint.sh catkin_make run_tests
+
+workspace:
+  base: /catkin_ws
+  path: src/
