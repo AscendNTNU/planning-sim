@@ -1,3 +1,10 @@
+/**
+@class Robot
+@brief Robot class
+
+This class handles all Robot functions. This includes getters and setters and checks.
+*/
+
 #pragma once
 
 #include <cmath>
@@ -14,14 +21,26 @@ private:
 	float time_After_Turn_Start;
 	float speed;	
 public:
-	//constructors
+	///Robot constructors
 	Robot();
 	Robot(int index);
 	Plank current_Plank;
 
-	//get
+	/**
+	@brief Gets the index associated with the robot instance.
+	@preturn The robot index
+	*/
 	int getIndex();
+
+	/**
+	@brief Gets the current position for the robot
+	@return The current position
+	*/
 	point_t getPosition();
+
+	/**
+	@brief Gets the current orientation
+	*/
 	float getOrientation();
 	float getTimeAfterTurn();
 	float getSpeed();
@@ -30,10 +49,9 @@ public:
 	//set
 	void setPositionOrientation(point_t position, float q);
 	void addToTimer(float time);
+	void update(int index, point_t position,float q, float elapsed_time);
 	
 	//methods
-	action_t chooseAction(Robot target);
 	bool isMoving();
-	void update(int index, point_t position,float q, float elapsed_time);
 	friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
