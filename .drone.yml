@@ -8,4 +8,4 @@ pipeline:
 
 workspace:
   base: /catkin_ws
-  path: src/
+  #path: src/
