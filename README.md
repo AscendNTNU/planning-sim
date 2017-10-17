@@ -5,6 +5,15 @@ Jenkins: [![Build Status](http://build.ascendntnu.no/buildStatus/icon?job=planni
 Drone CI: 
 [![Build Status](https://drone.ascendntnu.no/api/badges/AscendNTNU/planning-sim/status.svg)](https://drone.ascendntnu.no/AscendNTNU/planning-sim)
 
+## Overview
+
+This repo is an AI solution for mission 7a at IARC. The core concept is to give robots values based upon their position, orientation and the time until they turn. Once these values have been decided a multitude of classic AI algorithms can be run inorder to find the best action at a given time.  
+
+Currently robot value is calculated by integrating the "plank" path the robot follows over a 2D reward space spanning an X and Y coordinate. The reward space has been calculated through value iteration.
+
+The current algorithm is a greedy algorithm that finds the best placed robot based on the value of its plank. It then checks through all the possible actions and returns the best action based upon which action leads to the highest value plank.
+
+
 ## Setup
 
 Add this repo in your `catkin_ws/src` and it's ready to run.
