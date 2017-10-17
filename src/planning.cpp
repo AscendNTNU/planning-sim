@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include "AI/AI.h"
 #include "AI/structs.h"
-#include "planning_callbacks.h"
 
 const float SIMILARITY_THRESHOLD = 1;
 
