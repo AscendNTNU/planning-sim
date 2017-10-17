@@ -56,8 +56,8 @@ void Plank::calculateAllPlankPoints(){
     float step_y = step_length*sin(this->angle);
 
     for (int i = 0; i < 10; i++) {
-        this->plank_points[i].x = this->end_point.x + (i + 0.5) * step_x;
-        this->plank_points[i].y = this->end_point.x + (i + 0.5) * step_x;
+        this->plank_points[i].x = this->start_point.x + (i + 0.5) * step_x;
+        this->plank_points[i].y = this->start_point.x + (i + 0.5) * step_x;
     }
 }
 
@@ -94,11 +94,12 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
     this->length = sqrt(dx*dx + dy*dy);
 
     this->reward = calculateReward(num_Iterations);
+    this->calculateAllPlankPoints();
 }
 
 bool Plank::pointIsOutsideOfPlank(point_t point){
 
-    float tol = 0.001;
+    float tol = 0.1;
 	if ((point.x > (this->end_point.x + tol) && point.x > (this->start_point.x + tol)) || 
 		(point.x < (this->end_point.x - tol) && point.x < (this->start_point.x - tol)) ||
 	    (point.y > (this->end_point.y + tol) && point.y > (this->start_point.y + tol)) || 
