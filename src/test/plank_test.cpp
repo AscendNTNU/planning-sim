@@ -28,14 +28,14 @@ TEST (PlankTest, UpdatePlankTest) {
 	int number_of_iterations = 10;
 
 	//5.94 meters is approximately how far a ground robot drives in 18 seconds
-	Plank plank = Plank(point, angle, time_after_turn_start, number_of_iterations);
+	Plank plank = Plank(point, angle, time_after_turn_start);
 	EXPECT_EQ(plank.getPoint(11).x, point.x);
 	EXPECT_EQ(plank.getPoint(11).y, point.y);
 	EXPECT_NEAR(plank.getPoint(0).x, point.x + 5.94, 0.1);
 	EXPECT_NEAR(plank.getPoint(0).y, point.y, 0.1);
 
 	time_after_turn_start = 11; 
-	plank.updatePlank(point, angle, time_after_turn_start, number_of_iterations);
+	plank.updatePlank(point, angle, time_after_turn_start);
 	EXPECT_NEAR(plank.getPoint(11).x, point.x - 5.94/2, 0.1);
 	EXPECT_NEAR(plank.getPoint(11).y, point.y, 0.1);
 	EXPECT_NEAR(plank.getPoint(0).x, point.x + 5.94/2, 0.1);
@@ -51,13 +51,12 @@ TEST(PlankTest, PointOutsideOfPlank){
 	int time_after_turn_start = 11;
 	int number_of_iterations = 10;
 
-	Plank plank = Plank(point, angle, time_after_turn_start, number_of_iterations);
+	Plank plank = Plank(point, angle, time_after_turn_start);
 
 	point.x = 5;
 	EXPECT_TRUE(plank.pointIsOutsideOfPlank(point));
 	point.x = 7.5;
 	EXPECT_FALSE(plank.pointIsOutsideOfPlank(point));
-
 }
 
 int main(int argc, char **argv){

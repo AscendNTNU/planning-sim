@@ -12,7 +12,7 @@
 #include "AI/structs.h"
 #include <assert.h>
 
-const float SIMILARITY_THRESHOLD = 1;
+const float SIMILARITY_THRESHOLD = 3;
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -123,9 +123,9 @@ int main(int argc, char **argv)
                 target = ai.state.getRobot(target_id);
                 std::cout << "1" << std::endl;
             }
-            //If we are waiting on the ground robot(ie the robot isn't
-            //nearby our landing location) we might aswell update our
-            //where_to_act on our current observations.
+            // If we are waiting on the ground robot(ie the robot isn't
+            // nearby our landing location) we might aswell update our
+            // where_to_act on our current observations.
             else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
                 current_action_stack.push(ai.getBestActionStack(target).top());
                 std::cout << "2" << std::endl;

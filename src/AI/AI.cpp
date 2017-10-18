@@ -53,8 +53,8 @@ action_t AI::chooseAction(Robot target){
     float n = 10;
     float step_size = target.current_Plank.getLength()/n;
     float angle = target.current_Plank.getAngle();
-    float step_x = step_size*cos(angle);
-    float step_y = step_size*sin(angle);
+    float step_x = step_size*cosf(angle);
+    float step_y = step_size*sinf(angle);
 
     // Temporary max rewarded action
     action_t best_Action = action_Empty;
@@ -81,11 +81,9 @@ action_t AI::chooseAction(Robot target){
 			step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
 			if (step_Action.reward > best_Action.reward) {
 				best_Action = step_Action;
-				best_Action.when_To_Act = time_after_interception;// + interception.travel_Time; Denne skal kanskje være globalt tispunkt etter start?
+				best_Action.when_To_Act = time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
 			}
-		}
-        
-		
+		}		
 		if (backwards) {
             step_Point.x = step_Point.x-step_x;
             step_Point.y = step_Point.y-step_y;
@@ -109,9 +107,9 @@ action_t AI::getBestActionAtPosition(Robot target, point_t position, float time_
     float time_After_Turn_Start = fmod(this->state.getTimeStamp() + position.travel_Time + time_after_interception, 20);
 
     Plank plank_On_Top = Plank(position, fmod(target.getOrientation() + (MATH_PI/4), 2*MATH_PI), 
-                                    time_After_Turn_Start, num_Iterations);
+                                    time_After_Turn_Start);
     Plank plank_In_Front = Plank(position, fmod(target.getOrientation() + MATH_PI, 2*MATH_PI), 
-                                    time_After_Turn_Start, num_Iterations);
+                                    time_After_Turn_Start);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }

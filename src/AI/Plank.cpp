@@ -8,9 +8,9 @@ Plank::Plank(){
     this->reward = -200000;
 }
 
-Plank::Plank(point_t position, float angle, float time_After_Turn_Start, int num_Iterations){
+Plank::Plank(point_t position, float angle, float time_After_Turn_Start){
 	Plank();
-	this->updatePlank(position, angle, time_After_Turn_Start, num_Iterations);
+	this->updatePlank(position, angle, time_After_Turn_Start);
 }
 
 float Plank::getReward(){
@@ -52,28 +52,28 @@ bool Plank::willExitRed(){
 
 void Plank::calculateAllPlankPoints(){
     float step_length = this->length/10;
-    float step_x = step_length*cos(this->angle);
-    float step_y = step_length*sin(this->angle);
+    float step_x = step_length*cosf(this->angle);
+    float step_y = step_length*sinf(this->angle);
 
     for (int i = 0; i < 10; i++) {
         this->plank_points[i].x = this->start_point.x + (i + 0.5) * step_x;
-        this->plank_points[i].y = this->start_point.x + (i + 0.5) * step_x;
+        this->plank_points[i].y = this->start_point.y + (i + 0.5) * step_y;
     }
 }
 
-float Plank::calculateReward(int n){
+float Plank::calculateReward(){
     float step_length = this->length/10;
     float reward = 0.0;
     float value = 0.0;
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < 10; i++) {
         value = world.getGridValue(this->plank_points[i].x, this->plank_points[i].y);
         reward += value * step_length;
     }
     return reward;
 }
 
-void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start, int num_Iterations){
+void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start){
 
     this->angle = angle;
     if(time_After_Turn_Start < 2){
@@ -81,20 +81,19 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
         this->end_point.y = position.y;
     }
     else {
-        this->end_point.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cos(angle);
-        this->end_point.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sin(angle);
+        this->end_point.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cosf(angle);
+        this->end_point.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sinf(angle);
     }
-    this->start_point.x = this->end_point.x - (20-2)*ROBOT_SPEED*cos(this->angle); // Subtracting 2.5 because of turn time (no translation)
-    this->start_point.y = this->end_point.y - (20-2)*ROBOT_SPEED*sin(this->angle);
+    this->start_point.x = this->end_point.x - (20-2)*ROBOT_SPEED*cosf(this->angle); // Subtracting 2.5 because of turn time (no translation)
+    this->start_point.y = this->end_point.y - (20-2)*ROBOT_SPEED*sinf(this->angle);
     
 
     float dx = this->start_point.x - this->end_point.x;
     float dy = this->start_point.y - this->end_point.y;
     
     this->length = sqrt(dx*dx + dy*dy);
-
-    this->reward = calculateReward(num_Iterations);
     this->calculateAllPlankPoints();
+    this->reward = calculateReward();
 }
 
 bool Plank::pointIsOutsideOfPlank(point_t point){
