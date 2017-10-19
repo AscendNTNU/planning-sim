@@ -73,6 +73,7 @@ $ docker-compose up nodes
 
 # Or with GUI
 
+$ xhost +local:root # Run as root
 $ docker-compose up nodes gui
 ```
 
