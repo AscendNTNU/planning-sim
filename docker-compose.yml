@@ -14,34 +14,27 @@ services:
     command: bash -c "cd /catkin_ws && roscore"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
   planning:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     tty: true
     container_name: planning
-    environment:
-      - "ROS_HOSTNAME=planning"
-      - "ROS_MASTER_URI=http://master:11311"
     command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && rosrun planning_ros_sim planning"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
   pc:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     tty: true
-    ports:
-      - "127.0.0.1:22334:22334/udp"
-    expose:
-      - "22334/udp"
-      - "22335/udp"
-    container_name: pc
-    environment:
-      - "ROS_HOSTNAME=pc"
-      - "ROS_MASTER_URI=http://master:11311"
+    container_name: pc	
     command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && rosrun planning_ros_sim perception_control"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     tty: true
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
