@@ -75,6 +75,9 @@ void Robot::setPositionOrientation(point_t position, float q){
 	this->orientation = q;
 }
 
+// When is this used? Double check that it is used the way we want.
+// Adding time to time_After_Turn_Start makes the variable name be
+// misleading, except when correcting for drift.
 void Robot::addToTimer(float time){
 	this->time_After_Turn_Start += time;
 }
