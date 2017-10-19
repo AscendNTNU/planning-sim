@@ -69,7 +69,11 @@ $ rosrun planning_ros_sim planning
 Be sure to have `docker` and `docker-compose` (which should come with the docker installation).
 
 ```bash
-$ docker-compose up
+$ docker-compose up nodes
+
+# Or with GUI
+
+$ docker-compose up nodes gui
 ```
 
 ## Add and run tests
