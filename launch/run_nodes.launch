@@ -1,0 +1,4 @@
+<launch>
+    <node name="planning" pkg="planning_ros_sim" type="planning" output="screen"/>
+    <node name="perception_control" pkg="planning_ros_sim" type="perception_control" output="screen"/>
+</launch>
