@@ -3,6 +3,7 @@ pipeline:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
       event: push
+      branch: master
     commands:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
@@ -10,6 +11,9 @@ pipeline:
 clone:
   clone:
     image: plugins/git
+    when:
+      event: push
+      branch: master
     recursive: true
     submodule_override:
       src/ai-sim: https://github.com/ascendntnu/ai-sim.git
