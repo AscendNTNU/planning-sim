@@ -12,7 +12,7 @@ clone:
     image: plugins/git
     recursive: true
     submodule_override:
-      ai-sim: https://github.com/ascendntnu/ai-sim.git
+      src/ai-sim: https://github.com/ascendntnu/ai-sim.git
 
 workspace:
   base: /catkin_ws
