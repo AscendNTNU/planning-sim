@@ -1,9 +1,4 @@
 pipeline:
-  clone:
-    image: plugins/git
-    recursive: true
-    submodule_override:
-      ai-sim: https://github.com/ascendntnu/ai-sim.git
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
@@ -11,6 +6,13 @@ pipeline:
     commands:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
+
+clone:
+  git:
+    image: plugins/git
+    recursive: true
+    submodule_override:
+      ai-sim: https://github.com/ascendntnu/ai-sim.git
 
 workspace:
   base: /catkin_ws
