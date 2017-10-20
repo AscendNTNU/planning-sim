@@ -1,4 +1,9 @@
 pipeline:
+  clone:
+    image: plugins/git
+    recursive: true
+    submodule_override:
+      ai-sim: https://github.com/ascendntnu/ai-sim.git
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
