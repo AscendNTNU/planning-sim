@@ -30,18 +30,18 @@ void time_chatterCallback(std_msgs::Float32 msg){
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
-    observation_t robotObs;
+    observation_t robotObs = new observation_t;
     for(int i = 0; i < 10; i++) {
-    	  robotObs.robot_x[i] = msg.groundRobot[i].x;
-    	  robotObs.robot_y[i] = msg.groundRobot[i].y;
-    	  robotObs.robot_q[i] = msg.groundRobot[i].theta;
+          robotObs.robot_x[i] = msg.groundRobot[i].x;
+          robotObs.robot_y[i] = msg.groundRobot[i].y;
+          robotObs.robot_q[i] = msg.groundRobot[i].theta;
     }
     ai.updateRobot(robotObs, elapsed_time);
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
 {
-    observation_t droneObs;
+    observation_t droneObs = new observation_t;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
     ai.updateDrone(droneObs, elapsed_time);
@@ -65,13 +65,13 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action)
 }
 
 bool is_nearby(point_t current_Where_To_Act, point_t target) {
-	  double x1 = current_Where_To_Act.x;
-	  double y1 = current_Where_To_Act.y;
-	  double x2 = target.x;
-	  double y2 = target.y;
-	  
-	  double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);
-	  return dist < SIMILARITY_THRESHOLD;
+      double x1 = current_Where_To_Act.x;
+      double y1 = current_Where_To_Act.y;
+      double x2 = target.x;
+      double y2 = target.y;
+      
+      double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);
+      return dist < SIMILARITY_THRESHOLD;
 }
 
 float similarity(action_t action1 ,action_t action2){

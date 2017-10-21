@@ -14,7 +14,6 @@
 #include "AI/structs.h"
 #include <stdio.h>
 #include <sstream>
-  
 
 sim_CommandType to_Sim_ActionType(int action){
   switch(action){
