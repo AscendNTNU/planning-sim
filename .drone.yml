@@ -4,7 +4,7 @@ pipeline:
     when:
       event: push
     commands:
-      - cppcheck /catkin_ws/src/*
+      - cppcheck src/* --error-exitcode=1
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
@@ -22,4 +22,4 @@ clone:
 
 workspace:
   base: /catkin_ws
-  path: src/
+  path: src/planning-sim/
