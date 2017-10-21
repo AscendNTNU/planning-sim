@@ -82,7 +82,7 @@ $ docker-compose up nodes
 
 # Or with GUI
 
-$ xhost +local:root # Run as root
+$ xhost +local:root
 $ docker-compose up nodes gui
 ```
 
