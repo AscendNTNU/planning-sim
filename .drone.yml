@@ -1,4 +1,10 @@
 pipeline:
+  syntax:
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    when:
+      event: push
+    commands:
+      - cppcheck /catkin_ws/src/*
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
@@ -8,13 +14,11 @@ pipeline:
       - /ros_entrypoint.sh catkin_make run_tests
 
 clone:
-  git:
+  clone:
     image: plugins/git
     when:
       event: push
-    recursive: true
-    submodule_override:
-      src/ai-sim: https://github.com/ascendntnu/ai-sim.git
+    recursive: false
 
 workspace:
   base: /catkin_ws
