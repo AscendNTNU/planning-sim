@@ -19,7 +19,7 @@ services:
       context: ./src/ai-sim
       dockerfile: Dockerfile
     tty: true
-    command: bash -c "cd /srv/ai-sim/src/ai-sim/ && ./COMPILE_AND_RUN_SIM.sh"
+    working_dir: /srv/ai-sim/src/ai-sim/
     environment:
       DISPLAY:
     devices:
