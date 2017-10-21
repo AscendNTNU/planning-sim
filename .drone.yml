@@ -1,6 +1,6 @@
 pipeline:
   syntax:
-    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    image: stefanhudelmaier/cppcheck:latest
     when:
       event: push
     commands:
