@@ -14,6 +14,13 @@ services:
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+  syntax:
+    image: stefanhudelmaier/cppcheck:latest
+    tty: true
+    command: cppcheck src/* -isrc/ai-sim --error-exitcode=1 --enable=warning
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws/src/planning-sim/
   gui:
     build:
       context: ./src/ai-sim
