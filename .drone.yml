@@ -8,7 +8,7 @@ pipeline:
       - /ros_entrypoint.sh catkin_make run_tests
 
 clone:
-  clone:
+  git:
     image: plugins/git
     when:
       event: push
