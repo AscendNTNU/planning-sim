@@ -2,7 +2,7 @@
 
 Plank::Plank(){
     for (int i = 0; i < sizeof(this->plank_points); i++)
-        this->plank_points[i] = new point_t;
+        this->plank_points[i] = point_Zero;
 	this->end_point = point_Zero;
 	this->start_point = point_Zero;
     this->angle = 0;
