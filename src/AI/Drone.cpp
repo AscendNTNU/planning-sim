@@ -2,7 +2,7 @@
 
 Drone::Drone(){
 	this->command_Done = false;
-	this->prev_Position = new point_t;
+	this->prev_Position = point_Zero;
 	this->prev_Orientation = 0;
 	this->position = point_Zero;
 	this->orientation = 0;
