@@ -1,7 +1,6 @@
 #include "Plank.h"
 
 Plank::Plank(){
-	this->plank_points = new point_t;
 	this->end_point = point_Zero;
 	this->start_point = point_Zero;
     this->angle = 0;
@@ -120,15 +119,3 @@ std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
                       << "Length: "       << plank.length     << std::endl;
     return strm;
 };
-
-
-
-
-
-
-
-
-
-
-
-
