@@ -1,7 +1,8 @@
 #include "Plank.h"
 
 Plank::Plank(){
-	this->plank_points = {};
+    for (int i = 0; i < sizeof(this->plank_points); i++)
+        this->plank_points[i] = new point_t;
 	this->end_point = point_Zero;
 	this->start_point = point_Zero;
     this->angle = 0;
