@@ -30,7 +30,7 @@ void time_chatterCallback(std_msgs::Float32 msg){
 
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 {
-    observation_t robotObs = new observation_t;
+    observation_t robotObs;
     for(int i = 0; i < 10; i++) {
           robotObs.robot_x[i] = msg.groundRobot[i].x;
           robotObs.robot_y[i] = msg.groundRobot[i].y;
@@ -41,7 +41,7 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg)
 {
-    observation_t droneObs = new observation_t;
+    observation_t droneObs;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
     ai.updateDrone(droneObs, elapsed_time);
