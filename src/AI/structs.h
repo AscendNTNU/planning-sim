@@ -89,6 +89,13 @@ struct observation_t
     float obstacle_q[4];
 };
 
+static observation_t observation_Empty = {
+    .elapsed_time = 0,
+    .drone_x = 0,
+    .drone_y = 0,
+    .drone_cmd_done = false,
+    .num_Targets = 0,
+};
 
 enum action_Type_t
 {
