@@ -4,7 +4,7 @@ services:
   nodes:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     tty: true
-    command: bash -c "cd catkin_ws && catkin_make && source devel/setup.bash && roslaunch planning_ros_sim run_nodes.launch"
+    command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && roslaunch planning_ros_sim run_nodes.launch"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
@@ -18,6 +18,12 @@ services:
     image: stefanhudelmaier/cppcheck:latest
     tty: true
     command: cppcheck src/* -isrc/ai-sim --error-exitcode=1 --enable=warning
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws/src/planning-sim/
+  docs:
+    image: nnadeau/docker-doxygen:latest
+    tty: true
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     working_dir: /catkin_ws/src/planning-sim/
