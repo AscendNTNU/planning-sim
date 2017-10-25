@@ -12,7 +12,7 @@
 #include "AI/structs.h"
 #include <assert.h>
 
-const float SIMILARITY_THRESHOLD = 3;
+const float SIMILARITY_THRESHOLD = 1;
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -114,24 +114,48 @@ int main(int argc, char **argv)
     while (ros::ok()){
         ros::Duration(0.4).sleep();
         ros::spinOnce();
-        if(action_done){
+        // std::cout << "loop" << std::endl;
+        if(action_done && 1 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 19 ){
             target = ai.state.getRobot(target_id);
+            std::cout << "Time: " << elapsed_time << std::endl;
+            std::cout << "Target: " << target_id << std::endl;
+            // if(!target.isMoving()) {
+            //     std::cout << "Target likely turning, wait 2 seconds" << std::endl;
+            //     ros::Duration(2).sleep();
+            // }
             //If we've finished our stack get a new one!
-            if(current_action_stack.empty()){
+            if(current_action_stack.empty()){    
                 current_action_stack = ai.getBestGeneralActionStack(10);
                 target_id = current_action_stack.top().target;
                 target = ai.state.getRobot(target_id);
+                if(!target.isMoving()) {
+                    std::cout << "Target likely turning, wait 0.1 seconds" << std::endl;
+                    while(!current_action_stack.empty()) {
+                        current_action_stack.pop();
+                    }
+                    ros::Duration(0.1).sleep();
+                    ros::spinOnce();
+                    continue;
+                }
                 std::cout << "1" << std::endl;
                 std::cout << "where to act: " << current_action_stack.top().where_To_Act.x << ", " << current_action_stack.top().where_To_Act.y << std::endl;
             }
             // If we are waiting on the ground robot(ie the robot isn't
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
-            // else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
-            //     current_action_stack.push(ai.getBestActionStack(target).top());
-            //     std::cout << "2" << std::endl;
-            // }
+            else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
+                if(target.isMoving()) {
+                    current_action_stack.push(ai.getBestActionStack(target).top());
+                    std::cout << "2" << std::endl;                    
+                }
+                else continue;
+            }
 
+            // while(!target.isMoving()) {
+            //     std::cout << "Wait for target to stop turning" << std::endl;
+            //     ros::Duration(.1).sleep();
+            // }
+            std::cout << "Stack size: " << current_action_stack.size();
             current_action = current_action_stack.top();
             drone_action = to_ROS_Command(current_action);
             command_pub.publish(drone_action);
@@ -141,3 +165,20 @@ int main(int argc, char **argv)
     }
     return 0;
 }
+
+
+
+// if(no actions and not near turn time) {
+//     get action
+//     if target is moving {
+//         delete actions
+//         go to beginning
+//     }
+// }
+// else if(search done and target is not here) {
+//     if target is moving
+//         get new search action
+//     else
+//         go to beginning
+// }
+// execute action

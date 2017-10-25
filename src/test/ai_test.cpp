@@ -81,8 +81,8 @@ TEST_F (AITest, getBestActionAtPositionTest) {
     Robot robot = ai.state.getRobot(0);
 
     struct plank_point_t position = {
-        .x = initial.robot_x[0],
-        .y = robot.current_Plank.getPoint(11).y
+        .point.x = initial.robot_x[0],
+        .point.y = robot.current_Plank.getPoint(11).point.y
         .time_since_start_turn = robot.current_Plank.getPoint(11).time_since_start_turn;
     };
 
