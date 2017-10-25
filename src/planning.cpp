@@ -111,11 +111,32 @@ int main(int argc, char **argv)
         ros::spinOnce();
     }
 
+    // no_Command = 0,   // continue doing whatever you are doing
+    // land_On_Top_Of,     // trigger one 45 deg turn of robot (i)
+    // land_In_Front_Of,   // trigger one 180 deg turn of robot (i),
+    // land_At_Point,   // land at a given point
+    // track,           // follow robot (i) at a constant height
+    // search
+
+    action_Type_t test = no_Command;
+    std::cout << "No command: " << test << std::endl;
+    test = land_On_Top_Of;
+    std::cout << "land_On_Top_Of: " << test << std::endl;
+    test = land_In_Front_Of;
+    std::cout << "land_In_Front_Of: " << test << std::endl;
+    test = land_At_Point;
+    std::cout << "land_At_Point: " << test << std::endl;
+    test = track;
+    std::cout << "track: " << test << std::endl;
+    test = search;
+    std::cout << "search: " << test << std::endl;
+
+
     while (ros::ok()){
         ros::Duration(0.4).sleep();
         ros::spinOnce();
         // std::cout << "loop" << std::endl;
-        if(action_done && 1 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 19 ){
+        if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ){
             target = ai.state.getRobot(target_id);
             std::cout << "Time: " << elapsed_time << std::endl;
             std::cout << "Target: " << target_id << std::endl;
@@ -144,8 +165,12 @@ int main(int argc, char **argv)
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
             else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
+                std::cout << "Top Action: " << current_action_stack.top();
                 if(target.isMoving()) {
-                    current_action_stack.push(ai.getBestActionStack(target).top());
+                    //update where to act and go to new search pos
+                    action_t newAction = ai.getBestActionStack(target).top();
+                    current_action_stack.top().where_To_Act = newAction.where_To_Act;
+                    current_action_stack.push(newAction);
                     std::cout << "2" << std::endl;                    
                 }
                 else continue;
@@ -155,7 +180,7 @@ int main(int argc, char **argv)
             //     std::cout << "Wait for target to stop turning" << std::endl;
             //     ros::Duration(.1).sleep();
             // }
-            std::cout << "Stack size: " << current_action_stack.size();
+            std::cout << "Top Action: " << current_action_stack.top();
             current_action = current_action_stack.top();
             drone_action = to_ROS_Command(current_action);
             command_pub.publish(drone_action);
@@ -170,7 +195,7 @@ int main(int argc, char **argv)
 
 // if(no actions and not near turn time) {
 //     get action
-//     if target is moving {
+//     if target is not moving {
 //         delete actions
 //         go to beginning
 //     }
