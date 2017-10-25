@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cmath>
 #include <queue>
 #include <iostream>
 static const int DRONE_SPEED = 1;
@@ -20,6 +20,18 @@ struct point_t{
 	float travel_Time;
 };
 
+/**
+@brief Struct describing a point on a plank.
+@param point point being described
+@param is_ahead true if the point is ahead or on top of the robot
+@param time_till_first_arrival time in seconds until the robot would arrive at the point
+*/
+struct plank_point_t{
+    point_t point;
+    bool is_ahead;
+    float time_till_first_arrival;
+    float time_since_start_turn;
+};
 
 static point_t point_Zero = {
 	.x = 0.0,
@@ -130,3 +142,11 @@ struct tree_action_t{
     std::queue<action_t> actions;
     float reward;
 };
+
+static float getDistanceBetweenPoints(point_t point1, point_t point2){
+
+    float x_Distance = point1.x - point2.x;
+    float y_Distance = point1.y - point2.y;
+
+    return sqrt(pow(x_Distance,2) + pow(y_Distance,2));
+}

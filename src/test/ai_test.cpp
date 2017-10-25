@@ -80,12 +80,13 @@ TEST_F (AITest, getBestActionAtPositionTest) {
 
     Robot robot = ai.state.getRobot(0);
 
-    struct point_t position = {
+    struct plank_point_t position = {
         .x = initial.robot_x[0],
         .y = robot.current_Plank.getPoint(11).y
+        .time_since_start_turn = robot.current_Plank.getPoint(11).time_since_start_turn;
     };
 
-    action_t action = ai.getBestActionAtPosition(robot, position, 0);
+    action_t action = ai.getBestActionAtPosition(robot.getOrientation(), position);
 
     EXPECT_EQ(robot.current_Plank.getPoint(0).y,14);
     // EXPECT_EQ(land_In_Front_Of, action.type); 

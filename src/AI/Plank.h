@@ -15,9 +15,9 @@ extern World world;
 
 class Plank{
 	private:
-	    point_t end_point; //First endpoint robot meets
-	    point_t start_point; //Second endpoint robot meets
-	    point_t plank_points[10]; //Points between endpoints
+	    plank_point_t end_point; //First endpoint robot meets
+	    plank_point_t start_point; //Second endpoint robot meets
+	    plank_point_t plank_points[10]; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;
@@ -37,9 +37,12 @@ class Plank{
 		///Get length of current plank
 		float getLength();
 
+		///Get number of plank points
+		float getNumPlankPoints();
+
 		///@brief Get a point on the plank
 		///There are 12 points on the plank. The start point 0, the end point 11 and 10 points between
-		point_t getPoint(int i);
+		plank_point_t getPoint(int i);
 		
 		/**
 		@brief Check if the plank crosses the green line
@@ -59,9 +62,16 @@ class Plank{
 		@brief Calculate position of 10 equispaced points on the plank
 	    Splits the plank into 10 points that are equally spaced. This is for reward calculation
 	    and for iterating through the plank for decision making.
+	    @param robot_position original position the plank is created from
 		*/		
-		void calculateAllPlankPoints();
+		void calculateAllPlankPoints(point_t robot_position);
 
+		/**
+		@brief Checks whether a point is before or after the robot point
+	    @param point_in_question point to check
+		@param robot_position original position the plank is created from
+		*/	
+		bool isPointAheadOfRobot(point_t point_in_question, point_t robot_position);
 
 		/**
 		@brief Calculate the reward of a plank

@@ -55,7 +55,7 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action)
 {
     planning_ros_sim::droneCmd command;
     command.x = action.where_To_Act.x;
-    command.y = action.where_To_Act.x;
+    command.y = action.where_To_Act.y;
     command.z = 0;
     command.cmd = (int)action.type;
     command.target_id = action.target;
@@ -122,14 +122,15 @@ int main(int argc, char **argv)
                 target_id = current_action_stack.top().target;
                 target = ai.state.getRobot(target_id);
                 std::cout << "1" << std::endl;
+                std::cout << "where to act: " << current_action_stack.top().where_To_Act.x << ", " << current_action_stack.top().where_To_Act.y << std::endl;
             }
             // If we are waiting on the ground robot(ie the robot isn't
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
-            else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
-                current_action_stack.push(ai.getBestActionStack(target).top());
-                std::cout << "2" << std::endl;
-            }
+            // else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
+            //     current_action_stack.push(ai.getBestActionStack(target).top());
+            //     std::cout << "2" << std::endl;
+            // }
 
             current_action = current_action_stack.top();
             drone_action = to_ROS_Command(current_action);

@@ -65,51 +65,70 @@ action_t AI::chooseAction(Robot target){
     bool backwards = false;
     int i = 1;
     int counter = 0;
-    while (1) {
-        counter++;
-        if (target.current_Plank.pointIsOutsideOfPlank(step_Point)) {
-            if (backwards) {
-                best_Action.target = target.getIndex();
-                return best_Action;
-            } else {
-                i = n+1;
-                backwards = true;
-                angle += MATH_PI;
-            }
-        }
-		else {
-			step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
-			if (step_Action.reward > best_Action.reward) {
-				best_Action = step_Action;
-				best_Action.when_To_Act = time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
-			}
-		}		
-		if (backwards) {
-            step_Point.x = step_Point.x-step_x;
-            step_Point.y = step_Point.y-step_y;
-            i -= 1;
-        } else {
-            step_Point.x = step_Point.x+step_x; 
-            step_Point.y = step_Point.y+step_y;
-            i += 1;
-        }
-        time_after_interception = time_after_interception + (step_size)/target.getSpeed();
 
+    
+
+
+    for(int i = 1; i < target.current_Plank.getNumPlankPoints()-1; i++) {
+      // float time_to_action = target.current_Plank.plank_points[i].time_till_first_arrival;
+      // if(interception.travel_Time > time_to_action) {
+      //     time_to_action += 2*20;
+      // }
+      std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
+
+      step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
+      if (step_Action.reward > best_Action.reward) {
+          best_Action = step_Action;
+          // best_Action.when_To_Act = time_to_action; //time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
+      }
     }
+
+
+  //   while (1) {
+  //       counter++;
+  //       if (target.current_Plank.pointIsOutsideOfPlank(step_Point)) {
+  //           if (backwards) {
+  //               best_Action.target = target.getIndex();
+  //               return best_Action;
+  //           } else {
+  //               i = n+1;
+  //               backwards = true;
+  //               angle += MATH_PI;
+  //           }
+  //       }
+		// else {
+		// 	step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
+		// 	if (step_Action.reward > best_Action.reward) {
+		// 		best_Action = step_Action;
+		// 		best_Action.when_To_Act = time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
+		// 	}
+		// }		
+		// if (backwards) {
+  //           step_Point.x = step_Point.x-step_x;
+  //           step_Point.y = step_Point.y-step_y;
+  //           i -= 1;
+  //       } else {
+  //           step_Point.x = step_Point.x+step_x; 
+  //           step_Point.y = step_Point.y+step_y;
+  //           i += 1;
+  //       }
+  //       time_after_interception = time_after_interception + (step_size)/target.getSpeed();
+
+  //   }
     best_Action.target = target.getIndex();
     return best_Action;
 }
 
-action_t AI::getBestActionAtPosition(Robot target, point_t position, float time_after_interception) {
+action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t position) {
     int num_Iterations = 5; // Number of iterations when summing along a plank
     action_t action;
-    action.where_To_Act = position;
-    float time_After_Turn_Start = fmod(this->state.getTimeStamp() + position.travel_Time + time_after_interception, 20);
+    action.where_To_Act = position.point;
+    // float time_After_Turn_Start = fmod(this->state.getTimeStamp() + position.travel_Time + time_after_interception, 20);
 
-    Plank plank_On_Top = Plank(position, fmod(target.getOrientation() + (MATH_PI/4), 2*MATH_PI), 
-                                    time_After_Turn_Start);
-    Plank plank_In_Front = Plank(position, fmod(target.getOrientation() + MATH_PI, 2*MATH_PI), 
-                                    time_After_Turn_Start);
+    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
+                                    position.time_since_start_turn);
+    Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
+                                    position.time_since_start_turn);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }

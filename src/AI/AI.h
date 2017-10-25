@@ -46,7 +46,7 @@ public:
     @param time_after_interception How long to wait after the drone arrives at position
     @return The best action.
     */
-    action_t getBestActionAtPosition(Robot target, point_t position, float time_after_interception);
+    action_t getBestActionAtPosition(float target_orientation, plank_point_t position);
 
     /**
     @brief Returns best action given rewards
