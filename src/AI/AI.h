@@ -46,7 +46,7 @@ public:
     @param time_after_interception How long to wait after the drone arrives at position
     @return The best action.
     */
-    action_t getBestActionAtPosition(Robot target, point_t position, float time_after_interception);
+    action_t getBestActionAtPosition(float target_orientation, plank_point_t position);
 
     /**
     @brief Returns best action given rewards
@@ -62,10 +62,11 @@ public:
     @return Best possible action stack.
     Checks the best action for each robot and returns the action stack for performing the action with best reward/
     */
-    std::stack<action_t> getBestGeneralActionStack();
+    std::stack<action_t> getBestGeneralActionStack(int num_Robots);
 
     /**
     @brief Returns action stack for the best action for a target robot.
+    @param num_Robots Number of robots in game.
     @return Best possible action stack.
     Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
     */

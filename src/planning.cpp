@@ -55,7 +55,7 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action)
 {
     planning_ros_sim::droneCmd command;
     command.x = action.where_To_Act.x;
-    command.y = action.where_To_Act.x;
+    command.y = action.where_To_Act.y;
     command.z = 0;
     command.cmd = (int)action.type;
     command.target_id = action.target;
@@ -111,27 +111,63 @@ int main(int argc, char **argv)
         ros::spinOnce();
     }
 
+    action_Type_t test = no_Command;
+    std::cout << "No command: " << test << std::endl;
+    test = land_On_Top_Of;
+    std::cout << "land_On_Top_Of: " << test << std::endl;
+    test = land_In_Front_Of;
+    std::cout << "land_In_Front_Of: " << test << std::endl;
+    test = land_At_Point;
+    std::cout << "land_At_Point: " << test << std::endl;
+    test = track;
+    std::cout << "track: " << test << std::endl;
+    test = search;
+    std::cout << "search: " << test << std::endl;
+
+
     while (ros::ok()){
         ros::Duration(0.4).sleep();
         ros::spinOnce();
-        if(action_done){
+        // std::cout << "loop" << std::endl;
+        if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ){
             target = ai.state.getRobot(target_id);
+            std::cout << "Time: " << elapsed_time << std::endl;
+            std::cout << "Target: " << target_id << std::endl;
             //If we've finished our stack get a new one!
-            if(current_action_stack.empty()){
-                current_action_stack = ai.getBestGeneralActionStack();
+            if(current_action_stack.empty()){    
+                current_action_stack = ai.getBestGeneralActionStack(10);
                 target_id = current_action_stack.top().target;
                 target = ai.state.getRobot(target_id);
+                if(!target.isMoving()) {
+                    std::cout << "Target likely turning, wait 0.1 seconds" << std::endl;
+                    while(!current_action_stack.empty()) {
+                        current_action_stack.pop();
+                    }
+                    ros::Duration(0.1).sleep();
+                    ros::spinOnce();
+                    continue;
+                }
                 std::cout << "1" << std::endl;
+                // ROS_DEBUG_NAMED("debug_plankBug", "where to act: %f, %f", current_action_stack.top().where_To_Act.x,  current_action_stack.top().where_To_Act.y);
+                std::cout << "where to act: " << current_action_stack.top().where_To_Act.x << ", " << current_action_stack.top().where_To_Act.y << std::endl;
             }
-            //If we are waiting on the ground robot(ie the robot isn't
-            //nearby our landing location) we might aswell update our
-            //where_to_act on our current observations.
+            // If we are waiting on the ground robot(ie the robot isn't
+            // nearby our landing location) we might aswell update our
+            // where_to_act on our current observations.
             else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
-                current_action_stack.push(ai.getBestActionStack(target).top());
-                std::cout << "2" << std::endl;
+                std::cout << "Top Action: " << current_action_stack.top();
+                if(target.isMoving()) {
+                    //update where to act and go to new search pos
+                    action_t newAction = ai.getBestActionStack(target).top();
+                    current_action_stack.top().where_To_Act = newAction.where_To_Act;
+                    current_action_stack.push(newAction);
+                    std::cout << "2" << std::endl;
 
+                }
+                else continue;
             }
 
+            std::cout << "Top Action: " << current_action_stack.top();
             current_action = current_action_stack.top();
             drone_action = to_ROS_Command(current_action);
             command_pub.publish(drone_action);
@@ -141,3 +177,24 @@ int main(int argc, char **argv)
     }
     return 0;
 }
+
+
+// while(ok) {
+// if(no actions and not near turn time) { //Get land_on_top/land_in_front at point
+//     get action stack
+//     if target is not moving {
+//         delete actions
+//         go to beginning
+//     }
+// }
+// else if(search done and target is not here) { //update that plank point based on robots movements
+//     if target is moving
+//         get new search action
+//         if not similar
+//             delete actions
+//             go to beginning
+//     else
+//         go to beginning
+// }
+// execute action
+// }
