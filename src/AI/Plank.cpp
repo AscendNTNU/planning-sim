@@ -159,15 +159,3 @@ std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
                       << "Length: "       << plank.length            << std::endl;
     return strm;
 };
-
-
-
-
-
-
-
-
-
-
-
-

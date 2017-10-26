@@ -18,11 +18,20 @@ The current algorithm is a greedy algorithm that finds the best placed robot bas
 
 Add this repo in your `catkin_ws/src` and it's ready to run.
 
+```bash
+# Clone repo while adding all submodules recursivly
+$ git clone --recursive git@github.com:ascendntnu/planning-sim.git
+```
+
 ## Run GUI
 
 The nodes doesn't start until the GUI is running. Start the GUI from `catkin_ws/src/planning-sim/src/ai-sim/COMPILE_AND_RUN_SIM.sh`.
 
 ```bash
+# To update GUI submodule
+$ git submodule update --init # If it is the first time and you did not clone with the --recursive flag
+$ git submodule update # Every other time
+
 # Go to directory
 $ cd catkin_ws/src/planning-sim/src/ai-sim
 
@@ -69,7 +78,12 @@ $ rosrun planning_ros_sim planning
 Be sure to have `docker` and `docker-compose` (which should come with the docker installation).
 
 ```bash
-$ docker-compose up
+$ docker-compose up nodes
+
+# Or with GUI
+
+$ xhost +local:root
+$ docker-compose up nodes gui
 ```
 
 ## Add and run tests

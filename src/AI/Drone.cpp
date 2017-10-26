@@ -1,7 +1,6 @@
 #include "Drone.h"
 
 Drone::Drone(){
-
 	this->position = point_Zero;
 	this->orientation = 0;
 	this->angle_Of_Motion = 0;

@@ -1,4 +1,10 @@
 pipeline:
+  syntax:
+    image: stefanhudelmaier/cppcheck:latest
+    when:
+      event: push
+    commands:
+      - cppcheck src/* --error-exitcode=1
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
     when:
@@ -7,6 +13,13 @@ pipeline:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
 
+clone:
+  clone:
+    image: plugins/git
+    when:
+      event: push
+    recursive: false
+
 workspace:
   base: /catkin_ws
-  path: src/
+  path: src/planning-sim/
