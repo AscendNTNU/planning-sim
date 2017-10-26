@@ -42,79 +42,35 @@ Robot AI::chooseTarget(int num_Robots){
 }
 
 action_t AI::chooseAction(Robot target){
-    point_t interception = this->state.drone.getInterceptPoint(target);
-    point_t step_Point = {
-        .x = interception.x, 
-        .y = interception.y
-    };
+    // point_t interception = this->state.drone.getInterceptPoint(target);
+    // point_t step_Point = {
+    //     .x = interception.x, 
+    //     .y = interception.y
+    // };
 
-    float time_after_interception = 0;
+    // float time_after_interception = 0;
 
-    float n = 10;
-    float step_size = target.current_Plank.getLength()/n;
-    float angle = target.current_Plank.getAngle();
-    float step_x = step_size*cosf(angle);
-    float step_y = step_size*sinf(angle);
+    // float n = 10;
+    // float step_size = target.current_Plank.getLength()/n;
+    // float angle = target.current_Plank.getAngle();
+    // float step_x = step_size*cosf(angle);
+    // float step_y = step_size*sinf(angle);
 
-    // Temporary max rewarded action
+    // // Temporary max rewarded action
     action_t best_Action = action_Empty;
     
-    best_Action.where_To_Act.travel_Time = interception.travel_Time;
+    // best_Action.where_To_Act.travel_Time = interception.travel_Time;
     
     action_t step_Action;
-    bool backwards = false;
-    int i = 1;
-    int counter = 0;
-
-    
-
 
     for(int i = 1; i < target.current_Plank.getNumPlankPoints()-1; i++) {
-      // float time_to_action = target.current_Plank.plank_points[i].time_till_first_arrival;
-      // if(interception.travel_Time > time_to_action) {
-      //     time_to_action += 2*20;
-      // }
       std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
 
       step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
       if (step_Action.reward > best_Action.reward) {
           best_Action = step_Action;
-          // best_Action.when_To_Act = time_to_action; //time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
       }
     }
-
-
-  //   while (1) {
-  //       counter++;
-  //       if (target.current_Plank.pointIsOutsideOfPlank(step_Point)) {
-  //           if (backwards) {
-  //               best_Action.target = target.getIndex();
-  //               return best_Action;
-  //           } else {
-  //               i = n+1;
-  //               backwards = true;
-  //               angle += MATH_PI;
-  //           }
-  //       }
-		// else {
-		// 	step_Action = getBestActionAtPosition(target, step_Point, time_after_interception);
-		// 	if (step_Action.reward > best_Action.reward) {
-		// 		best_Action = step_Action;
-		// 		best_Action.when_To_Act = time_after_interception + interception.travel_Time; //Denne skal kanskje være globalt tispunkt etter start?
-		// 	}
-		// }		
-		// if (backwards) {
-  //           step_Point.x = step_Point.x-step_x;
-  //           step_Point.y = step_Point.y-step_y;
-  //           i -= 1;
-  //       } else {
-  //           step_Point.x = step_Point.x+step_x; 
-  //           step_Point.y = step_Point.y+step_y;
-  //           i += 1;
-  //       }
-  //       time_after_interception = time_after_interception + (step_size)/target.getSpeed();
-
-  //   }
     best_Action.target = target.getIndex();
     return best_Action;
 }

@@ -29,8 +29,8 @@ typedef int8_t      s08;
 #include "lib/imgui/imgui_demo.cpp"
 #include "lib/imgui/imgui_impl_sdl.cpp"
 
-// Allocate thirty minutes worth of real time history
-#define History_Max_Length ((int)(6.0f * 60.0f / Sim_Timestep))
+// Allocate ten minutes worth of real time history
+#define History_Max_Length ((int)(10.0f * 60.0f / Sim_Timestep))
 
 #define Assert SDL_assert
 #define Printf SDL_Log
