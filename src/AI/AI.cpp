@@ -30,13 +30,12 @@ Robot AI::chooseTarget(int num_Robots){
     float best_reward = -1000000;
     for(int i = 0; i < num_Robots; i++){
         robot = this->state.robots[i];
-    		if(robot.current_Plank.willExitGreen()) {
-    			continue;
-    		}
-        if(robot.current_Plank.getReward() > best_reward){
-            best_reward = robot.current_Plank.getReward();
-            target = robot;
-        }
+        if(robot != NULL){
+    		
+            if(robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()){
+                best_reward = robot.current_Plank.getReward();
+                target = robot;
+            }
     }
     return target;
 }

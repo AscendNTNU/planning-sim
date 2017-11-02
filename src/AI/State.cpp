@@ -17,9 +17,15 @@ Drone State::getDrone(){
 	return this->drone;
 }
 Robot State::getRobot(int index){
+	if(index < 0 || index > 10){
+		return NULL
+	}
 	return this->robots[index];
 }
 Robot State::getObstacle(int index){
+	if(index < 0 || index > 4){
+		return NULL
+	}
 	return this->obstacles[index];
 }
 
