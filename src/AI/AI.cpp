@@ -1,5 +1,5 @@
 #include "AI.h"
-
+#include <typeinfo>
 AI::AI(){
     this->state = State();
 }
@@ -30,12 +30,12 @@ Robot AI::chooseTarget(int num_Robots){
     float best_reward = -1000000;
     for(int i = 0; i < num_Robots; i++){
         robot = this->state.robots[i];
-        if(robot != NULL){
-    		
+        if(robot.getIndex() != -1){
             if(robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()){
                 best_reward = robot.current_Plank.getReward();
                 target = robot;
             }
+        }
     }
     return target;
 }
