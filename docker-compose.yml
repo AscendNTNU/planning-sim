@@ -24,9 +24,10 @@ services:
   docs:
     image: nnadeau/docker-doxygen:latest
     tty: true
+    command: doxygen config.conf
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
-    working_dir: /catkin_ws/src/planning-sim/
+    working_dir: /catkin_ws/src/planning-sim/src/AI
   gui:
     build:
       context: ./src/ai-sim
