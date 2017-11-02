@@ -1,5 +1,5 @@
 #include "AI.h"
-
+#include <typeinfo>
 AI::AI(){
     this->state = State();
 }
@@ -30,31 +30,17 @@ Robot AI::chooseTarget(int num_Robots){
     float best_reward = -1000000;
     for(int i = 0; i < num_Robots; i++){
         robot = this->state.robots[i];
-    		if(robot.current_Plank.willExitGreen()) {
-    			continue;
-    		}
-        if(robot.current_Plank.getReward() > best_reward){
-            best_reward = robot.current_Plank.getReward();
-            target = robot;
+        if(robot.getIndex() != -1){
+            if(robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()){
+                best_reward = robot.current_Plank.getReward();
+                target = robot;
+            }
         }
     }
     return target;
 }
 
 action_t AI::chooseAction(Robot target){
-    // point_t interception = this->state.drone.getInterceptPoint(target);
-    // point_t step_Point = {
-    //     .x = interception.x, 
-    //     .y = interception.y
-    // };
-
-    // float time_after_interception = 0;
-
-    // float n = 10;
-    // float step_size = target.current_Plank.getLength()/n;
-    // float angle = target.current_Plank.getAngle();
-    // float step_x = step_size*cosf(angle);
-    // float step_y = step_size*sinf(angle);
 
     // // Temporary max rewarded action
     action_t best_Action = action_Empty;
