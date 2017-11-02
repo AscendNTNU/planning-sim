@@ -28,6 +28,12 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     working_dir: /catkin_ws/src/planning-sim/src/AI
+  watch-docs:
+    image: nginx:stable-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./src/AI/Documentation/html:/usr/share/nginx/html:ro
   gui:
     build:
       context: ./src/ai-sim
