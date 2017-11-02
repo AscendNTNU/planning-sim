@@ -41,19 +41,6 @@ Robot AI::chooseTarget(int num_Robots){
 }
 
 action_t AI::chooseAction(Robot target){
-    // point_t interception = this->state.drone.getInterceptPoint(target);
-    // point_t step_Point = {
-    //     .x = interception.x, 
-    //     .y = interception.y
-    // };
-
-    // float time_after_interception = 0;
-
-    // float n = 10;
-    // float step_size = target.current_Plank.getLength()/n;
-    // float angle = target.current_Plank.getAngle();
-    // float step_x = step_size*cosf(angle);
-    // float step_y = step_size*sinf(angle);
 
     // // Temporary max rewarded action
     action_t best_Action = action_Empty;
