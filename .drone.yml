@@ -14,7 +14,7 @@ pipeline:
       - /ros_entrypoint.sh catkin_make run_tests
   publish-docs:
     image: drillster/drone-rsync
-    host: ascendntnu.no
+    hosts: [ ascendntnu.no ]
     user: root
     key: ${SSH_KEY}
     secrets: [ ssh_key ]
