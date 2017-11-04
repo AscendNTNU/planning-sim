@@ -15,10 +15,7 @@ pipeline:
   publish-docs:
     image: drillster/drone-rsync
     hosts: [ ascendntnu.no ]
-    user: root
-    key: ${SSH_KEY}
-    secrets: [ ssh_key ]
-    source: src/AI/Documentation/
+    key: "${SSH_KEY}"
     target: /home/ascend/repos/planning-sim
     when:
       status: success
