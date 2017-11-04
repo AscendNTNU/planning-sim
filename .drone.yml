@@ -21,7 +21,7 @@ pipeline:
     when:
       status: success
       event: push
-      branch: [ dev, feature/publish-docs ]
+      branch: dev
     script:
       - cd /home/ascend/repos/planning-sim
       - docker-compose run docs
