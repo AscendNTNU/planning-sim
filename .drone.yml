@@ -26,7 +26,7 @@ pipeline:
       - cd /home/ascend/repos/planning-sim
       - docker-compose run docs
       - mkdir -p /home/ascend/docs/planning-sim
-      - cp -R src/AI/Documentation/* /home/ascend/docs/planning-sim
+      - cp -R src/AI/Documentation/html/* /home/ascend/docs/planning-sim
 
 clone:
   clone:
