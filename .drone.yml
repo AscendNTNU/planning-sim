@@ -12,6 +12,25 @@ pipeline:
     commands:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
+  publish-docs:
+    image: drillster/drone-rsync
+    host: ascendntnu.no
+    user: root
+    key: ${SSH_KEY}
+    secrets: [ ssh_key ]
+    source: src/AI/Documentation/
+    target: /home/ascend/repos/planning-sim
+    when:
+      status: success
+      event: push
+      branch: [ dev, feature/publish-docs ]
+    script:
+      - pwd
+      - ls -lah
+      - cd /home/ascend/docs
+      - mkdir -p planning-sim
+      - cd planning-sim
+      - pwd
 
 clone:
   clone:
