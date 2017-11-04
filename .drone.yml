@@ -15,7 +15,8 @@ pipeline:
   publish-docs:
     image: drillster/drone-rsync
     hosts: [ ascendntnu.no ]
-    key: "${RSYNC_KEY}"
+    key: ${RSYNC_KEY}
+    secrets: [ rsync_key ]
     target: /home/ascend/repos/planning-sim
     when:
       status: success
