@@ -24,12 +24,11 @@ bool action_done = true;
 AI ai = AI();
 World world = World(0);
 
-void time_chatterCallback(std_msgs::Float32 msg){
+void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
 }
 
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
-{
+void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
     observation_t robotObs = observation_Empty;
     for(int i = 0; i < 10; i++) {
           robotObs.robot_x[i] = msg.groundRobot[i].x;
@@ -39,20 +38,18 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg)
     ai.updateRobot(robotObs, elapsed_time);
 }
 
-void drone_chatterCallback(geometry_msgs::Pose2D msg)
-{
+void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     observation_t droneObs = observation_Empty;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
     ai.updateDrone(droneObs, elapsed_time);
 }
 
-void command_done_chatterCallback(std_msgs::Bool msg){
+void command_done_chatterCallback(std_msgs::Bool msg) {
     action_done = (bool)msg.data;
 }
 
-planning_ros_sim::droneCmd to_ROS_Command(action_t action)
-{
+planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
     planning_ros_sim::droneCmd command;
     command.x = action.where_To_Act.x;
     command.y = action.where_To_Act.y;
@@ -74,15 +71,14 @@ bool is_nearby(point_t current_Where_To_Act, point_t target) {
       return dist < SIMILARITY_THRESHOLD;
 }
 
-float similarity(action_t action1 ,action_t action2){
-    if(is_nearby(action1.where_To_Act, action2.where_To_Act)){
+float similarity(action_t action1 ,action_t action2) {
+    if(is_nearby(action1.where_To_Act, action2.where_To_Act)) {
         return 1;
     }
     return 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle ground_robot_node;
     ros::NodeHandle drone_node;
@@ -106,7 +102,7 @@ int main(int argc, char **argv)
 
     world.startTimer();
 
-    while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0){
+    while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0) {
         ros::Duration(0.2).sleep();
         ros::spinOnce();
     }
@@ -124,29 +120,34 @@ int main(int argc, char **argv)
     test = search;
     std::cout << "search: " << test << std::endl;
 
-
-    while (ros::ok()){
+    while (ros::ok()) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
         // std::cout << "loop" << std::endl;
-        if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ){
+
+        if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
             target = ai.state.getRobot(target_id);
             std::cout << "Time: " << elapsed_time << std::endl;
             std::cout << "Target: " << target_id << std::endl;
+
             //If we've finished our stack get a new one!
-            if(current_action_stack.empty()){    
+            if(current_action_stack.empty()) {
                 current_action_stack = ai.getBestGeneralActionStack(10);
                 target_id = current_action_stack.top().target;
                 target = ai.state.getRobot(target_id);
+
                 if(!target.isMoving()) {
                     std::cout << "Target likely turning, wait 0.1 seconds" << std::endl;
+
                     while(!current_action_stack.empty()) {
                         current_action_stack.pop();
                     }
+
                     ros::Duration(0.1).sleep();
                     ros::spinOnce();
                     continue;
                 }
+
                 std::cout << "1" << std::endl;
                 // ROS_DEBUG_NAMED("debug_plankBug", "where to act: %f, %f", current_action_stack.top().where_To_Act.x,  current_action_stack.top().where_To_Act.y);
                 std::cout << "where to act: " << current_action_stack.top().where_To_Act.x << ", " << current_action_stack.top().where_To_Act.y << std::endl;
@@ -154,16 +155,17 @@ int main(int argc, char **argv)
             // If we are waiting on the ground robot(ie the robot isn't
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
-            else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())){
+            else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())) {
                 std::cout << "Top Action: " << current_action_stack.top();
+
                 if(target.isMoving()) {
                     //update where to act and go to new search pos
                     action_t newAction = ai.getBestActionStack(target).top();
                     current_action_stack.top().where_To_Act = newAction.where_To_Act;
                     current_action_stack.push(newAction);
                     std::cout << "2" << std::endl;
-
                 }
+
                 else continue;
             }
 
@@ -175,6 +177,7 @@ int main(int argc, char **argv)
             std::cout << "3" << std::endl;
         }
     }
+
     return 0;
 }
 
