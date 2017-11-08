@@ -74,7 +74,7 @@ bool is_nearby(point_t current_Where_To_Act, point_t target) {
       return dist < SIMILARITY_THRESHOLD;
 }
 
-float similarity(action_t action1 ,action_t action2){
+float similarity(action_t action1 ,action_t action2){ // why float??
     if(is_nearby(action1.where_To_Act, action2.where_To_Act)){
         return 1;
     }
@@ -164,6 +164,14 @@ int main(int argc, char **argv)
                     std::cout << "2" << std::endl;
 
                 }
+
+                else if(!similarity(ai.getBestActionStack(target).top(), current_action)) {
+                    while (!current_action_stack.empty()) {
+                        current_action_stack.pop();
+                    }
+                    continue;
+                }
+
                 else continue;
             }
 
