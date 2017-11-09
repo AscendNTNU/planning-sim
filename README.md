@@ -84,6 +84,12 @@ $ docker-compose up nodes
 
 $ xhost +local:root
 $ docker-compose up nodes gui
+
+# Or with GUI in the background
+
+$ xhost +local:root
+$ docker-compose up -d gui # Daemon mode
+$ docker-compose up nodes
 ```
 
 ## Add and run tests
