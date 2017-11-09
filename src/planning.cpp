@@ -165,7 +165,12 @@ int main(int argc, char **argv) {
                     current_action_stack.push(newAction);
                     std::cout << "2" << std::endl;
                 }
-
+                else if(!similarity(ai.getBestActionStack(target).top(), current_action)) {
+                    while (!current_action_stack.empty()) {
+                        current_action_stack.pop();
+                    }
+                    continue;
+                }
                 else continue;
             }
 
