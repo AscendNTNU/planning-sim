@@ -112,11 +112,11 @@ static observation_t observation_Empty = {
 enum action_Type_t
 {
     no_Command = 0,   // continue doing whatever you are doing
-    land_On_Top_Of,     // trigger one 45 deg turn of robot (i)
-    land_In_Front_Of,   // trigger one 180 deg turn of robot (i),
-    land_At_Point,	 // land at a given point
-    track,           // follow robot (i) at a constant height
-    search           // ascend to 3 meters and go to (x, y)
+    land_On_Top_Of,   // trigger one 45 deg turn of robot (i)
+    land_In_Front_Of, // trigger one 180 deg turn of robot (i),
+    land_At_Point,    // land at a given point
+    track,            // follow robot (i) at a constant height
+    search            // ascend to 3 meters and go to (x, y)
 };
 
 struct action_t{
