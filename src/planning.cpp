@@ -25,6 +25,7 @@ AI ai = AI();
 World world = World(0);
 
 void time_chatterCallback(std_msgs::Float32 msg){
+    // std::cout << "Time callback: " << msg.data << std::endl;
     elapsed_time = (float)msg.data;
 }
 
@@ -107,7 +108,7 @@ int main(int argc, char **argv)
     world.startTimer();
 
     while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0){
-        ros::Duration(0.2).sleep();
+        // ros::Duration(0.2).sleep();
         ros::spinOnce();
     }
 
@@ -126,12 +127,13 @@ int main(int argc, char **argv)
 
 
     while (ros::ok()){
-        ros::Duration(0.4).sleep();
+        // ros::Duration(0.2).sleep();
         ros::spinOnce();
+        std::cout << "Time: " << elapsed_time << std::endl;
         // std::cout << "loop" << std::endl;
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ){
             target = ai.state.getRobot(target_id);
-            std::cout << "Time: " << elapsed_time << std::endl;
+            
             std::cout << "Target: " << target_id << std::endl;
             //If we've finished our stack get a new one!
             if(current_action_stack.empty()){    
@@ -143,7 +145,7 @@ int main(int argc, char **argv)
                     while(!current_action_stack.empty()) {
                         current_action_stack.pop();
                     }
-                    ros::Duration(0.1).sleep();
+                    // ros::Duration(0.1).sleep();
                     ros::spinOnce();
                     continue;
                 }
@@ -174,7 +176,12 @@ int main(int argc, char **argv)
             current_action_stack.pop();
             std::cout << "3" << std::endl;
         }
+
+        if(elapsed_time > 600) {
+            break;
+        }
     }
+    std::cout << "Sim Finished" << std::endl;
     return 0;
 }
 
