@@ -55,7 +55,7 @@ void droneCmd_chatterCallback(planning_ros_sim::droneCmd droneCmd_msg)
 int main(int argc, char **argv)
 {
   sim_init_msgs(true);
-  sim_State state;
+  sim_Observed_State state;
   bool running = true;
 
   sim_Command cmd;
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     sim_recv_state(&state);
-    sim_Observed_State obs_state = sim_observe_state(state);
+    sim_Observed_State obs_state = state;
 
     for (int n = 0; n<10; n++)
     {
