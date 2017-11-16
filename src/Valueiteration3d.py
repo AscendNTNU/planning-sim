@@ -126,7 +126,7 @@ newVauegrid()
 
 
 
-#TESTS
+#TESTSS
 #oldValuegrid() #checks if old valuegrid works
 
 #checks if plank lenght is consistent with angles from 0 - 2pi
