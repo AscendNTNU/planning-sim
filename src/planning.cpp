@@ -11,6 +11,7 @@
 #include "AI/AI.h"
 #include "AI/structs.h"
 #include <assert.h>
+// #include <ros/console.h>
 
 const float SIMILARITY_THRESHOLD = 1;
 
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     world.startTimer();
 
     while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0){
-        // ros::Duration(0.2).sleep();
+        ros::Duration(0.2).sleep();
         ros::spinOnce();
     }
 
@@ -129,7 +130,7 @@ int main(int argc, char **argv)
     while (ros::ok()){
         // ros::Duration(0.2).sleep();
         ros::spinOnce();
-        std::cout << "Time: " << elapsed_time << std::endl;
+        // std::cout << "Time: " << elapsed_time << std::endl;
         // std::cout << "loop" << std::endl;
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ){
             target = ai.state.getRobot(target_id);
@@ -145,7 +146,7 @@ int main(int argc, char **argv)
                     while(!current_action_stack.empty()) {
                         current_action_stack.pop();
                     }
-                    // ros::Duration(0.1).sleep();
+                    ros::Duration(0.1).sleep();
                     ros::spinOnce();
                     continue;
                 }
@@ -182,6 +183,14 @@ int main(int argc, char **argv)
         }
     }
     std::cout << "Sim Finished" << std::endl;
+    int numOut = 0;
+    for(int i = 0; i < 10; i++) {
+        // ROS_DEBUG_STREAM("Robot 1: (" << ai.state.getRobot(i).getPosition().x << ", " << ai.state.getRobot(i).getPosition().y << ")");
+        if(ai.state.getRobot(i).getPosition().x>20) {
+            numOut += 1;
+        }
+    }
+    // ROS_DEBUG_STREAM("# Robots out green: " << numOut << std::endl); 
     return 0;
 }
 

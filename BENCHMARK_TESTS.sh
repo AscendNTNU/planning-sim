@@ -9,7 +9,7 @@ WORKDIR=$(pwd)
 cd ../..
 xterm -title 'build' -e 'catkin_make'
 cd $WORKDIR/src
-g++ ai-sim/sim_no_gui.cpp -o sim_no_gui -lGL `sdl2-config --cflags --libs`
+#g++ ai-sim/sim_no_gui.cpp -o sim_no_gui -lGL `sdl2-config --cflags --libs`
 if [ $? -eq 0 ]; then
     echo COMPILED SUCCESS
     xterm -title 'App1' -hold -e 'roscore' &

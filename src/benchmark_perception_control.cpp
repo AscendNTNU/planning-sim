@@ -50,7 +50,7 @@ void droneCmd_chatterCallback(planning_ros_sim::droneCmd droneCmd_msg)
   command.type = to_Sim_ActionType(droneCmd_msg.cmd);
   command.reward = droneCmd_msg.reward;
   std::cout<< "Sending drone command " << command.i << std::endl;
-  sim_send_cmd(&command);
+  // sim_send_cmd(&command);
 }
 
 
@@ -88,8 +88,9 @@ int main(int argc, char **argv)
   sim_Observed_State obs_state; 
   while (ros::ok())
   {
+    ros::Duration(0.4).sleep();
     obs_state = sim_observe_state(state);
-
+    
     for (int n = 0; n<10; n++)
     {
       groundrobot_msg.groundRobot[n].x = obs_state.target_x[n];
