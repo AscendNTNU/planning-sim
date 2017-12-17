@@ -16,12 +16,19 @@ State::State(){
 Drone State::getDrone(){
 	return this->drone;
 }
+
 Robot State::getRobot(int index){
 	if(index < 0 || index > 10){
 		return Robot(-1);
 	}
 	return this->robots[index];
 }
+
+std::array<Robot,10> State::getRobots(){
+	return this->robots;
+}
+
+
 Robot State::getObstacle(int index){
 	if(index < 0 || index > 4){
 		return  Robot(-1);
@@ -29,25 +36,29 @@ Robot State::getObstacle(int index){
 	return this->obstacles[index];
 }
 
+std::array<Robot,4> State::getObstacles(){
+	return this->obstacles;
+}
+
 float State::getTimeStamp(){
 	return this->time_Stamp;
 }
 
 
-bool State::updateState(observation_t observation, float elapsed_time){
-	bool drone_Updated = updateDroneState(observation, elapsed_time);
-	bool robot_Updated = updateRobotState(observation, elapsed_time);
+bool State::update(observation_t observation, float elapsed_time){
+	bool drone_Updated = updateDrone(observation, elapsed_time);
+	bool robot_Updated = updateRobot(observation, elapsed_time);
 	return (drone_Updated and robot_Updated);
 }
 
-bool State::updateDroneState(observation_t observation, float elapsed_time){
+bool State::updateDrone(observation_t observation, float elapsed_time){
 
 	this->time_Stamp = elapsed_time;
 	this->drone.update(observation);
 	return true;
 }
 
-bool State::updateRobotState(observation_t observation, float elapsed_time){
+bool State::updateRobot(observation_t observation, float elapsed_time){
 	point_t position = point_Zero;
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < 10; i++){

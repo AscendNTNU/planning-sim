@@ -23,6 +23,7 @@ bool action_done = true;
 
 AI ai = AI();
 World world = World(0);
+State state = State();
 
 void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
@@ -35,14 +36,14 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
           robotObs.robot_y[i] = msg.groundRobot[i].y;
           robotObs.robot_q[i] = msg.groundRobot[i].theta;
     }
-    ai.updateRobot(robotObs, elapsed_time);
+    state.updateRobot(robotObs, elapsed_time);
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     observation_t droneObs = observation_Empty;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
-    ai.updateDrone(droneObs, elapsed_time);
+    state.updateDrone(droneObs, elapsed_time);
 }
 
 void command_done_chatterCallback(std_msgs::Bool msg) {
@@ -96,13 +97,13 @@ int main(int argc, char **argv) {
     planning_ros_sim::droneCmd drone_action;
     
     int target_id = 0;
-    Robot target = ai.state.getRobot(1);
+    Robot target = state.getRobot(1);
     action_t current_action;
     std::stack<action_t> current_action_stack;
 
     world.startTimer();
 
-    while (ros::ok() and ai.state.getRobot(0).getPosition().x == 0) {
+    while (ros::ok() and state.getRobot(0).getPosition().x == 0) {
         ros::Duration(0.2).sleep();
         ros::spinOnce();
     }
@@ -126,15 +127,15 @@ int main(int argc, char **argv) {
         // std::cout << "loop" << std::endl;
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
-            target = ai.state.getRobot(target_id);
+            target = state.getRobot(target_id);
             std::cout << "Time: " << elapsed_time << std::endl;
             std::cout << "Target: " << target_id << std::endl;
 
             //If we've finished our stack get a new one!
             if(current_action_stack.empty()) {
-                current_action_stack = ai.getBestGeneralActionStack(10);
+                current_action_stack = ai.getBestGeneralActionStack(state);
                 target_id = current_action_stack.top().target;
-                target = ai.state.getRobot(target_id);
+                target = state.getRobot(target_id);
 
                 if(!target.isMoving()) {
                     std::cout << "Target likely turning, wait 0.1 seconds" << std::endl;
@@ -160,12 +161,12 @@ int main(int argc, char **argv) {
 
                 if(target.isMoving()) {
                     //update where to act and go to new search pos
-                    action_t newAction = ai.getBestActionStack(target).top();
+                    action_t newAction = ai.getBestActionStack(target, state.getDrone()).top();
                     current_action_stack.top().where_To_Act = newAction.where_To_Act;
                     current_action_stack.push(newAction);
                     std::cout << "2" << std::endl;
                 }
-                else if(!similarity(ai.getBestActionStack(target).top(), current_action)) {
+                else if(!similarity(ai.getBestActionStack(target, state.getDrone()).top(), current_action)) {
                     while (!current_action_stack.empty()) {
                         current_action_stack.pop();
                     }

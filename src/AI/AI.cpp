@@ -1,19 +1,16 @@
 #include "AI.h"
 #include "Robot.h"
-#include <typeinfo>
-AI::AI() {
-    this->state = State();
+#include <array>
+
+std::stack<action_t> AI::getBestGeneralActionStack(State state) {
+    Robot target = chooseTarget(state.getRobots());
+    return getBestActionStack(target, state.getDrone());
 }
 
-std::stack<action_t> AI::getBestGeneralActionStack(int num_Robots) {
-    Robot target = chooseTarget(10);
-    return getBestActionStack(target);
-}
-
-std::stack<action_t> AI::getBestActionStack(Robot target) {
+std::stack<action_t> AI::getBestActionStack(Robot target, Drone drone) {
     std::stack<action_t> action_Stack;
 
-    action_t best_Action = chooseAction(target);
+    action_t best_Action = chooseAction(target, drone);
     action_Stack.push(best_Action);
 
     // If search is not already spesified, add a search (goto) action to complete the next action
@@ -26,15 +23,15 @@ std::stack<action_t> AI::getBestActionStack(Robot target) {
     return action_Stack;
 }
 
-Robot AI::chooseTarget(int num_Robots) {
+Robot AI::chooseTarget(std::array<Robot,10> robots) {
     Robot robot;
     float best_reward = -1000000;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
 
-    for (int i = 0; i < num_Robots; i++) {
-        robot = this->state.robots[i];
+    for (int i = 0; i < robots.size(); i++) {
+        robot = robots[i];
 
         if (robot.getIndex() != -1 && robot.getVisibility()) {
 
@@ -48,7 +45,7 @@ Robot AI::chooseTarget(int num_Robots) {
     return target;
 }
 
-action_t AI::chooseAction(Robot target) {
+action_t AI::chooseAction(Robot target, Drone drone) {
 
     // // Temporary max rewarded action
     action_t best_Action = action_Empty;
@@ -77,7 +74,7 @@ action_t AI::chooseAction(Robot target) {
 
         point_t next_search_point = point_Zero;
 
-        point_t pos = this->state.drone.getPosition();
+        point_t pos = drone.getPosition();
         float x = pos.x;
         float y = pos.y;
         float track_width = 20;
@@ -115,7 +112,6 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     int num_Iterations = 5; // Number of iterations when summing along a plank
     action_t action;
     action.where_To_Act = position.point;
-    // float time_After_Turn_Start = fmod(this->state.getTimeStamp() + position.travel_Time + time_after_interception, 20);
 
     Plank plank_On_Top = Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
                                     position.time_since_start_turn);
@@ -136,16 +132,4 @@ action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, act
     }
 
     return action;
-}
-
-bool AI::update(observation_t observation,float elapsed_time) {
-    return this->state.updateState(observation, elapsed_time);
-}
-
-bool AI::updateRobot(observation_t observation,float elapsed_time) {
-    return this->state.updateRobotState(observation, elapsed_time);
-}
-
-bool AI::updateDrone(observation_t observation,float elapsed_time) {
-    return this->state.updateDroneState(observation, elapsed_time);
 }

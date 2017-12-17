@@ -14,11 +14,6 @@ This class handles all AI functions. This includes the choice of target and the 
 
 class AI{
 public:
-    ///AI constructor
-    AI();
-
-    ///Current State
-    State state;
 
     /**
     @brief Returns best target based on current planks.
@@ -27,7 +22,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot chooseTarget(int num_Robots);
+    Robot chooseTarget(std::array<Robot,10> robots);
 
 
     /**
@@ -37,7 +32,7 @@ public:
     Given a robot, returns the action from different points on the plank that gives best value.
     If none found, returns an empty action, ie at (0,0)
     */
-    action_t chooseAction(Robot target);
+    action_t chooseAction(Robot target, Drone drone);
 
     /**
     @brief Gets the best action for a robot at a given position and time
@@ -62,7 +57,7 @@ public:
     @return Best possible action stack.
     Checks the best action for each robot and returns the action stack for performing the action with best reward/
     */
-    std::stack<action_t> getBestGeneralActionStack(int num_Robots);
+    std::stack<action_t> getBestGeneralActionStack(State state);
 
     /**
     @brief Returns action stack for the best action for a target robot.
@@ -70,9 +65,5 @@ public:
     @return Best possible action stack.
     Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
     */
-    std::stack<action_t> getBestActionStack(Robot target_id);
-
-    bool update(observation_t observation, float elapsed_time);
-    bool updateDrone(observation_t observation, float elapsed_time);
-    bool updateRobot(observation_t observation, float elapsed_time);
+    std::stack<action_t> getBestActionStack(Robot target, Drone drone);
 };
