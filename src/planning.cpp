@@ -99,6 +99,7 @@ int main(int argc, char **argv) {
     int target_id = 0;
     Robot target = state.getRobot(1);
     action_t current_action;
+    action_t updated_action;
     std::stack<action_t> current_action_stack;
 
     world.startTimer();
@@ -108,79 +109,51 @@ int main(int argc, char **argv) {
         ros::spinOnce();
     }
 
-    action_Type_t test = no_Command;
-    std::cout << "No command: " << test << std::endl;
-    test = land_On_Top_Of;
-    std::cout << "land_On_Top_Of: " << test << std::endl;
-    test = land_In_Front_Of;
-    std::cout << "land_In_Front_Of: " << test << std::endl;
-    test = land_At_Point;
-    std::cout << "land_At_Point: " << test << std::endl;
-    test = track;
-    std::cout << "track: " << test << std::endl;
-    test = search;
-    std::cout << "search: " << test << std::endl;
-
     while (ros::ok()) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
-        // std::cout << "loop" << std::endl;
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
-            target = state.getRobot(target_id);
-            std::cout << "Time: " << elapsed_time << std::endl;
-            std::cout << "Target: " << target_id << std::endl;
+            // target = state.getRobot(target_id);
 
-            //If we've finished our stack get a new one!
+            //If we've finished our stack get a new one.
             if(current_action_stack.empty()) {
                 current_action_stack = ai.getBestGeneralActionStack(state);
-                target_id = current_action_stack.top().target;
-                target = state.getRobot(target_id);
+            }
 
-                if(!target.isMoving()) {
-                    std::cout << "Target likely turning, wait 0.1 seconds" << std::endl;
+            current_action = current_action_stack.top();
+            target = state.getRobot(current_action.target);
 
-                    while(!current_action_stack.empty()) {
-                        current_action_stack.pop();
-                    }
-
-                    ros::Duration(0.1).sleep();
-                    ros::spinOnce();
-                    continue;
+            if(!target.isMoving()){
+                while (!current_action_stack.empty()) {
+                    current_action_stack.pop();
                 }
-
-                std::cout << "1" << std::endl;
-                // ROS_DEBUG_NAMED("debug_plankBug", "where to act: %f, %f", current_action_stack.top().where_To_Act.x,  current_action_stack.top().where_To_Act.y);
-                std::cout << "where to act: " << current_action_stack.top().where_To_Act.x << ", " << current_action_stack.top().where_To_Act.y << std::endl;
+                continue;
             }
             // If we are waiting on the ground robot(ie the robot isn't
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
-            else if(current_action_stack.top().type != search && !is_nearby(current_action_stack.top().where_To_Act, target.getPosition())) {
-                std::cout << "Top Action: " << current_action_stack.top();
+            if(current_action.type != search && !is_nearby(current_action.where_To_Act, target.getPosition())) {
+                
+                updated_action = ai.chooseAction(target, state.getDrone());
+                updated_action.type = search;
 
-                if(target.isMoving()) {
-                    //update where to act and go to new search pos
-                    action_t newAction = ai.getBestActionStack(target, state.getDrone()).top();
-                    current_action_stack.top().where_To_Act = newAction.where_To_Act;
-                    current_action_stack.push(newAction);
-                    std::cout << "2" << std::endl;
-                }
-                else if(!similarity(ai.getBestActionStack(target, state.getDrone()).top(), current_action)) {
+                if(!similarity(updated_action, current_action)) {
+
                     while (!current_action_stack.empty()) {
                         current_action_stack.pop();
                     }
                     continue;
                 }
-                else continue;
+                //update where to act and go to new search pos
+                current_action = updated_action;
+                current_action_stack.push(updated_action);
+
             }
 
-            std::cout << "Top Action: " << current_action_stack.top();
-            current_action = current_action_stack.top();
             drone_action = to_ROS_Command(current_action);
             command_pub.publish(drone_action);
             current_action_stack.pop();
-            std::cout << "3" << std::endl;
         }
     }
 
