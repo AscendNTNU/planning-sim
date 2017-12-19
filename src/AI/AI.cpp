@@ -2,25 +2,14 @@
 #include "Robot.h"
 #include <array>
 
-std::stack<action_t> AI::getBestGeneralActionStack(State state) {
-    Robot target = chooseTarget(state.getRobots());
-    return getBestActionStack(target, state.getDrone());
+action_t AI::getBestGeneralAction(Observation observation) {
+    Robot target = chooseTarget(observation.getRobots());
+    return getBestAction(target, observation);
 }
 
-std::stack<action_t> AI::getBestActionStack(Robot target, Drone drone) {
-    std::stack<action_t> action_Stack;
-
-    action_t best_Action = chooseAction(target, drone);
-    action_Stack.push(best_Action);
-
-    // If search is not already spesified, add a search (goto) action to complete the next action
-    if (best_Action.type != search) {
-        action_t search_Action = best_Action;
-        search_Action.type = search;
-        action_Stack.push(search_Action);
-    }
-
-    return action_Stack;
+action_t AI::getBestAction(Robot target, Observation observation) {
+    action_t best_Action = chooseAction(target, observation.getDrone());
+    return best_Action;
 }
 
 Robot AI::chooseTarget(std::array<Robot,10> robots) {
@@ -48,7 +37,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots) {
 action_t AI::chooseAction(Robot target, Drone drone) {
 
     // // Temporary max rewarded action
-    action_t best_Action = action_Empty;
+    action_t best_Action = empty_action;
 
     // best_Action.where_To_Act.travel_Time = interception.travel_Time;
 
@@ -57,7 +46,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
         action_t step_Action;
 
         for (int i = 1; i < target.current_Plank.getNumPlankPoints() - 1; i++) {
-            std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
+            // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
 
             step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
 
@@ -70,7 +59,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     }
     // If no target is visible, we do a patrol round
     else {
-        action_t search_Action = action_Empty;
+        action_t search_Action = empty_action;
 
         point_t next_search_point = point_Zero;
 

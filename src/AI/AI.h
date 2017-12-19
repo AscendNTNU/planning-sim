@@ -8,11 +8,12 @@ This class handles all AI functions. This includes the choice of target and the 
 
 #pragma once
 #include "Robot.h"
-#include "State.h"
+#include "Observation.h"
 #include "Plank.h"
 #include <stack>
 
 class AI{
+
 public:
 
     /**
@@ -57,7 +58,7 @@ public:
     @return Best possible action stack.
     Checks the best action for each robot and returns the action stack for performing the action with best reward/
     */
-    std::stack<action_t> getBestGeneralActionStack(State state);
+    action_t getBestGeneralAction(Observation observation);
 
     /**
     @brief Returns action stack for the best action for a target robot.
@@ -65,5 +66,5 @@ public:
     @return Best possible action stack.
     Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
     */
-    std::stack<action_t> getBestActionStack(Robot target, Drone drone);
+    action_t getBestAction(Robot target, Observation observation);
 };

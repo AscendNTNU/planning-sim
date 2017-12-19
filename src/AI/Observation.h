@@ -3,7 +3,7 @@
 #include "Drone.h"
 #include <array>
 
-class State{
+class Observation{
 private:
 	float time_Stamp;
 	std::array<Robot,10> robots;
@@ -12,7 +12,7 @@ private:
 
 public:
 
-	State();
+	Observation();
 
 	Drone getDrone();
 

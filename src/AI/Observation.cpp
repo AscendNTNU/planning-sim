@@ -1,6 +1,6 @@
-#include "State.h"
+#include "Observation.h"
 
-State::State(){
+Observation::Observation(){
 	this->drone = Drone();
 	
 	for(int i = 0; i<10; i++){
@@ -13,52 +13,52 @@ State::State(){
 	this->time_Stamp = 0;
 }
 
-Drone State::getDrone(){
+Drone Observation::getDrone(){
 	return this->drone;
 }
 
-Robot State::getRobot(int index){
+Robot Observation::getRobot(int index){
 	if(index < 0 || index > 10){
 		return Robot(-1);
 	}
 	return this->robots[index];
 }
 
-std::array<Robot,10> State::getRobots(){
+std::array<Robot,10> Observation::getRobots(){
 	return this->robots;
 }
 
 
-Robot State::getObstacle(int index){
+Robot Observation::getObstacle(int index){
 	if(index < 0 || index > 4){
 		return  Robot(-1);
 	}
 	return this->obstacles[index];
 }
 
-std::array<Robot,4> State::getObstacles(){
+std::array<Robot,4> Observation::getObstacles(){
 	return this->obstacles;
 }
 
-float State::getTimeStamp(){
+float Observation::getTimeStamp(){
 	return this->time_Stamp;
 }
 
 
-bool State::update(observation_t observation, float elapsed_time){
+bool Observation::update(observation_t observation, float elapsed_time){
 	bool drone_Updated = updateDrone(observation, elapsed_time);
 	bool robot_Updated = updateRobot(observation, elapsed_time);
 	return (drone_Updated and robot_Updated);
 }
 
-bool State::updateDrone(observation_t observation, float elapsed_time){
+bool Observation::updateDrone(observation_t observation, float elapsed_time){
 
 	this->time_Stamp = elapsed_time;
 	this->drone.update(observation);
 	return true;
 }
 
-bool State::updateRobot(observation_t observation, float elapsed_time){
+bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	point_t position = point_Zero;
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < 10; i++){
