@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include "AI/AI.h"
 #include "AI/structs.h"
-#include <assert.h>
 
 const float SIMILARITY_THRESHOLD = 1;
 
@@ -114,7 +113,6 @@ int main(int argc, char **argv) {
         ros::spinOnce();
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
-            // target = state.getRobot(target_id);
 
             //If we've finished our stack get a new one.
             if(current_action_stack.empty()) {
@@ -125,11 +123,9 @@ int main(int argc, char **argv) {
             target = state.getRobot(current_action.target);
 
             if(!target.isMoving()){
-                while (!current_action_stack.empty()) {
-                    current_action_stack.pop();
-                }
                 continue;
             }
+
             // If we are waiting on the ground robot(ie the robot isn't
             // nearby our landing location) we might aswell update our
             // where_to_act on our current observations.
@@ -164,19 +160,21 @@ int main(int argc, char **argv) {
 // while(ok) {
 // if(no actions and not near turn time) { //Get land_on_top/land_in_front at point
 //     get action stack
+//     get current action
+//     
 //     if target is not moving {
-//         delete actions
-//         go to beginning
+//         loop
 //     }
-// }
-// else if(search done and target is not here) { //update that plank point based on robots movements
-//     if target is moving
-//         get new search action
+// 
+//     if(search done and the target isn't in position) { //update that plank point based on robots movements
+//     
+//         check what the current best action is
 //         if not similar
 //             delete actions
 //             go to beginning
-//     else
-//         go to beginning
-// }
-// execute action
+//         else
+//             place the current best action ontop of action stack
+//          
+//     execute action
+//     pop action from stack
 // }
