@@ -21,7 +21,6 @@ bool action_done = true;
 
 World world = World(0);
 AIController ai_controller = AIController();
-Observation observation = Observation();
 
 void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
@@ -61,6 +60,7 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 }
 
 int main(int argc, char **argv) {
+
     ros::init(argc, argv, "planning");
     ros::NodeHandle ground_robot_node;
     ros::NodeHandle drone_node;
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
     
     ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
-
+    
     planning_ros_sim::droneCmd drone_action;
     
     world.startTimer();
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
         ros::spinOnce();
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
-            
+
             action = ai_controller.stateHandler();
 
             if(action.type != no_Command){

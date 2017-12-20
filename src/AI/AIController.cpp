@@ -20,7 +20,7 @@ float similarity(action_t action1 ,action_t action2) {
 AIController::AIController(){
 	this->ai_ = AI();
 	this->state_ = no_input_data;
-
+    this->observation = Observation();
 }
 
 action_t AIController::stateHandler(){
@@ -60,7 +60,6 @@ void AIController::noInputDataState(){
 void AIController::idleState(){
     printf("Idle state\n");
     this->current_action_ = ai_.getBestGeneralAction(this->observation);
-	this->target_ = this->observation.getRobot(this->current_action_.target);
 	this->state_ = fly_to;
 	return;
 }
@@ -80,13 +79,20 @@ action_t AIController::flyToState(){
 
 void AIController::waitingState(){
     printf("waiting state\n");
-    std::cout<<(this->target_.getPosition().x) << std::endl;
-	if(is_nearby(this->current_action_.where_To_Act, this->target_.getPosition())){
+    int target_id = this->current_action_.target;
+    Robot target = this->observation.getRobot(target_id);
+
+    if(!target.isMoving()){
+        this->state_ = waiting;
+        return;
+    }
+
+	if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
 		this->state_ = perform_action;
 		return;
 	}
 
-	action_t updated_action = this->ai_.getBestAction(this->target_, this->observation);
+	action_t updated_action = this->ai_.getBestAction(target, this->observation);
 
     if(!similarity(updated_action, this->current_action_)) {
     	this->state_ = idle;

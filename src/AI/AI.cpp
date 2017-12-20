@@ -22,7 +22,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots) {
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
-        if (robot.getIndex() != -1 && robot.getVisibility()) {
+        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
             if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
                 best_reward = robot.current_Plank.getReward();

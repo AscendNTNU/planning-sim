@@ -12,7 +12,6 @@ class AIController{
 private:
     AI ai_;
     ai_state_t state_;
-    Robot target_;
     action_t current_action_;
 
 public:
