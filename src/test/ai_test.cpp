@@ -42,20 +42,20 @@ struct observation_t initializeObservation(int num_of_robots, int num_of_obstacl
 	return initial;
 }
 
-TEST_F (AITest, chooseTargetTest) {
-    struct observation_t initial = initializeObservation(2,0);
-    initial.robot_y[0] = 13;
-    initial.robot_y[1] = 9;
+// TEST_F (AITest, chooseTargetTest) {
+//     struct observation_t initial = initializeObservation(2,0);
+//     initial.robot_y[0] = 13;
+//     initial.robot_y[1] = 9;
 
-    initial.robot_q[0] = PI/2.0;
-    initial.robot_q[1] = PI/2.0;
+//     initial.robot_q[0] = PI/2.0;
+//     initial.robot_q[1] = PI/2.0;
 
-    ai.update(initial, 0);
-    Robot robot = ai.chooseTarget(2);
-    point_t position = robot.getPosition();
-    EXPECT_EQ(position.x, initial.robot_x[0]);
-    EXPECT_EQ(position.y, initial.robot_y[0]);
-}
+//     ai.update(initial, 0);
+//     Robot robot = ai.chooseTarget(2);
+//     point_t position = robot.getPosition();
+//     EXPECT_EQ(position.x, initial.robot_x[0]);
+//     EXPECT_EQ(position.y, initial.robot_y[0]);
+// }
 
 // TEST_F (AITest, chooseActionTest) { 
 //     struct observation_t initial = initializeObservation(1,0);
