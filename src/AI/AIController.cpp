@@ -68,7 +68,7 @@ action_t AIController::flyToState(){
     printf("fly to state\n");	
 	if(this->current_action_.type==search){
 		this->state_ = idle;
-		return empty_action;
+		return this->current_action_;
 	}
 
 	action_t fly_action = this->current_action_;
