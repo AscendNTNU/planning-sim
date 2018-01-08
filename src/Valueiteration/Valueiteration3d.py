@@ -122,7 +122,7 @@ def indexClosestTheta(actual_theta):
 
 def valueiteration():
 	numiter = 1000
-	#Do this many times, for 20*12 states, iterating over grid 10000 times, return grid
+	#Do this many times, for 20, iterating over grid 10000 times, return grid
 	for i in range(numiter):
 		print("Iteration " + str(i+1) + " out of " + str(numiter), end="\r")
 		for x in range(1, len(valuegrid) - 1):
