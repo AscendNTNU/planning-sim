@@ -21,21 +21,16 @@ sim_CommandType to_Sim_ActionType(int action){
     case land_On_Top_Of:
       std::cout << "command is on top" << std::endl;
       return sim_CommandType_LandOnTopOf;
-    break;
     case land_In_Front_Of:
       std::cout << "command is in front" << std::endl;
       return sim_CommandType_LandInFrontOf;
-    break;
     case land_At_Point:
       return sim_CommandType_NoCommand;
-    break;
     case search:
       std::cout << "command is search" << std::endl;
       return sim_CommandType_Search;
-    break;
     default:
       return sim_CommandType_NoCommand;
-    break;
   }
 }
 
