@@ -3,7 +3,7 @@
 #include <array>
 
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots());
+    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
     return getBestAction(target, observation);
 }
 
@@ -12,7 +12,7 @@ action_t AI::getBestAction(Robot target, Observation observation) {
     return best_Action;
 }
 /*
-Robot AI::chooseTarget(std::array<Robot,10> robots) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     float best_reward = -1000000;
 
@@ -36,7 +36,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots) {
 */
 
 //Alternative method of chooseTarget, using the best drone position at intersection instead of the best plank.
-Robot AI::chooseTarget(int num_Robots) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     point_t best_pos = point_Zero;
     float best_reward = world.getGridValue(best_pos.x, best_pos.y);
@@ -44,13 +44,13 @@ Robot AI::chooseTarget(int num_Robots) {
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
 
-    for (int i = 0; i < num_Robots; i++) {
-        robot = this->state.robots[i];
+    for (int i = 0; i < robots.size(); i++) {
+        robot = robots[i];
 
         if (robot.getIndex() != -1 && robot.getVisibility()) {
 
             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
-                best_pos = this->state.drone.getInterceptPoint(robot);
+                best_pos = drone.getInterceptPoint(robot);
                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
                 target = robot;
             }
