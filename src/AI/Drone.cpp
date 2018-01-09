@@ -5,15 +5,10 @@ Drone::Drone(){
 	this->orientation = 0;
 	this->angle_Of_Motion = 0;
 	this->speed = DRONE_SPEED;
-	this->state = starting;
 }
 
 point_t Drone::getPosition(){
 	return this->position;
-}
-
-drone_State_t Drone::getState(){
-	return this->state;
 }
 
 bool Drone::update(observation_t observation){

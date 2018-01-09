@@ -5,6 +5,7 @@
 static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
+static const float SIMILARITY_THRESHOLD = 1;
 
 /**
 @brief Struct describing a point on the course.
@@ -53,21 +54,6 @@ inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
 struct bounds_t{
 	int x_Max;
 	int y_Max;
-};
-
-enum drone_State_t
-{
-    landing_On_Top,
-    landing_In_Front, // Equal to landing_At_Point?
-    landing_At_Point,
-    waiting,
-    tracking,
-	choosing_Action,
-	choosing_Target,
-	starting,
-	waiting_For_Action,
-	no_Target_Found,
-	terminate
 };
 
 /**
@@ -127,7 +113,7 @@ struct action_t{
     point_t where_To_Act;
 };
 
-static action_t action_Empty = {
+static action_t empty_action = {
     .target = 0,
 	.type = no_Command,
 	.reward = -200000,
