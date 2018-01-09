@@ -11,7 +11,7 @@ action_t AI::getBestAction(Robot target, Observation observation) {
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
-
+/*
 Robot AI::chooseTarget(std::array<Robot,10> robots) {
     Robot robot;
     float best_reward = -1000000;
