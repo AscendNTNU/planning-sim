@@ -3,17 +3,15 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
-#include <vector>
-#include "../../../devel/include/planning_ros_sim/groundRobotList.h"
-#include "../../../devel/include/planning_ros_sim/groundRobot.h"
-#include "../../../devel/include/planning_ros_sim/droneCmd.h"
+#include "planning_ros_sim/groundRobotList.h"
+#include "planning_ros_sim/groundRobot.h"
+#include "planning_ros_sim/droneCmd.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
 #include "ai-sim/sim.h"
 #include "ai-sim/gui.h"
 #include "AI/structs.h"
 #include <stdio.h>
-#include <sstream>
 
 sim_CommandType to_Sim_ActionType(int action){
   switch(action){
@@ -70,10 +68,12 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::NodeHandle o;
   ros::NodeHandle command_done_node;
+
   planning_ros_sim::groundRobotList groundrobot_msg;
   geometry_msgs::Pose2D drone_msg;
   std_msgs::Float32 time_msg; 
   std_msgs::Bool command_done_msg;
+
   ros::Publisher ground_robots_pub = l.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
   ros::Publisher drone_pub = m.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
   ros::Subscriber droneCmd_sub = n.subscribe("drone_cmd_chatter", 100, droneCmd_chatterCallback);

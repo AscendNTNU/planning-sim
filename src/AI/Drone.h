@@ -24,15 +24,10 @@ private:
 	point_t prev_Position;
 	float prev_Orientation;
 
-	drone_State_t state;
-
 public:
 	Drone();
 	///return position of drone on the field
 	point_t getPosition();
-
-	///return the current state of the drone (e.g. choosing target/action, landing on top or in front, etc.)
-	drone_State_t getState();
 
 	///update drone based on the new observation from the sim
 	bool update(observation_t observation);
