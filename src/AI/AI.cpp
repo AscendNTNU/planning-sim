@@ -26,6 +26,7 @@ std::stack<action_t> AI::getBestActionStack(Robot target) {
     return action_Stack;
 }
 
+/*
 Robot AI::chooseTarget(int num_Robots) {
     Robot robot;
     float best_reward = -1000000;
@@ -45,6 +46,31 @@ Robot AI::chooseTarget(int num_Robots) {
         }
     }
 
+    return target;
+}
+*/
+
+//Alternative method of chooseTarget, using the best drone position at intersection instead of the best plank.
+Robot AI::chooseTarget(int num_Robots) {
+    Robot robot;
+    point_t best_pos = point_Zero;
+    float best_reward = world.getGridValue(best_pos.x, best_pos.y);
+
+    // Return an invalid robot if none was assigned
+    Robot target = Robot(-1);
+
+    for (int i = 0; i < num_Robots; i++) {
+        robot = this->state.robots[i];
+
+        if (robot.getIndex() != -1 && robot.getVisibility()) {
+
+            if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+                best_pos = this->state.drone.getInterceptPoint(robot);
+                best_reward = world.getGridValue(best_pos.x, best_pos.y);
+                target = robot;
+            }
+        }
+    }
     return target;
 }
 
