@@ -48,8 +48,43 @@ Robot AI::chooseTarget(int num_Robots) {
     return target;
 }
 
-action_t AI::chooseAction(Robot target) {
+action_t AI::squareSearch(Robot target) {
+    action_t search_Action = action_Empty;
 
+    point_t next_search_point = point_Zero;
+
+    point_t pos = this->state.drone.getPosition();
+    float x = pos.x;
+    float y = pos.y;
+    float track_width = 20;
+    float track_height = 20;
+    float track_center_x = track_width / 2;
+    float track_center_y = track_height / 2;
+    float padding = 3;
+
+    // The drone flies in a square path in a clockwise order
+    if (x > track_center_x && y > track_center_y) {
+        next_search_point.x = track_width - padding;
+        next_search_point.y = padding;
+    } else if (x > track_center_x && y < track_center_y) {
+        next_search_point.x = padding;
+        next_search_point.y = padding;
+    } else if (x <= track_center_x && y <= track_center_y) {
+        next_search_point.x = padding;
+        next_search_point.y = track_height - padding;
+    } else if (x < track_center_x && y > track_center_y) {
+        next_search_point.x = track_width - padding;
+        next_search_point.y = track_height - padding;
+    }
+
+    search_Action.type = search;
+    search_Action.where_To_Act = next_search_point;
+    search_Action.target = 0;
+
+    return search_Action;
+}
+
+action_t AI::chooseAction(Robot target) {
     // // Temporary max rewarded action
     action_t best_Action = action_Empty;
 
@@ -73,39 +108,7 @@ action_t AI::chooseAction(Robot target) {
     }
     // If no target is visible, we do a patrol round
     else {
-        action_t search_Action = action_Empty;
-
-        point_t next_search_point = point_Zero;
-
-        point_t pos = this->state.drone.getPosition();
-        float x = pos.x;
-        float y = pos.y;
-        float track_width = 20;
-        float track_height = 20;
-        float track_center_x = track_width / 2;
-        float track_center_y = track_height / 2;
-        float padding = 3;
-
-        // The drone flies in a square path in a clockwise order
-        if (x > track_center_x && y > track_center_y) {
-            next_search_point.x = track_width - padding;
-            next_search_point.y = padding;
-        } else if (x > track_center_x && y < track_center_y) {
-            next_search_point.x = padding;
-            next_search_point.y = padding;
-        } else if (x <= track_center_x && y <= track_center_y) {
-            next_search_point.x = padding;
-            next_search_point.y = track_height - padding;
-        } else if (x < track_center_x && y > track_center_y) {
-            next_search_point.x = track_width - padding;
-            next_search_point.y = track_height - padding;
-        }
-
-        search_Action.type = search;
-        search_Action.where_To_Act = next_search_point;
-        search_Action.target = 0;
-
-        best_Action = search_Action;
+        best_Action = this->squareSearch(target);
     }
 
     return best_Action;
