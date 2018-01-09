@@ -35,7 +35,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 }
 */
 
-//Alternative method of chooseTarget, using the best drone position at intersection instead of the best plank.
+//Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
 Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     point_t best_pos = point_Zero;
@@ -59,7 +59,6 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     return target;
 }
 
-action_t AI::chooseAction(Robot target, Drone drone) {
 action_t AI::squareSearch(Robot target) {
     action_t search_Action = action_Empty;
 
@@ -96,6 +95,7 @@ action_t AI::squareSearch(Robot target) {
     return search_Action;
 }
 
+action_t AI::chooseAction(Robot target, Drone drone) {
     // // Temporary max rewarded action
     action_t best_Action = empty_action;
 
