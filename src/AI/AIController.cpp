@@ -47,7 +47,7 @@ action_t AIController::stateHandler(){
             break;
     }
     return action;
- }
+}
 
 void AIController::noInputDataState(){
     printf("No Input data state\n");
@@ -55,7 +55,7 @@ void AIController::noInputDataState(){
     	this->state_ = idle;
     }
     return;
- }
+}
 
 void AIController::idleState(){
     printf("Idle state\n");

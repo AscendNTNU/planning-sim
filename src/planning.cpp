@@ -108,8 +108,6 @@ int main(int argc, char **argv) {
 
     ascend_msgs::ControlFSMGoal drone_action;
     
-    world.startTimer(); // This must be fetched by the time_chatter node
-
     action_t action = empty_action;
 /*
     // Old method without actionLib
@@ -134,16 +132,16 @@ int main(int argc, char **argv) {
         drone_action = to_ROS_Action(action);
         client.sendGoal(drone_action);
 
-        bool client_result = client.waitForResult(); // Can be passed ros::Duration(20) to timeout after 20 seconds
+        // Can be passed ros::Duration(20) to timeout after 20 seconds
+        bool client_result = client.waitForResult(); 
         //Check status
         if(client_result && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5) {
             auto state = client.getState();
             if(state == state.SUCCEEDED) {
                 //Pointer to result
                 auto result_p = client.getResult();
-                ROS_INFO("Result: %i", result_p->finished);
             } else if(state == state.ABORTED) {
-                //Ups, something went wrong
+                //Ups, something went wrong, Control aborted action
                 continue;
             }
         }

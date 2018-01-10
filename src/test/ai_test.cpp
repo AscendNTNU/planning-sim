@@ -9,7 +9,6 @@ float PI = 3.1415;
 class AITest: public ::testing::Test {
 protected:
 	virtual void SetUp( ) {
-		world.startTimer();
         ai = AI();
 	}
     AI ai;
