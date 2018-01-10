@@ -1,7 +1,7 @@
 #include "Robot.h"
 
 Robot::Robot() {
-    this->index = 0;
+    this->index = -1;
     this->position = point_Zero;
     this->old_Position = point_Zero;
     this->orientation = 0;
