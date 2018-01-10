@@ -52,7 +52,6 @@ bool Observation::update(observation_t observation, float elapsed_time){
 }
 
 bool Observation::updateDrone(observation_t observation, float elapsed_time){
-
 	this->time_Stamp = elapsed_time;
 	this->drone.update(observation);
 	return true;
@@ -63,11 +62,11 @@ bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < 10; i++){ // should loop through lenght of observed robots not 10.
 		position = (point_t){.x = observation.robot_x[i], .y = observation.robot_y[i]};
-		this->robots[i].update(i, position, observation.robot_q[i], this->time_Stamp);
+		this->robots[i].update(i, position, observation.robot_q[i], this->time_Stamp, observation.robot_visible[i]);
 	}
 	for(int i = 0; i < 4; i++){
 		position = (point_t){.x = 0, .y = 0};
-		this->obstacles[i].update(i, position, 0, this->time_Stamp);
+		this->obstacles[i].update(i, position, 0, this->time_Stamp, true);
 	}
 	return true;
 }
