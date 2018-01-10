@@ -59,12 +59,12 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     return target;
 }
 
-action_t AI::squareSearch(Robot target) {
-    action_t search_Action = action_Empty;
+action_t AI::squareSearch(Robot target, Drone drone) {
+    action_t search_Action = empty_action;
 
     point_t next_search_point = point_Zero;
 
-    point_t pos = this->state.drone.getPosition();
+    point_t pos = drone.getPosition();
     float x = pos.x;
     float y = pos.y;
     float track_width = 20;
@@ -119,7 +119,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     }
     // If no target is visible, we do a patrol round
     else {
-        best_Action = this->squareSearch(target);
+        best_Action = this->squareSearch(target, drone);
     }
 
     return best_Action;
