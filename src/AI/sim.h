@@ -875,6 +875,115 @@ sim_State sim_init(unsigned int seed)
     return result;
 }
 
+// Robots are a list of x, y and angle points.
+sim_State sim_init(float robots[Num_Targets][3], float obstacles[Num_Obstacles][3])
+{
+    unsigned int seed = 0;
+    sim_State result;
+    INTERNAL = &result;
+    DRONE = &INTERNAL->drone;
+    ROBOTS = INTERNAL->robots;
+    TARGETS = INTERNAL->robots;
+    OBSTACLES = INTERNAL->robots + Num_Targets;
+
+    INTERNAL->elapsed_time = 0.0f;
+
+    // Use the seed to set the initial state of the xorshift
+    {
+        // Pick out some pieces of the number
+        // TODO: Does this pattern generate bad sequences?
+        INTERNAL->seed = seed;
+        INTERNAL->xor128_x = seed & 0xaa121212;
+        INTERNAL->xor128_y = seed & 0x21aa2121;
+        INTERNAL->xor128_z = seed & 0x1212aa12;
+        INTERNAL->xor128_w = seed & 0x212a12aa;
+
+        // Seeds must be nonzero
+        if (INTERNAL->xor128_x == 0) INTERNAL->xor128_x++;
+        if (INTERNAL->xor128_y == 0) INTERNAL->xor128_y++;
+        if (INTERNAL->xor128_z == 0) INTERNAL->xor128_z++;
+        if (INTERNAL->xor128_w == 0) INTERNAL->xor128_w++;
+    }
+
+    DRONE->x = 10.0f;
+    DRONE->y = 10.0f;
+    DRONE->z = Sim_Average_Flying_Heigth; // TODO: Dynamics for z when landing
+    DRONE->xr = 10.0f;
+    DRONE->yr = 10.0f;
+    DRONE->v_max = 1.0f;
+    DRONE->cmd.type = sim_CommandType_NoCommand;
+    DRONE->cmd.x = 0.0f;
+    DRONE->cmd.y = 0.0f;
+    DRONE->cmd.i = 0;
+    DRONE->landing = false;
+    DRONE->on_ground = false;
+    DRONE->cmd_done = true;
+    DRONE->land_timer = 0.0f;
+
+    for (unsigned int i = 0; i < Num_Targets; i++)
+    {
+        sim_Robot robot = {};
+
+        // TODO: Verify the distance between the wheels
+        // I've read on iRobot's store that the distance
+        // is about 0.34 meters. But that, combined with
+        // the +-9mm/s wheel speeds does _not_ make the
+        // obstacles rotate about the floor center.
+        // So something is wrong, either with my dynamics
+        // equations, the measurements, or how I'm interpreting
+        // the +-9mm/s number. (Does it actually refer to
+        // angular velocity?).
+
+        robot.L = Sim_Robot_Wheel_Distance;
+
+        // Spawn each ground robot in a circle
+
+        //float t = TWO_PI * (_xor128() % 11) / (float)(10);
+        robot.x = robots[i][0];
+        robot.y = robots[i][1];
+        robot.q = robots[i][2];
+
+        //robot.x = _xor128() % 21;
+        //robot.y = _xor128() % 21;
+        //robot.q = t;
+
+        robot.internal.initialized = false;
+        robot.state = Robot_Start;
+        robot.removed = false;
+
+        TARGETS[i] = robot;
+    }
+
+    for (unsigned int i = 0; i < Num_Obstacles; i++)
+    {
+        float t = TWO_PI * i / (float)(Num_Obstacles);
+
+        sim_Robot robot = {};
+
+        robot.L = Sim_Robot_Wheel_Distance;
+
+        // The obstacles are also spawned in a circle,
+        // but at an initial radius of 5 meters.
+        robot.x = obstacles[i][0];
+        robot.y = obstacles[i][1];
+        robot.q = obstacles[i][2];
+        robot.internal.initialized = false;
+        robot.state = Robot_Start;
+        robot.removed = false;
+        robot.reward = 0;
+
+        OBSTACLES[i] = robot;
+    }
+
+    INTERNAL = 0;
+    DRONE = 0;
+    ROBOTS = 0;
+    TARGETS = 0;
+    OBSTACLES = 0;
+
+    return result;
+}
+
 #include <stdio.h>
 
 sim_State sim_tick(sim_State state, sim_Command new_cmd)
