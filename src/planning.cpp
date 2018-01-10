@@ -11,6 +11,10 @@
 #include "AI/AIController.h"
 #include "AI/structs.h"
 
+#include <actionlib/client/simple_action_client.h>
+#include <ascend_msgs/AIInterfaceAction.h>
+using ClientType = actionlib::SimpleActionClient<ascend_msgs::AIInterfaceAction>;
+
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -47,40 +51,68 @@ void command_done_chatterCallback(std_msgs::Bool msg) {
     action_done = (bool)msg.data;
 }
 
-planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
-    planning_ros_sim::droneCmd command;
-    command.x = action.where_To_Act.x;
-    command.y = action.where_To_Act.y;
-    command.z = 0;
-    command.cmd = (int)action.type;
-    command.target_id = action.target;
-    command.reward = action.reward;
+ascend_msgs::ControlFSM to_ROS_Action(action_t action) {
+    // Instansiate the action message
+    ascend_msgs::ControlFSM drone_action;
+    // Tell server who we are
+    drone_action.caller_id = ascend_msgs::ControlFSM::CALLER_AI;
+    // Set action type
+    switch (action.type) {
+        case land_On_Top_Of:
+            drone_action.cmd = ascend_msgs::ControlFSM::LAND_ON_TOP_OF;
+            break;
+        case land_In_Front_Of:
+            drone_action.cmd = ascend_msgs::ControlFSM::LAND_AT_POINT;
+            break;
+        case land_At_Point:
+            drone_action.cmd = ascend_msgs::ControlFSM::GO_TO_XYZ;
+            break;
+        case track:
+            drone_action.cmd = ascend_msgs::ControlFSM::TRACK;
+            break;
+        case search:
+            drone_action.cmd = ascend_msgs::ControlFSM::SEARCH;
+            break;
+        default:
+            ROS_INFO("Action type: %i", (int)action.cmd)
+            // This should never happen.
+            drone_action.cmd = ascend_msgs::ControlFSM::NO_COMMAND;
+            break;
+    }
 
-    return command;
+    drone_action.target_id = action.target;
+
+    drone_action.x = action.where_To_Act.x;
+    drone_action.y = action.where_To_Act.y;
+    drone_action.z = action.where_To_Act.z;
+
+    // Is mainly used by the gui
+    drone_action.reward = action.reward;
+
+
+
+    return drone_action;
 }
 
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
-    ros::NodeHandle ground_robot_node;
-    ros::NodeHandle drone_node;
-    ros::NodeHandle command_node;
-    ros::NodeHandle time_node;
-    ros::NodeHandle command_done_node;
+    ros::NodeHandle nh;
 
-    ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
-    ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
+    ros::Subscriber time_sub = nh.subscribe("time_chatter", 1000, time_chatterCallback);
+    ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
+    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
+
+    ClientType client("perception_control", true);
+    client.waitForServer(); //Waits until server is ready
+
+    ascend_msgs::ControlFSM goal;
     
-    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
-    
-    planning_ros_sim::droneCmd drone_action;
-    
-    world.startTimer();
+    world.startTimer(); // This must be fetched by the time_chatter node
 
     action_t action = empty_action;
-
+/*
+    // Old method without actionLib
     while (ros::ok()) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
@@ -91,8 +123,28 @@ int main(int argc, char **argv) {
 
             if(action.type != no_Command){
                 printf("sending command\n");
-                drone_action = to_ROS_Command(action);
+                drone_action = to_ROS_Action(action);
                 command_pub.publish(drone_action);
+            }
+        }
+    }
+*/
+    while (ros::ok()) {
+        action = ai_controller.stateHandler();
+        drone_action = to_ROS_Action(action);
+        client.sendGoal(drone_action);
+
+        bool finished = client.waitForResult(); // Can be passed ros::Duration(20) to timeout after 20 seconds
+        //Check status
+        if(finished && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5) {
+            auto state = client.getState();
+            if(state == state.SUCCEEDED) {
+                //Pointer to result
+                auto result_p = client.getResult();
+                ROS_INFO("Result: %i", result_p->complete);
+            } else if(state == state.ABORTED) {
+                //Ups, something went wrong
+                continue;
             }
         }
     }
