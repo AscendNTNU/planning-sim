@@ -66,7 +66,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
             break;
         default:
-            ROS_INFO("Action type: %i", (int)action.type);
+            ROS_INFO("Action type: %i was not recognized.", (int)action.type);
             // This should never happen.
             drone_action.cmd = ascend_msgs::ControlFSMGoal::NO_COMMAND;
             break;
@@ -82,6 +82,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     return drone_action;
 }
 
+// 
 bool robotsAtTurnTime(float elapsed_time) {
     if (2.5 > fmod(elapsed_time, 20) || fmod(elapsed_time, 20) < 17.5) {
         return true;
