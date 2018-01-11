@@ -31,5 +31,9 @@ AccessToSim::AccessToSim(Observation observation) {
 }
 
 void AccessToSim::step() {
-    std::cout << "STEP!!!!" << std::endl;
+
+    sim_Command cmd;
+    cmd.type = sim_CommandType_NoCommand;
+
+    this->state = sim_tick(this->state, cmd);
 }
