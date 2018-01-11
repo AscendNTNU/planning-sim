@@ -35,7 +35,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 }
 */
 
-//Alternative method of chooseTarget, using the best drone position at intersection instead of the best plank.
+//Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
 Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     point_t best_pos = point_Zero;
@@ -59,8 +59,43 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     return target;
 }
 
-action_t AI::chooseAction(Robot target, Drone drone) {
+action_t AI::squareSearch(Robot target, Drone drone) {
+    action_t search_Action = empty_action;
 
+    point_t next_search_point = point_Zero;
+
+    point_t pos = drone.getPosition();
+    float x = pos.x;
+    float y = pos.y;
+    float track_width = 20;
+    float track_height = 20;
+    float track_center_x = track_width / 2;
+    float track_center_y = track_height / 2;
+    float padding = 3;
+
+    // The drone flies in a square path in a clockwise order
+    if (x > track_center_x && y > track_center_y) {
+        next_search_point.x = track_width - padding;
+        next_search_point.y = padding;
+    } else if (x > track_center_x && y < track_center_y) {
+        next_search_point.x = padding;
+        next_search_point.y = padding;
+    } else if (x <= track_center_x && y <= track_center_y) {
+        next_search_point.x = padding;
+        next_search_point.y = track_height - padding;
+    } else if (x < track_center_x && y > track_center_y) {
+        next_search_point.x = track_width - padding;
+        next_search_point.y = track_height - padding;
+    }
+
+    search_Action.type = search;
+    search_Action.where_To_Act = next_search_point;
+    search_Action.target = 0;
+
+    return search_Action;
+}
+
+action_t AI::chooseAction(Robot target, Drone drone) {
     // // Temporary max rewarded action
     action_t best_Action = empty_action;
 
@@ -84,39 +119,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     }
     // If no target is visible, we do a patrol round
     else {
-        action_t search_Action = empty_action;
-
-        point_t next_search_point = point_Zero;
-
-        point_t pos = drone.getPosition();
-        float x = pos.x;
-        float y = pos.y;
-        float track_width = 20;
-        float track_height = 20;
-        float track_center_x = track_width / 2;
-        float track_center_y = track_height / 2;
-        float padding = 3;
-
-        // The drone flies in a square path in a clockwise order
-        if (x > track_center_x && y > track_center_y) {
-            next_search_point.x = track_width - padding;
-            next_search_point.y = padding;
-        } else if (x > track_center_x && y < track_center_y) {
-            next_search_point.x = padding;
-            next_search_point.y = padding;
-        } else if (x <= track_center_x && y <= track_center_y) {
-            next_search_point.x = padding;
-            next_search_point.y = track_height - padding;
-        } else if (x < track_center_x && y > track_center_y) {
-            next_search_point.x = track_width - padding;
-            next_search_point.y = track_height - padding;
-        }
-
-        search_Action.type = search;
-        search_Action.where_To_Act = next_search_point;
-        search_Action.target = 0;
-
-        best_Action = search_Action;
+        best_Action = this->squareSearch(target, drone);
     }
 
     return best_Action;
