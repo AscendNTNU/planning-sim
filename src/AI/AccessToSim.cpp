@@ -1,6 +1,5 @@
 #include "AccessToSim.h"
 #include "structs.h"
-#include "sim.h"
 #include <iostream>
 #include <array>
 
@@ -26,15 +25,10 @@ AccessToSim::AccessToSim(Observation observation) {
         obstacles[i].z = obstacle.getOrientation();
     }
 
-    //sim_State state = sim_init_state(observation.getTimeStamp(), robots, obstacles);
+    sim_State state = sim_init_state(observation.getTimeStamp(), robots, obstacles);
 
     this->state = state;
 }
-
-// float time_Stamp;
-// std::array<Robot,10> robots;
-// std::array<Robot,4> obstacles;
-// Drone drone;
 
 void AccessToSim::step() {
     std::cout << "STEP!!!!" << std::endl;

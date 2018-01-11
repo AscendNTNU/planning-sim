@@ -330,7 +330,8 @@ struct sim_State
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef SIM_IMPLEMENTATION
+#ifndef SIM_IMPLEMENTATION
+#define SIM_IMPLEMENTATION
 #ifndef PI
 #define PI 3.14159265359f
 #endif
@@ -942,9 +943,9 @@ sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> ro
         // Spawn each ground robot in a circle
 
         //float t = TWO_PI * (_xor128() % 11) / (float)(10);
-        robot.x = robots[i][0];
-        robot.y = robots[i][1];
-        robot.q = robots[i][2];
+        robot.x = robots[i].x;
+        robot.y = robots[i].y;
+        robot.q = robots[i].z;
 
         //robot.x = _xor128() % 21;
         //robot.y = _xor128() % 21;
@@ -967,9 +968,9 @@ sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> ro
 
         // The obstacles are also spawned in a circle,
         // but at an initial radius of 5 meters.
-        robot.x = obstacles[i][0];
-        robot.y = obstacles[i][1];
-        robot.q = obstacles[i][2];
+        robot.x = obstacles[i].x;
+        robot.y = obstacles[i].y;
+        robot.q = obstacles[i].z;
         robot.internal.initialized = false;
         robot.state = Robot_Start;
         robot.removed = false;
