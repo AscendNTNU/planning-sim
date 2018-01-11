@@ -86,11 +86,15 @@ int main(int argc, char **argv) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
 
+        /**
+         * Delete this:
+         */
         AccessToSim access_to_sim = AccessToSim(ai_controller.observation);
         access_to_sim.step();
         std::cout << access_to_sim.getState().robots[2].x << std::endl;
         access_to_sim.step();
         std::cout << access_to_sim.getState().robots[2].x << std::endl;
+        /* To this */
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
 
