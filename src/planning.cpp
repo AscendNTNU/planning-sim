@@ -73,21 +73,24 @@ int main(int argc, char **argv) {
     ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
     ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
     ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
-    
-    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
-    
-    planning_ros_sim::droneCmd drone_action;
-    
-    world.startTimer();
 
-    AccessToSim access_to_sim = AccessToSim();
-    access_to_sim.step();
+    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
+
+    planning_ros_sim::droneCmd drone_action;
+
+    world.startTimer();
 
     action_t action = empty_action;
 
     while (ros::ok()) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
+
+        AccessToSim access_to_sim = AccessToSim(ai_controller.observation);
+        access_to_sim.step();
+        access_to_sim.step();
+        access_to_sim.step();
+        access_to_sim.step();
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
 
