@@ -30,10 +30,15 @@ AccessToSim::AccessToSim(Observation observation) {
     this->state = state;
 }
 
-void AccessToSim::step() {
-
+AccessToSim* AccessToSim::step() {
     sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
 
     this->state = sim_tick(this->state, cmd);
+
+    return this;
+}
+
+sim_State AccessToSim::getState() {
+    return this->state;
 }

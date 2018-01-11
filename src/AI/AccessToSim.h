@@ -3,11 +3,10 @@
 
 class AccessToSim {
     private:
-        sim_State state = {};
-        sim_Observed_State observed_state;
-        sim_Observed_State prev_obv_state;
-        sim_Command cmd;
+        sim_State state;
+        bool hasCollision;
     public:
         AccessToSim(Observation observation);
-        void step();
+        AccessToSim* step();
+        sim_State getState();
 };
