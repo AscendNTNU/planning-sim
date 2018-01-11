@@ -48,20 +48,18 @@ sim_Command action_ROS2Sim(GoalType goal){
 
   switch(goal.cmd){
 
+    case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
+      // What happens here
+      break;
     case ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF:
       command.type = sim_CommandType_LandOnTopOf;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
-      command.type = sim_CommandType_LandInFrontOf; // Will this work? Is the targe_id passed correctly?
-      break;
-    case ascend_msgs::ControlFSMGoal::TRACK:
-      command.type = sim_CommandType_Track;
+      command.type = sim_CommandType_LandInFrontOf; 
+      // How do we know if we should send LandInFrontOf of LandAtPoint?
       break;
     case ascend_msgs::ControlFSMGoal::SEARCH:
       command.type = sim_CommandType_Search;
-      break;
-    case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
-      // What happens here
       break;
     default:
       command.type = sim_CommandType_NoCommand;
@@ -80,7 +78,7 @@ void newGoalCB(ActionServerType* server) {
   //Check there really is a new one available
   if(!server->isNewGoalAvailable()) return;
   //Accept the new goal
-  ascend_msgs::ControlFSMGoal goal = *server->acceptNewGoal(); //Returns boost::shared_ptr to goal
+  ascend_msgs::ControlFSMGoal goal = *server->acceptNewGoal();
   //Check that the client hasn't cancelled the request already calls
   if(server->isPreemptRequested()) {
     //Goal is already stopped by client

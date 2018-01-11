@@ -45,7 +45,6 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
-// When is GO_TO_XYZ used?
 ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     // Instansiate the action message
     ascend_msgs::ControlFSMGoal drone_action;
@@ -56,14 +55,12 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
         case land_On_Top_Of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
-        case land_In_Front_Of: // We need to send a new action if we observe that the robot position drifts
+        case land_In_Front_Of:
+            // GO_TO_XYZ until robot is close enough to not be able to drift away?
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case land_At_Point:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
-            break;
-        case track:
-            drone_action.cmd = ascend_msgs::ControlFSMGoal::TRACK;
             break;
         case search:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
@@ -76,17 +73,20 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     }
 
     drone_action.target_id = action.target;
-
     drone_action.x = action.where_To_Act.x;
     drone_action.y = action.where_To_Act.y;
     drone_action.z = action.where_To_Act.z;
-
     // Is used by the sim to show reward in gui
     drone_action.reward = action.reward;
 
-
-
     return drone_action;
+}
+
+bool robotsAtTurnTime(float elapsed_time) {
+    if (2.5 > fmod(elapsed_time, 20) || fmod(elapsed_time, 20) < 17.5) {
+        return true;
+    }
+    return false;
 }
 
 int main(int argc, char **argv) {
@@ -105,27 +105,34 @@ int main(int argc, char **argv) {
     
     action_t action = empty_action;
 
+    ros::Rate rate(30.0);
     while (ros::ok()) {
-        // do we still need this?
-        ros::Duration(0.4).sleep();
         ros::spinOnce();
 
         action = ai_controller.stateHandler();
+
+        if (robotsAtTurnTime(elapsed_time)) {
+            continue;
+        }
+
         drone_action = action_plank2ROS(action);
         client.sendGoal(drone_action);
 
         // Can be passed ros::Duration(20) to timeout after 20 seconds
         bool client_result = client.waitForResult(); 
         //Check status
-        if(client_result && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5) {
+        if(client_result) { // Quick fix for timer drift
             auto state = client.getState();
             if(state == state.SUCCEEDED) {
-                //Pointer to result
-                auto result_p = client.getResult();
+                // Let stateHandler do its job in next iteration
+                continue;
             } else if(state == state.ABORTED) {
-                //Ups, something went wrong, Control aborted action
+                // Ups, something went wrong, Control aborted action, or we timed it out
+                // Fly higher to see more?
+                // Lift off ground so we dont get disqualified?
                 continue;
             }
         }
     }
+    rate.sleep();
 }
