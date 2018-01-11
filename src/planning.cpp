@@ -21,8 +21,6 @@ geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
 
-bool action_done = true;
-
 World world = World(0);
 AIController ai_controller = AIController();
 
@@ -47,11 +45,8 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
-void command_done_chatterCallback(std_msgs::Bool msg) {
-    action_done = (bool)msg.data;
-}
-
-ascend_msgs::ControlFSMGoal to_ROS_Action(action_t action) {
+// When is GO_TO_XYZ used?
+ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     // Instansiate the action message
     ascend_msgs::ControlFSMGoal drone_action;
     // Tell server who we are
@@ -61,11 +56,11 @@ ascend_msgs::ControlFSMGoal to_ROS_Action(action_t action) {
         case land_On_Top_Of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
-        case land_In_Front_Of:
+        case land_In_Front_Of: // We need to send a new action if we observe that the robot position drifts
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case land_At_Point:
-            drone_action.cmd = ascend_msgs::ControlFSMGoal::GO_TO_XYZ;
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case track:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::TRACK;
@@ -86,7 +81,7 @@ ascend_msgs::ControlFSMGoal to_ROS_Action(action_t action) {
     drone_action.y = action.where_To_Act.y;
     drone_action.z = action.where_To_Act.z;
 
-    // Is mainly used by the gui
+    // Is used by the sim to show reward in gui
     drone_action.reward = action.reward;
 
 
@@ -109,27 +104,14 @@ int main(int argc, char **argv) {
     ascend_msgs::ControlFSMGoal drone_action;
     
     action_t action = empty_action;
-/*
-    // Old method without actionLib
+
     while (ros::ok()) {
+        // do we still need this?
         ros::Duration(0.4).sleep();
         ros::spinOnce();
 
-        if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
-
-            action = ai_controller.stateHandler();
-
-            if(action.type != no_Command){
-                printf("sending command\n");
-                drone_action = to_ROS_Action(action);
-                command_pub.publish(drone_action);
-            }
-        }
-    }
-*/
-    while (ros::ok()) {
         action = ai_controller.stateHandler();
-        drone_action = to_ROS_Action(action);
+        drone_action = action_plank2ROS(action);
         client.sendGoal(drone_action);
 
         // Can be passed ros::Duration(20) to timeout after 20 seconds
