@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(planning_ros_sim)
 
 ## Find catkin and any catkin packages + message_generation
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs message_generation actionlib
+	actionlib_msgs)
 ## Declare ROS messages and services
 
 #add_service_files(DIRECTORY srv FILES)
