@@ -743,13 +743,13 @@ static void
 robot_integrate(sim_Robot *robot, float dt)
 {
     float v = 0.5f * (robot->vl + robot->vr);
-    float w = (robot->vr - robot->vl) / (robot->L*0.5f);
+    //float w = (robot->vr - robot->vl) / (robot->L*0.5f);
     robot->x += v * cosf(robot->q) * dt;
     robot->y += v * sinf(robot->q) * dt;
-    robot->q += w * dt;
+    //robot->q += w * dt;
 
     // Wrap angles
-    robot->q = wrap_angle(robot->q);
+    //robot->q = wrap_angle(robot->q);
 
     robot->forward_x = cosf(robot->q);
     robot->forward_y = sinf(robot->q);
@@ -1180,7 +1180,7 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
 
                 if (len < Sim_Drone_Goto_Proximity)
                 {
-		                printf ("%s", "OKEI\n");
+                        printf ("%s", "OKEI\n");
                     DRONE->cmd.type = sim_CommandType_NoCommand;
                     DRONE->cmd_done = true;
                 }
