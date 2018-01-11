@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
+#include "AI/AccessToSim.h"
 
 
 planning_ros_sim::groundRobotList GroundRobots;
@@ -78,6 +79,9 @@ int main(int argc, char **argv) {
     planning_ros_sim::droneCmd drone_action;
     
     world.startTimer();
+
+    AccessToSim access_to_sim = AccessToSim();
+    access_to_sim.step();
 
     action_t action = empty_action;
 

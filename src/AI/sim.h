@@ -31,6 +31,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include "structs.h"
+#include <array>
 
 #ifndef SIM_HEADER_INCLUDE
 #define SIM_HEADER_INCLUDE
@@ -95,6 +97,7 @@ struct sim_State;
 
 sim_State          sim_tick(sim_State, sim_Command);
 sim_State          sim_init(unsigned int);
+sim_State          sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> robots, std::array<point_t, Num_Obstacles> obstacles);
 sim_Observed_State sim_observe_state(sim_State);
 
 sim_Observed_State sim_load_snapshot(char*);
@@ -876,7 +879,7 @@ sim_State sim_init(unsigned int seed)
 }
 
 // Robots are a list of x, y and angle points.
-sim_State sim_init(float robots[Num_Targets][3], float obstacles[Num_Obstacles][3])
+sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> robots, std::array<point_t, Num_Obstacles> obstacles)
 {
     unsigned int seed = 0;
     sim_State result;
@@ -886,7 +889,7 @@ sim_State sim_init(float robots[Num_Targets][3], float obstacles[Num_Obstacles][
     TARGETS = INTERNAL->robots;
     OBSTACLES = INTERNAL->robots + Num_Targets;
 
-    INTERNAL->elapsed_time = 0.0f;
+    INTERNAL->elapsed_time = elapsed_time;
 
     // Use the seed to set the initial state of the xorshift
     {
