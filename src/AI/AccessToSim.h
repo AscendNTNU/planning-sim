@@ -9,4 +9,5 @@ class AccessToSim {
         AccessToSim(Observation observation);
         AccessToSim* step();
         sim_State getState();
+        bool getCollision();
 };

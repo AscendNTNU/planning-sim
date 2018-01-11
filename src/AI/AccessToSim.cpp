@@ -42,3 +42,7 @@ AccessToSim* AccessToSim::step() {
 sim_State AccessToSim::getState() {
     return this->state;
 }
+
+bool AccessToSim::getCollision() {
+    return this->hasCollision;
+}
