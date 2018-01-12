@@ -104,6 +104,46 @@ Drone AccessToSim::getDrone() {
     return drone;
 }
 
+std::array<Robot, 10> AccessToSim::getRobots() {
+    observation_t observation = this->getObservationStruct();
+
+    std::array<Robot, 10> robots;
+    float elapsed_time = observation.elapsed_time;
+
+    for (int i = 0; i < Num_Targets; i++) {
+        Robot robot = Robot();
+        point_t position;
+        position.x = observation.robot_x[i];
+        position.y = observation.robot_y[i];
+        float orientation = observation.robot_q[i];
+        robot.update(i, position, orientation, elapsed_time);
+
+        robots[i] = robot;
+    }
+
+    return robots;
+}
+
+std::array<Robot, 4> AccessToSim::getObstacles() {
+    observation_t observation = this->getObservationStruct();
+
+    std::array<Robot, 4> obstacles;
+    float elapsed_time = observation.elapsed_time;
+
+    for (int i = 0; i < Num_Obstacles; i++) {
+        Robot obstacle = Robot();
+        point_t position;
+        position.x = observation.robot_x[i];
+        position.y = observation.robot_y[i];
+        float orientation = observation.robot_q[i];
+        obstacle.update(i, position, orientation, elapsed_time);
+
+        obstacles[i] = obstacle;
+    }
+
+    return obstacles;
+}
+
 bool AccessToSim::getCollision() {
     return this->hasCollision;
 }

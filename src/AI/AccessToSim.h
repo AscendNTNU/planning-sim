@@ -12,5 +12,7 @@ class AccessToSim {
         Observation getObservation();
         observation_t getObservationStruct();
         Drone getDrone();
+        std::array<Robot, 10> getRobots();
+        std::array<Robot, 4> getObstacles();
         bool getCollision();
 };
