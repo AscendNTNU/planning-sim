@@ -43,6 +43,33 @@ sim_State AccessToSim::getState() {
     return this->state;
 }
 
+Observation AccessToSim::getObservation() {
+    sim_Observed_State state = sim_observe_everything(this->state);
+
+    observation_t new_observation;
+    new_observation.elapsed_time = state.elapsed_time;
+    new_observation.num_Targets = Num_Targets;
+    new_observation.drone_x = state.drone_x;
+    new_observation.drone_y = state.drone_y;
+    new_observation.drone_cmd_done = state.drone_cmd_done;
+
+    for (int i = 0; i < Num_Targets; i++) {
+        new_observation.robot_x[i] = state.target_x[i];
+        new_observation.robot_y[i] = state.target_y[i];
+        new_observation.robot_q[i] = state.target_q[i];
+    }
+
+    for (int i = 0; i < Num_Obstacles; i++) {
+        new_observation.obstacle_x[i] = state.obstacle_x[i];
+        new_observation.obstacle_y[i] = state.obstacle_y[i];
+        new_observation.obstacle_q[i] = state.obstacle_q[i];
+    }
+
+    Observation observation = Observation();
+    observation.update(new_observation, state.elapsed_time);
+    return observation;
+}
+
 bool AccessToSim::getCollision() {
     return this->hasCollision;
 }
