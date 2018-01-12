@@ -7,7 +7,8 @@ class AccessToSim {
         bool hasCollision;
     public:
         AccessToSim(Observation observation);
-        AccessToSim* step();
+        AccessToSim* step(sim_Command cmd);
+        AccessToSim* stepNoCommand();
         sim_State getState();
         Observation getObservation();
         observation_t getObservationStruct();

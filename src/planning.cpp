@@ -90,9 +90,9 @@ int main(int argc, char **argv) {
          * Delete this:
          */
         AccessToSim access_to_sim = AccessToSim(ai_controller.observation);
-        access_to_sim.step();
+        access_to_sim.step(command_Empty);
         //std::cout << access_to_sim.getState().robots[2].x << std::endl;
-        //access_to_sim.step();
+        //access_to_sim.step(command_Empty);
         //std::cout << access_to_sim.getState().robots[2].x << std::endl;
         /* To this */
 

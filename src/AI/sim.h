@@ -67,7 +67,13 @@ struct sim_Command
     char text[Num_max_text_length*Num_Targets+Num_max_text_length];
 
     float reward;
+};
 
+struct sim_Command command_Empty = {
+    .type = sim_CommandType_NoCommand,
+    .x = 0.0f,
+    .y = 0.0f,
+    .i = 0
 };
 
 struct sim_Observed_State
