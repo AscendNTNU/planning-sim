@@ -10,5 +10,7 @@ class AccessToSim {
         AccessToSim* step();
         sim_State getState();
         Observation getObservation();
+        observation_t getObservationStruct();
+        Drone getDrone();
         bool getCollision();
 };
