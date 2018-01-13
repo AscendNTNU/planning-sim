@@ -39,16 +39,16 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     point_t best_pos = point_Zero;
-    float best_reward = world.getGridValue(best_pos.x, best_pos.y);
+    float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
+        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-        if (robot.getIndex() != -1 && robot.getVisibility()) {
-
+            std::cout << "index" << robot.getIndex();
             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
                 best_pos = drone.getInterceptPoint(robot);
                 best_reward = world.getGridValue(best_pos.x, best_pos.y);

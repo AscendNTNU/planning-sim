@@ -81,12 +81,13 @@ int main(int argc, char **argv)
     sim_recv_state(&state);
     sim_Observed_State obs_state = state;
 
-    for (int n = 0; n<10; n++)
-    {
+    for (int n = 0; n<10; n++){
       groundrobot_msg.groundRobot[n].x = obs_state.target_x[n];
       groundrobot_msg.groundRobot[n].y = obs_state.target_y[n];
       groundrobot_msg.groundRobot[n].theta = obs_state.target_q[n];
+      groundrobot_msg.groundRobot[n].visible = obs_state.target_in_view[n];
     }
+
     drone_msg.x = obs_state.drone_x;
     drone_msg.y = obs_state.drone_y;
 
