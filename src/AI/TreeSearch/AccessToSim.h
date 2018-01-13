@@ -19,4 +19,5 @@ class AccessToSim {
         std::array<Robot, 10> getRobots();
         std::array<Robot, 4> getObstacles();
         bool getCollision();
+        sim_Command convertToSimAction(action_t action_struct);
 };

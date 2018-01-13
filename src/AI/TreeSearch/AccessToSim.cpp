@@ -170,3 +170,28 @@ std::array<Robot, 4> AccessToSim::getObstacles() {
 bool AccessToSim::getCollision() {
     return this->hasCollision;
 }
+
+sim_Command AccessToSim::convertToSimAction(action_t action) {
+    sim_Command cmd;
+
+    cmd.i = action.target;
+    cmd.x = action.where_To_Act.x;
+    cmd.y = action.where_To_Act.y;
+
+    switch(action.type) {
+        case no_Command:
+            cmd.type = sim_CommandType_NoCommand;
+            break;
+        case land_On_Top_Of:
+            cmd.type = sim_CommandType_LandOnTopOf;
+            break;
+        case land_In_Front_Of:
+            cmd.type = sim_CommandType_LandInFrontOf;
+            break;
+        case search:
+            cmd.type = sim_CommandType_Search
+            break;
+    }
+
+    return cmd;
+}
