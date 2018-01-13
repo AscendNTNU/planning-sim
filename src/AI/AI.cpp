@@ -1,10 +1,16 @@
 #include "AI.h"
 #include "Robot.h"
 #include <array>
+#include <queue>
 
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
-    return getBestAction(target, observation);
+    
+    TreeSearch tree = TreeSearch(observation);
+    tree.DFSBestAction(tree.root);
+    std::queue<action_t> queue = getActionQueue(tree.best_node_p);
+    return 
+    //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
+    //return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {

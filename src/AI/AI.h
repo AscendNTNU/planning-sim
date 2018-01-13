@@ -5,11 +5,8 @@
 This class handles all AI functions. This includes the choice of target and the choice of target.
 */
 
-
 #pragma once
-#include "Robot.h"
 #include "Observation.h"
-#include "Plank.h"
 #include <stack>
 
 class AI{

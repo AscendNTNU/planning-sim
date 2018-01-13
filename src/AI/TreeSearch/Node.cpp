@@ -3,18 +3,25 @@
 
 Node::Node(Node* parent_p, Observation state, action_t action) {
 	this->state = state;
-	this-> action = action;
+	this->from_action = action;
 	this->reward = this->state.getStateValue();
 	this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time)
 
 	this->parent_p = parent_p;
-	this->children = createChildren(this->state);
+	this->children = createChildren(20.0);
+	this->is_root = false;
 }
 
-std::list<Node*> Node::createChildren(){
+float Node::getTime(){
+	return this->time;
+}
+
+std::list<Node*> Node::createChildren(float tree_time_depth){
 	
 	std::list<Node*> children;
 	AccessToSim sim;
+	Node* node_p;
+	Observation state;
 
 	for(int i=0; i<10; i++){
 		Robot robot = this->observation.robots[i];
@@ -24,20 +31,27 @@ std::list<Node*> Node::createChildren(){
 		    action_t action;
 		    action.where_To_Act = robot.plank.getPoint(j);
 
-
 		    sim = AccessToSim(this->state);
 		    action.type = sim_CommandType_LandOnTopOf;
-		    Observation state = sim.simulateAction(action);
-		    Node* = &Node(this, state, action);
-			children.push_back();
+		    state = sim.simulateAction(action);
+		    node_p = &Node(this, state, action);
+
+		    if(node_p->getTime() < tree_time_depth){
+				children.push_back(node_p);
+		    }
 
 			sim = AccessToSim(this->state);
 			action.type = sim_CommandType_LandInFrontOf;
-		    Observation state = sim.simulateAction(action);
-		    Node* = &Node(this, state, action);
-			children.push_back();
+		    state = sim.simulateAction(action);
+		    node_p = &Node(this, state, action);
+
+		    if(node_p->getTime() < tree_time_depth){
+				children.push_back(node_p);
+		    }
 		}
 	}
+
+	return children;
 }
 
 void simulateAction(action_t action){
@@ -50,5 +64,6 @@ void simulateAction(action_t action){
 		tick++;
 	}
 	sim.simulateAction(action);
+	return sim.getObservation();
 }
 

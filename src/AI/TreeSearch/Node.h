@@ -1,19 +1,21 @@
-#include "AI.h"
-#include "structs.h"
-#include "Observation.h"
+#pragma once
+
 #include <list>
+#include "../structs.h"
 
 class Node {
     private:
-        Node* parent_p;
-        std::list<Node*> children;
-        Observation state;
-        action_t action; // should be renamed action from?
-        float reward;
-        float time;
+
+    Node* parent_p;
+    std::list<Node*> children;
+    Observation state;
+    action_t from_action;
+    float reward;
+    float time;
+    bool is_root;
 
     public:
+        float getTime();
         Node(Node* parent_p, Observation state, action_t action);
-        std::list<node_t*> Node::createChildren(AccessToSim sim);
-        
+        std::list<Node*> createChildren(float tree_time_depth);
 };

@@ -1,4 +1,6 @@
-#include "AI.h"
+#pragma once
+
+#include "../AI.h"
 #include "sim.h"
 
 class AccessToSim {
