@@ -14,10 +14,17 @@ class Node {
     action_t from_action;
     float reward;
     float time;
-    bool is_root;
 
     public:
-        float getTime();
+
         Node(Node* parent_p, Observation state, action_t action);
+
+        float getTime();
+        float getReward();
+        std::list<Node*> getChildren();
+        Node* getParentPointer();
+        action_t getAction();
+
+        bool isRoot();
         std::list<Node*> createChildren(float tree_time_depth);
 };

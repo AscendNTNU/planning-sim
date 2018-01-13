@@ -22,38 +22,33 @@ TreeSearch::TreeSearch(Observation state) {
         return this->root_p;
     }
 
-    Node getBestNodePointer(){
-        return this->best_node_p
+    Node TreeSearch::getBestNodePointer(){
+        return this->best_node_p;
     }
 
 void TreeSearch::DFSBestAction(Node* node_p) {
 
-    if(node_p->reward > this->best_node_p->reward){
+    if(node_p->getReward() > this->best_node_p->getReward()){
         this->best_node_p = node_p;
     }
 
-    std::list<Node*> children = node_p->children;
+    std::list<Node*> children = node_p->getChildren();
     std::list<Node*>::iterator it;
 
-    for (it = node_p->children.begin(); it != node_p->children.end(); it++) {
+    for (it = children.begin(); it != children.end(); it++) {
         Node* child_p = *it;
-        this->DFS(child_p);
+        this->DFSBestAction(child_p);
     }
-
-
 }
 
-std::list<Node> TreeSearch::getChildren(Node node) { // might be unnecessary
-    return node.children;
-}
 
- std::queue<action_t> TreeSearch::getActionQueue(Node* node_p,) {
+ std::queue<action_t> TreeSearch::getActionQueue(Node* node_p) {
     std::queue<action_t> action_queue;
 
-    if (!node_p->parent_p->is_root) {
-        action_queue = this->getActionQueue(node_p->parent_p);
+    if (!node_p->getParentPointer()->isRoot()) {
+        action_queue = this->getActionQueue(node_p->getParentPointer());
     }
 
-    action_queue.insert(node_p->action);
+    action_queue.push(node_p->getAction());
     return action_queue;
 }

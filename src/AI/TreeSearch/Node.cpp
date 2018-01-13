@@ -12,9 +12,33 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
 	this->is_root = false;
 }
 
+Node* Node::getParentPointer(){
+	return this->parent_p
+}
+
+action_t Node:getAction(){
+	return this->from_action;
+}
+
+float Node::getReward(){
+	return this->reward;
+}
+
 float Node::getTime(){
 	return this->time;
 }
+
+std::list<Node*> getChildren(){
+	return this->children;
+}
+
+bool isRoot(){
+	if(this->parent == NULL){
+		return true
+	}
+	return false;
+}
+
 
 std::list<Node*> Node::createChildren(float tree_time_depth){
 	
@@ -65,5 +89,7 @@ Observation simulateAction(action_t action){
 	if(action.type == land_On_Top_Of){
 		return sim.simulateAction(action);
 	}
-	
+
+
+
 }
