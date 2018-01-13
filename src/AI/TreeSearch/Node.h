@@ -11,6 +11,9 @@ class Node {
         action_t action; // should be renamed action from?
         float reward;
         float time;
+
+        std::list<node_t*> Node::create_children();
+
     public:
         Node(Node* parent_p, Observation state, action_t action);
 };

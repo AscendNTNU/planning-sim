@@ -1,8 +1,8 @@
 #include "AccessToSim.h"
-#include "structs.h"
+#include "../structs.h"
 #include <list>
 
-struct node_t {
+struct node_t { 
     node_t* parent_p;
     std::list<node_t*> children;
     Observation state;

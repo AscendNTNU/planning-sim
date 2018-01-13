@@ -41,12 +41,3 @@ void TreeSearch::DFS(node_t* node_p) {
 std::list<node_t> TreeSearch::getChildren(node_t node) {
     return node.children;
 }
-
-node_t Node(node_t* parent_p, Observation state, sim_Command action){
-    node_t node{
-        .parent_p = parent_p,
-        .state = state,
-        .action = action
-    };
-
-}
