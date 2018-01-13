@@ -40,7 +40,7 @@ AccessToSim::AccessToSim(Observation observation) {
 }
 
 Observation AccessToSim::simulateAction(action_t action){
-    sim_Command cmd = convertToSimAction(action)
+    sim_Command cmd = convertToSimAction(action);
     state = sim_tick(this->state, cmd);
     cmd.type = sim_CommandType_NoCommand;
 
@@ -51,7 +51,7 @@ Observation AccessToSim::simulateAction(action_t action){
 }
 
 Observation AccessToSim::step(action_t action) {
-    sim_Command cmd = convertToSimAction(action)
+    sim_Command cmd = convertToSimAction(action);
     this->state = sim_tick(this->state, cmd);
     return getObservation();
 }

@@ -27,3 +27,5 @@ class Node {
         bool isRoot();
         std::list<Node*> createChildren(float tree_time_depth);
 };
+
+Observation simulateAction(action_t action, AccessToSim sim);
