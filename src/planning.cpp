@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
-#include "AI/AccessToSim.h"
-
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -85,16 +83,6 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::Duration(0.4).sleep();
         ros::spinOnce();
-
-        /**
-         * Delete this:
-         */
-        AccessToSim access_to_sim = AccessToSim(ai_controller.observation);
-        access_to_sim.step(command_Empty);
-        //std::cout << access_to_sim.getState().robots[2].x << std::endl;
-        //access_to_sim.step(command_Empty);
-        //std::cout << access_to_sim.getState().robots[2].x << std::endl;
-        /* To this */
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
 
