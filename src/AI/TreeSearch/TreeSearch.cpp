@@ -2,18 +2,9 @@
 
 TreeSearch::TreeSearch(Observation state) {
     this->state = state;
-    this->root_p = root
-    Node* root_p;
-    root_p->state = state;
-    root_p->from_action = command_Empty;
-    root_p->reward = 0;
-    root_p->parent_p = NULL;
-    root_p->is_root = true;
+    Node* root_p = Node(NULL, state, command_Empty);
 
     std::list<Node> children;
-    root_p->time = 0;
-    root_p.createChildren(this->state);
-
     this->root_p = root_p;
 }
 

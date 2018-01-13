@@ -5,8 +5,12 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
     this->state = state;
     this->from_action = action;
     this->reward = this->state.getStateValue();
-    this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time);
-
+    if(parent_p == NULL){
+    	this->time = 0;
+    }
+    else{
+    	this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time);
+	}
 	this->parent_p = parent_p;
 	this->children = createChildren(20.0);
 }
