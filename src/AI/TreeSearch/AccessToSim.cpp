@@ -189,7 +189,7 @@ sim_Command AccessToSim::convertToSimAction(action_t action) {
             cmd.type = sim_CommandType_LandInFrontOf;
             break;
         case search:
-            cmd.type = sim_CommandType_Search
+            cmd.type = sim_CommandType_Search;
             break;
     }
 
