@@ -1,5 +1,4 @@
 #include "Node.h"
-#include "../Plank.h"
 
 Node::Node(Node* parent_p, Observation state, action_t action) {
     this->state = state;

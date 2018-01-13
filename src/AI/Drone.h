@@ -5,7 +5,7 @@
 This calss holds the information for the drone as updated by the simulator and the AI.
 It also includes functions for determining the drones relation to other parts of the world (e.g. points and ground robots).
 */
-
+#pragma once
 
 #include <iostream>
 #include "structs.h"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <list>
-#include "../Observation.h"
 #include "../structs.h"
 #include "AccessToSim.h"
 

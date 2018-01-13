@@ -5,7 +5,6 @@
 This class creates the plank describing a ground robots motion given no random
 movement. It is responisble for setting value on a ground robots position.
 */
-
 #pragma once
 #include <iostream>
 #include "structs.h"
