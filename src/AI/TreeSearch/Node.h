@@ -7,16 +7,14 @@
 
 class Node {
     private:
-
-    Node* parent_p;
-    std::list<Node*> children;
-    Observation state;
-    action_t from_action;
-    float reward;
-    float time;
+        Node* parent_p;
+        std::list<Node*> children;
+        Observation state;
+        action_t from_action;
+        float reward;
+        float time;
 
     public:
-
         Node(Node* parent_p, Observation state, action_t action);
 
         float getTime();

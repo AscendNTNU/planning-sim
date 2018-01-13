@@ -12,19 +12,18 @@ TreeSearch::TreeSearch(Observation state) {
 
     std::list<Node> children;
     root_p->time = 0;
-    root_p->children = createChildren(this->state);
+    root_p.createChildren(this->state);
 
     this->root_p = root_p;
-
 }
 
-    Node TreeSearch::getRootPointer(){
-        return this->root_p;
-    }
+Node* TreeSearch::getRootPointer() {
+    return this->root_p;
+}
 
-    Node TreeSearch::getBestNodePointer(){
-        return this->best_node_p;
-    }
+Node* TreeSearch::getBestNodePointer() {
+    return this->best_node_p;
+}
 
 void TreeSearch::DFSBestAction(Node* node_p) {
 

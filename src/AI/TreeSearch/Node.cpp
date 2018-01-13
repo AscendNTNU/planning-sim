@@ -2,93 +2,95 @@
 #include "../Plank.h"
 
 Node::Node(Node* parent_p, Observation state, action_t action) {
-	this->state = state;
-	this->from_action = action;
-	this->reward = this->state.getStateValue();
-	this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time);
+    this->state = state;
+    this->from_action = action;
+    this->reward = this->state.getStateValue();
+    this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time);
 
-	this->parent_p = parent_p;
-	this->children = createChildren(20.0);
-	this->is_root = false;
+    this->parent_p = parent_p;
+    this->children = createChildren(20.0);
+    this->is_root = false;
 }
 
-Node* Node::getParentPointer(){
-	return this->parent_p
+Node* Node::getParentPointer() {
+    return this->parent_p
 }
 
-action_t Node:getAction(){
-	return this->from_action;
+action_t Node::getAction() {
+    return this->from_action;
 }
 
-float Node::getReward(){
-	return this->reward;
+float Node::getReward() {
+    return this->reward;
 }
 
-float Node::getTime(){
-	return this->time;
+float Node::getTime() {
+    return this->time;
 }
 
-std::list<Node*> getChildren(){
-	return this->children;
+std::list<Node*> getChildren() {
+    return this->children;
 }
 
-bool isRoot(){
-	if(this->parent == NULL){
-		return true
-	}
-	return false;
+bool isRoot() {
+    if(this->parent == NULL) {
+        return true
+    }
+
+    return false;
 }
 
 
-std::list<Node*> Node::createChildren(float tree_time_depth){
-	
-	std::list<Node*> children;
-	Node* node_p;
-	Observation state;
+std::list<Node*> Node::createChildren(float tree_time_depth) {
+    std::list<Node*> children;
+    Node* node_p;
+    Observation state;
 
-	for(int i=0; i<10; i++){
-		Robot robot = this->state.getRobot(i);
-		std::array<point_t, 10> action_points;
+    for(int i=0; i<10; i++) {
+        Robot robot = this->state.getRobot(i);
+        std::array<point_t, 10> action_points;
 
-		for(int j=1; j<11;j++){
-		    action_t action;
-		    action.where_To_Act = robot.getPlank().getPoint(j);
+        for(int j=1; j<11;j++) {
+            action_t action;
+            action.where_To_Act = robot.getPlank().getPoint(j);
 
-		    AccessToSim sim = AccessToSim(this->state);
-		    action.type = land_On_Top_Of;
-		    state = sim.simulateAction(action);
-		    node_p = &Node(this, state, action);
+            AccessToSim sim = AccessToSim(this->state);
+            action.type = land_On_Top_Of;
+            state = sim.simulateAction(action);
+            node_p = &Node(this, state, action);
 
-		    if(node_p->getTime() < tree_time_depth){
-				children.push_back(node_p);
-		    }
+            if(node_p->getTime() < tree_time_depth) {
+                children.push_back(node_p);
+            }
 
-			sim = AccessToSim(this->state);
-			action.type = land_In_Front_Of;
-		    state = sim.simulateAction(action);
-		    node_p = &Node(this, state, action);
+            sim = AccessToSim(this->state);
+            action.type = land_In_Front_Of;
+            state = sim.simulateAction(action);
+            node_p = &Node(this, state, action);
 
-		    if(node_p->getTime() < tree_time_depth){
-				children.push_back(node_p);
-		    }
-		}
-	}
+            if(node_p->getTime() < tree_time_depth) {
+                children.push_back(node_p);
+            }
+        }
+    }
 
-	return children;
+    this->children = children;
+
+    return children;
 }
 
-Observation simulateAction(action_t action){
-	action_t fly_to = action;
-	fly_to.type = sim_CommandType_Search;
-	Observation state = sim.simulateAction(action);
-	int tick = 0;
-	while(!pointsWithinThreshold(action.where_To_Act, state.robot[action.target].position, 0.5) || tick > 60*40){
-		state = sim.stepNoCommand();
-		tick++;
-	}
-	if(action.type == land_On_Top_Of){
-		return sim.simulateAction(action);
-	}
+Observation simulateAction(action_t action) {
+    action_t fly_to = action;
+    fly_to.type = sim_CommandType_Search;
+    Observation state = sim.simulateAction(action);
+    int tick = 0;
+    while(!pointsWithinThreshold(action.where_To_Act, state.robot[action.target].position, 0.5) || tick > 60*40) {
+        state = sim.stepNoCommand();
+        tick++;
+    }
+    if(action.type == land_On_Top_Of) {
+        return sim.simulateAction(action);
+    }
 
 
 
