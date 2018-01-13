@@ -23,16 +23,23 @@ TreeSearch::TreeSearch(Observation observation) {
 }
 
 node_t TreeSearch::getBestAction(node_t node) {
-    if (node.time > 20) {
+    if (node.time >= 20) {
         return node;
     }
 
     std::list<node_t> children = node.children;
+    node_t best_node;
 
-    for (int i = 0; i < Num_Targets; i++) {
-        //node_t child = children::it;
-        //return this->getBestAction();
+    std::list<node_t>::iterator it;
+    for (it = children.begin(); it != children.end(); it++) {
+        node_t child = *it;
+        node_t child_candidate = this->getBestAction(child);
+
+        // Set best child candidate
+        best_node = child_candidate;
     }
+
+    return best_node;
 }
 
 std::list<node_t> TreeSearch::getChildren(node_t node) {
