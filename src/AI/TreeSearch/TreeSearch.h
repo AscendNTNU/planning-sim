@@ -3,9 +3,9 @@
 #include <list>
 
 struct node_t {
-    node_t* parent;
-    std::list<node_t> children;
-    Observation observation;
+    node_t* parent_p;
+    std::list<node_t*> children;
+    Observation state;
     sim_Command from_action;
     float reward = 0;
     float time = 0;
@@ -15,9 +15,11 @@ struct node_t {
 class TreeSearch {
     private:
         Observation observation_;
-        node_t* root_;
+        node_t* root_p_;
+        node_t* best_node_p_;
+
     public:
-        TreeSearch(Observation observation);
-        node_t getBestAction(node_t node);
+        TreeSearch(Observation state);
+        void DFS(node_t node);
         std::list<node_t> getChildren(node_t node);
 };
