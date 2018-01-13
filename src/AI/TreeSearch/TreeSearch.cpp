@@ -2,10 +2,10 @@
 
 TreeSearch::TreeSearch(Observation state) {
     this->state = state;
-    Node* root_p = Node(NULL, state, command_Empty);
+    Node root = Node(NULL, state, empty_action);
 
     std::list<Node> children;
-    this->root_p = root_p;
+    this->root_p = &root;
 }
 
 Node* TreeSearch::getRootPointer() {
