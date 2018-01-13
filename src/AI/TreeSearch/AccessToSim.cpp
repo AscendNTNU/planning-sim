@@ -8,12 +8,22 @@ AccessToSim::AccessToSim(Observation observation) {
     std::array<point_t, Num_Obstacles> obstacles;
 
     for (int i = 0; i < Num_Robots; i++) {
+    
         Robot robot = observation.getRobot(i);
-        point_t pos = robot.getPosition();
+    
+        if(robot.isVisible()){
+            point_t pos = robot.getPosition();
 
-        robots[i].x = pos.x;
-        robots[i].y = pos.y;
-        robots[i].z = robot.getOrientation();
+            robots[i].x = pos.x;
+            robots[i].y = pos.y;
+            robots[i].z = robot.getOrientation();
+        }
+
+        else{
+            robots[i].x = -1;
+            robots[i].y = -1;
+            robots[i].z = 0;
+        }
     }
 
     for (int i = 0; i < Num_Obstacles; i++) {
