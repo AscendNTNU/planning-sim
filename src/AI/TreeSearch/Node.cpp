@@ -90,7 +90,7 @@ Observation simulateAction(action_t action, AccessToSim sim) {
     fly_to.type = search;
     Observation state = sim.simulateAction(action);
     int tick = 0;
-    while(!pointsWithinThreshold(action.where_To_Act, state.robot[action.target].position, 0.5) || tick > 60*40) {
+    while(!pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).position, 0.5) || tick > 60*40) {
         state = sim.stepNoCommand();
         tick++;
     }
