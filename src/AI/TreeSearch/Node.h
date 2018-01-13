@@ -19,6 +19,7 @@ class Node {
 
         float getTime();
         float getReward();
+        Observation getState();
         std::list<Node*> getChildren();
         Node* getParentPointer();
         action_t getAction();

@@ -7,17 +7,20 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
     this->reward = this->state.getStateValue();
     this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time);
 
-    this->parent_p = parent_p;
-    this->children = createChildren(20.0);
-    this->is_root = false;
+	this->parent_p = parent_p;
+	this->children = createChildren(20.0);
 }
 
-Node* Node::getParentPointer() {
-    return this->parent_p
+Node* Node::getParentPointer(){
+	return this->parent_p;
 }
 
-action_t Node::getAction() {
-    return this->from_action;
+Observation Node::getState(){
+	return this->state;
+}
+
+action_t Node::getAction(){
+	return this->from_action;
 }
 
 float Node::getReward() {
@@ -28,16 +31,15 @@ float Node::getTime() {
     return this->time;
 }
 
-std::list<Node*> getChildren() {
-    return this->children;
+std::list<Node*> Node::getChildren(){
+	return this->children;
 }
 
-bool isRoot() {
-    if(this->parent == NULL) {
-        return true
-    }
-
-    return false;
+bool Node::isRoot(){
+	if(this->parent_p == NULL){
+		return true;
+	}
+	return false;
 }
 
 
@@ -50,9 +52,9 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
         Robot robot = this->state.getRobot(i);
         std::array<point_t, 10> action_points;
 
-        for(int j=1; j<11;j++) {
-            action_t action;
-            action.where_To_Act = robot.getPlank().getPoint(j);
+		for(int j=1; j<11;j++){
+		    action_t action;
+		    action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
 
             AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;

@@ -2,7 +2,7 @@
 
 TreeSearch::TreeSearch(Observation state) {
     this->state = state;
-
+    this->root_p = root
     Node* root_p;
     root_p->state = state;
     root_p->from_action = command_Empty;
