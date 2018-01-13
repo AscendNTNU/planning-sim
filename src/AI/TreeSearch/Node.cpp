@@ -62,7 +62,7 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
 
             AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
-            state = sim.simulateAction(action);
+            state = simulateAction(action, sim);
             node_p = &Node(this, state, action);
 
             if(node_p->getTime() < tree_time_depth) {
@@ -71,7 +71,7 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
 
             sim = AccessToSim(this->state);
             action.type = land_In_Front_Of;
-            state = sim.simulateAction(action);
+            state = simulateAction(action, sim);
             node_p = &Node(this, state, action);
 
             if(node_p->getTime() < tree_time_depth) {
@@ -85,7 +85,7 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
     return children;
 }
 
-Observation simulateAction(action_t action) {
+Observation simulateAction(action_t action, AccessToSim sim) {
     action_t fly_to = action;
     fly_to.type = search;
     Observation state = sim.simulateAction(action);
@@ -97,7 +97,4 @@ Observation simulateAction(action_t action) {
     if(action.type == land_On_Top_Of) {
         return sim.simulateAction(action);
     }
-
-
-
 }
