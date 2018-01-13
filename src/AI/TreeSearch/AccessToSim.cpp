@@ -1,10 +1,9 @@
 #include "AccessToSim.h"
-#include <iostream>
 #include <array>
 
 AccessToSim::AccessToSim(Observation observation) {
-    std::array<point_t, Num_Targets> robots;
-    std::array<point_t, Num_Obstacles> obstacles;
+    std::array<sim_Position, Num_Targets> robots;
+    std::array<sim_Position, Num_Obstacles> obstacles;
 
     for (int i = 0; i < Num_Robots; i++) {
     
@@ -15,13 +14,13 @@ AccessToSim::AccessToSim(Observation observation) {
 
             robots[i].x = pos.x;
             robots[i].y = pos.y;
-            robots[i].z = robot.getOrientation();
+            robots[i].q = robot.getOrientation();
         }
 
         else{
             robots[i].x = -1;
             robots[i].y = -1;
-            robots[i].z = 0;
+            robots[i].q = 0;
         }
     }
 
@@ -31,7 +30,7 @@ AccessToSim::AccessToSim(Observation observation) {
 
         obstacles[i].x = pos.x;
         obstacles[i].y = pos.y;
-        obstacles[i].z = obstacle.getOrientation();
+        obstacles[i].q = obstacle.getOrientation();
     }
 
     sim_State state = sim_init_state(observation.getTimeStamp(), robots, obstacles);

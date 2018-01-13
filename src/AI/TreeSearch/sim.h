@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <array>
-#include "../structs.h"
 
 #ifndef SIM_HEADER_INCLUDE
 #define SIM_HEADER_INCLUDE
@@ -101,9 +100,16 @@ struct sim_Observed_State
 
 struct sim_State;
 
+struct sim_Position
+{
+    float x;
+    float y;
+    float q;
+};
+
 sim_State          sim_tick(sim_State, sim_Command);
 sim_State          sim_init(unsigned int);
-sim_State          sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> robots, std::array<point_t, Num_Obstacles> obstacles);
+sim_State          sim_init_state(float elapsed_time, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles);
 sim_Observed_State sim_observe_state(sim_State);
 
 sim_Observed_State sim_load_snapshot(char*);
@@ -886,7 +892,7 @@ sim_State sim_init(unsigned int seed)
 }
 
 // Robots are a list of x, y and angle points.
-sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> robots, std::array<point_t, Num_Obstacles> obstacles)
+sim_State sim_init_state(float elapsed_time, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles)
 {
     unsigned int seed = 0;
     sim_State result;
@@ -951,7 +957,7 @@ sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> ro
         //float t = TWO_PI * (_xor128() % 11) / (float)(10);
         robot.x = robots[i].x;
         robot.y = robots[i].y;
-        robot.q = robots[i].z;
+        robot.q = robots[i].q;
 
         //robot.x = _xor128() % 21;
         //robot.y = _xor128() % 21;
@@ -976,7 +982,7 @@ sim_State sim_init_state(float elapsed_time, std::array<point_t, Num_Targets> ro
         // but at an initial radius of 5 meters.
         robot.x = obstacles[i].x;
         robot.y = obstacles[i].y;
-        robot.q = obstacles[i].z;
+        robot.q = obstacles[i].q;
         robot.internal.initialized = false;
         robot.state = Robot_Start;
         robot.removed = false;
