@@ -12,8 +12,8 @@ class Node {
         float reward;
         float time;
 
-        std::list<node_t*> Node::create_children();
-
     public:
         Node(Node* parent_p, Observation state, action_t action);
+        std::list<node_t*> Node::createChildren(AccessToSim sim);
+        
 };

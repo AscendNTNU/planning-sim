@@ -41,6 +41,14 @@ static point_t point_Zero = {
 	.travel_Time = 0.0
 };
 
+bool pointsWithinThreshold(point_t point_one, point_t point_two, float threshold){
+    float distance_squared = (point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2;
+    if(distance_squared <= threshold**2){
+        return true;
+    }
+    return  false;
+}
+
 inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
     strm << "[" << point.x << ", " << point.y << "]";
     return strm;

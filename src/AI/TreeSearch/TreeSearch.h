@@ -4,6 +4,7 @@
 
 struct node_t { 
     node_t* parent_p;
+    AccessToSim sim;
     std::list<node_t*> children;
     Observation state;
     sim_Command from_action;
@@ -21,5 +22,4 @@ class TreeSearch {
     public:
         TreeSearch(Observation state);
         void DFS(node_t node);
-        std::list<node_t> getChildren(node_t node);
 };

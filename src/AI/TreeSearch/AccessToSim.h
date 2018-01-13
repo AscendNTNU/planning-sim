@@ -7,6 +7,7 @@ class AccessToSim {
         bool hasCollision;
     public:
         AccessToSim(Observation observation);
+        void simulateAction(sim_Command cmd);
         AccessToSim* step(sim_Command cmd);
         AccessToSim* stepNoCommand();
         sim_State getState();

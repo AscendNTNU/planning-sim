@@ -1,7 +1,5 @@
 #include "Node.h"
 #include "../Plank.h"
-#include "../AI.h"
-
 
 Node::Node(Node* parent_p, Observation state, action_t action) {
 	this->state = state;
@@ -10,26 +8,47 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
 	this->time = parent_p->time + (this->state.getTimeStamp() - parent_p->time)
 
 	this->parent_p = parent_p;
-	this->children = create_children(this->state);
+	this->children = createChildren(this->state);
 }
 
-std::list<node_t*> Node::create_children(){
+std::list<Node*> Node::createChildren(){
 	
-	std::list<node_t*> children;
+	std::list<Node*> children;
+	AccessToSim sim;
 
 	for(int i=0; i<10; i++){
 		Robot robot = this->observation.robots[i];
 		std::array<point_t, 10> action_points
 
 		for(int j=1; j<11;j++){
-			point_t action_point = robot.plank.getPoint(j);
+		    action_t action;
+		    action.where_To_Act = robot.plank.getPoint(j);
 
-			node_t* = &Node(this, state, action);
+
+		    sim = AccessToSim(this->state);
+		    action.type = sim_CommandType_LandOnTopOf;
+		    Observation state = sim.simulateAction(action);
+		    Node* = &Node(this, state, action);
+			children.push_back();
+
+			sim = AccessToSim(this->state);
+			action.type = sim_CommandType_LandInFrontOf;
+		    Observation state = sim.simulateAction(action);
+		    Node* = &Node(this, state, action);
 			children.push_back();
 		}
-		
-
-		Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
-                                     position.time_since_start_turn);
 	}
 }
+
+void simulateAction(action_t action){
+	action_t fly_to = action;
+	fly_to.type = sim_CommandType_Search
+	Observation state = sim.simulateAction(action);
+	int tick = 0;
+	while(!pointsWithinThreshold(action.where_To_Act, drone.position, 0.5) || tick > 60*40){
+		sim.stepNoCommand();
+		tick++;
+	}
+	sim.simulateAction(action);
+}
+
