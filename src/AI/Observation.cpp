@@ -45,6 +45,23 @@ float Observation::getTimeStamp(){
 }
 
 
+float Observation::getStateValue() {
+    float state_value;
+    int num_robots = 0;
+    
+    for (int i = 0; i < 10; i++) {
+        robot = this->robots[i];
+        if (robot.isVisible()) {
+            num_robots += 1;
+            state_value += robot.current_Plank.getReward();
+        }
+    }
+
+    this->state_value = state_value / num_robots;
+    return this->state_value
+}
+
+
 bool Observation::update(observation_t observation, float elapsed_time){
     bool drone_Updated = updateDrone(observation, elapsed_time);
     bool robot_Updated = updateRobot(observation, elapsed_time);
