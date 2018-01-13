@@ -48,17 +48,18 @@ float Observation::getTimeStamp(){
 float Observation::getStateValue() {
     float state_value;
     int num_robots = 0;
-    
+    Robot robot;
+
     for (int i = 0; i < 10; i++) {
         robot = this->robots[i];
-        if (robot.isVisible()) {
+        if (robot.getVisibility()) {
             num_robots += 1;
             state_value += robot.current_Plank.getReward();
         }
     }
 
     this->state_value = state_value / num_robots;
-    return this->state_value
+    return this->state_value;
 }
 
 

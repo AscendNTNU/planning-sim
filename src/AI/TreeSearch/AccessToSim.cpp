@@ -1,7 +1,4 @@
-#pragma once
-
 #include "AccessToSim.h"
-#include "structs.h"
 #include <iostream>
 #include <array>
 
@@ -13,7 +10,7 @@ AccessToSim::AccessToSim(Observation observation) {
     
         Robot robot = observation.getRobot(i);
     
-        if(robot.isVisible()){
+        if(robot.getVisibility()){
             point_t pos = robot.getPosition();
 
             robots[i].x = pos.x;
@@ -53,20 +50,20 @@ Observation AccessToSim::simulateAction(sim_Command cmd){
     return getObservation();
 }
 
-sim_State AccessToSim::step(sim_Command cmd) {
+Observation AccessToSim::step(sim_Command cmd) {
     this->state = sim_tick(this->state, cmd);
-    return this;
+    return getObservation();
 }
 
-sim_State AccessToSim::stepNoCommand() {
+Observation AccessToSim::stepNoCommand() {
     sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
     this->state = sim_tick(this->state, cmd);
-    return this;
+    return getObservation();
 }
 
-sim_State AccessToSim::getState() {
-    return this->state;
+Observation AccessToSim::getState() {
+    return getObservation();
 }
 
 Observation AccessToSim::getObservation() {

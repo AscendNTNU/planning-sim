@@ -1,4 +1,4 @@
-#include "structs.h"
+#include "../structs.h"
 #include "Robot.h"
 
 //functions

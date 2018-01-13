@@ -31,8 +31,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "structs.h"
 #include <array>
+#include "../structs.h"
 
 #ifndef SIM_HEADER_INCLUDE
 #define SIM_HEADER_INCLUDE

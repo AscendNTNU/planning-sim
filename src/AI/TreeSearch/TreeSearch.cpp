@@ -1,7 +1,7 @@
 #include "TreeSearch.h"
 
 TreeSearch::TreeSearch(Observation state) {
-    this->state_ = state;
+    this->state = state;
 
     Node* root_p;
     root_p->state = state;
@@ -17,6 +17,14 @@ TreeSearch::TreeSearch(Observation state) {
     this->root_p = root_p;
 
 }
+
+    Node TreeSearch::getRootPointer(){
+        return this->root_p;
+    }
+
+    Node getBestNodePointer(){
+        return this->best_node_p
+    }
 
 void TreeSearch::DFSBestAction(Node* node_p) {
 

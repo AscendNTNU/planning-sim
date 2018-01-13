@@ -7,7 +7,6 @@ It also includes functions for determining the drones relation to other parts of
 */
 
 
-#include <cmath>
 #include <iostream>
 #include "structs.h"
 #include "Robot.h"

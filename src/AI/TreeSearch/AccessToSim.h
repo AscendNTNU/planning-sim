@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../AI.h"
+#include "../Observation.h"
 #include "sim.h"
 
 class AccessToSim {
@@ -9,10 +9,10 @@ class AccessToSim {
         bool hasCollision;
     public:
         AccessToSim(Observation observation);
-        void simulateAction(sim_Command cmd);
-        AccessToSim* step(sim_Command cmd);
-        AccessToSim* stepNoCommand();
-        sim_State getState();
+        Observation simulateAction(sim_Command cmd);
+        Observation step(sim_Command cmd);
+        Observation stepNoCommand();
+        Observation getState();
         Observation getObservation();
         observation_t getObservationStruct();
         Drone getDrone();

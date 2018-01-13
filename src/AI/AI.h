@@ -7,6 +7,7 @@ This class handles all AI functions. This includes the choice of target and the 
 
 #pragma once
 #include "Observation.h"
+#include "TreeSearch/TreeSearch.h"
 #include <stack>
 
 class AI{
