@@ -87,7 +87,7 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
 
 Observation simulateAction(action_t action) {
     action_t fly_to = action;
-    fly_to.type = sim_CommandType_Search;
+    fly_to.type = search;
     Observation state = sim.simulateAction(action);
     int tick = 0;
     while(!pointsWithinThreshold(action.where_To_Act, state.robot[action.target].position, 0.5) || tick > 60*40) {

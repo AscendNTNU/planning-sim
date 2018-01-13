@@ -9,8 +9,8 @@ class AccessToSim {
         bool hasCollision;
     public:
         AccessToSim(Observation observation);
-        Observation simulateAction(sim_Command cmd);
-        Observation step(sim_Command cmd);
+        Observation simulateAction(action_t action);
+        Observation step(action_t action);
         Observation stepNoCommand();
         Observation getState();
         Observation getObservation();
