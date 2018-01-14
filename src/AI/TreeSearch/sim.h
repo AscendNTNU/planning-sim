@@ -68,13 +68,6 @@ struct sim_Command
     float reward;
 };
 
-struct sim_Command command_Empty = {
-    .type = sim_CommandType_NoCommand,
-    .x = 0.0f,
-    .y = 0.0f,
-    .i = 0
-};
-
 struct sim_Observed_State
 {
     float elapsed_time;
@@ -111,6 +104,7 @@ sim_State          sim_tick(sim_State, sim_Command);
 sim_State          sim_init(unsigned int);
 sim_State          sim_init_state(float elapsed_time, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles);
 sim_Observed_State sim_observe_state(sim_State);
+sim_Observed_State sim_observe_everything(sim_State state);
 
 sim_Observed_State sim_load_snapshot(char*);
 void               sim_write_snapshot(char*, sim_Observed_State);
@@ -342,8 +336,7 @@ struct sim_State
 #include <stdlib.h>
 #include <math.h>
 
-#ifndef SIM_IMPLEMENTATION
-#define SIM_IMPLEMENTATION
+#ifdef SIM_IMPLEMENTATION
 #ifndef PI
 #define PI 3.14159265359f
 #endif
@@ -427,6 +420,14 @@ get_char_text(char cmd_text[Num_max_text_length+Num_max_text_length*Num_Targets]
      }
 
 }
+
+struct sim_Command command_Empty = {
+    .type = sim_CommandType_NoCommand,
+    .x = 0.0f,
+    .y = 0.0f,
+    .i = 0
+};
+
 
 // ***********************************************************************
 // What follows is mostly a transcription of the given IARC Mission 7

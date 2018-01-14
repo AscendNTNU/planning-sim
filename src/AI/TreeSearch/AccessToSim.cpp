@@ -1,6 +1,9 @@
 #include "AccessToSim.h"
 #include <array>
 
+#define SIM_IMPLEMENTATION
+#include "sim.h"
+
 AccessToSim::AccessToSim(Observation observation) {
     std::array<sim_Position, Num_Targets> robots;
     std::array<sim_Position, Num_Obstacles> obstacles;
