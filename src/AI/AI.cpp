@@ -4,8 +4,11 @@
 
 action_t AI::getBestGeneralAction(Observation observation) {
     
+    std::cout << "building tree" << std::endl;
     TreeSearch tree = TreeSearch(observation);
+    std::cout << "searching tree" << std::endl;
     tree.DFSBestAction(tree.getRootPointer());
+    std::cout << "returing action queue" << std::endl;
     std::queue<action_t> queue = tree.getActionQueue(tree.getBestNodePointer());
     return queue.front();
     //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());

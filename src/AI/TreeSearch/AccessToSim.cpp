@@ -68,7 +68,9 @@ Observation AccessToSim::step(action_t action) {
 Observation AccessToSim::stepNoCommand() {
     sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
-    this->state = sim_tick(this->state, cmd);
+    for(int i=0; i < 5; i++){
+        this->state = sim_tick(this->state, cmd);
+    }
     return getObservation();
 }
 

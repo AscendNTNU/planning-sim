@@ -10,12 +10,14 @@ class Node {
         Observation state;
         action_t from_action;
         float reward;
-        float time;
+        float time_stamp;
+        float time_elapsed;
 
     public:
         Node(Node* parent_p, Observation state, action_t action);
 
-        float getTime();
+        float getTimeElapsed();
+        float getTimeStamp();
         float getReward();
         Observation getState();
         std::list<Node*> getChildren();
