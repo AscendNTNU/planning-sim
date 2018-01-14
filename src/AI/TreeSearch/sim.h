@@ -102,7 +102,7 @@ struct sim_Position
 
 sim_State          sim_tick(sim_State, sim_Command);
 sim_State          sim_init(unsigned int);
-sim_State          sim_init_state(float elapsed_time, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles);
+sim_State          sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles);
 sim_Observed_State sim_observe_state(sim_State);
 sim_Observed_State sim_observe_everything(sim_State state);
 
@@ -893,7 +893,7 @@ sim_State sim_init(unsigned int seed)
 }
 
 // Robots are a list of x, y and angle points.
-sim_State sim_init_state(float elapsed_time, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles)
+sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles)
 {
     unsigned int seed = 0;
     sim_State result;
@@ -922,9 +922,9 @@ sim_State sim_init_state(float elapsed_time, std::array<sim_Position, Num_Target
         if (INTERNAL->xor128_w == 0) INTERNAL->xor128_w++;
     }
 
-    DRONE->x = 10.0f;
-    DRONE->y = 10.0f;
-    DRONE->z = Sim_Average_Flying_Heigth; // TODO: Dynamics for z when landing
+    DRONE->x = drone.x;
+    DRONE->y = drone.y;
+    DRONE->z = drone.q;
     DRONE->xr = 10.0f;
     DRONE->yr = 10.0f;
     DRONE->v_max = 1.0f;

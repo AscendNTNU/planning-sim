@@ -7,6 +7,7 @@
 AccessToSim::AccessToSim(Observation observation) {
     std::array<sim_Position, Num_Targets> robots;
     std::array<sim_Position, Num_Obstacles> obstacles;
+    sim_Position drone;
 
     for (int i = 0; i < Num_Robots; i++) {
     
@@ -36,7 +37,13 @@ AccessToSim::AccessToSim(Observation observation) {
         obstacles[i].q = obstacle.getOrientation();
     }
 
-    sim_State state = sim_init_state(observation.getTimeStamp(), robots, obstacles);
+    Drone drone_object = observation.getDrone();
+    point_t pos = drone_object.getPosition();
+    drone.x = pos.x;
+    drone.y = pos.y;
+    drone.q = pos.z;
+
+    sim_State state = sim_init_state(observation.getTimeStamp(), drone, robots, obstacles);
 
     this->state = state;
 }
