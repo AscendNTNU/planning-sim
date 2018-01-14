@@ -9,7 +9,6 @@
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
 #include "AI/AIController.h"
-#include "AI/structs.h"
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -18,7 +17,6 @@ float elapsed_time = 0;
 
 bool action_done = true;
 
-World world = World(0);
 AIController ai_controller = AIController();
 
 void time_chatterCallback(std_msgs::Float32 msg) {
@@ -75,8 +73,6 @@ int main(int argc, char **argv) {
     ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
     planning_ros_sim::droneCmd drone_action;
-
-    world.startTimer();
 
     action_t action = empty_action;
 

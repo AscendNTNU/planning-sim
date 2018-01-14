@@ -16,7 +16,7 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 ## Declare a catkin package
 catkin_package(CATKIN_DEPENDS message_runtime)
 
-add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp src/AI/TreeSearch/AccessToSim.cpp src/AI/TreeSearch/Node.cpp src/AI/TreeSearch/TreeSearch.cpp)
+add_library(libAI src/AI/structs.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp src/AI/TreeSearch/AccessToSim.cpp src/AI/TreeSearch/Node.cpp src/AI/TreeSearch/TreeSearch.cpp)
 catkin_package(LIBRARIES libAI)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")

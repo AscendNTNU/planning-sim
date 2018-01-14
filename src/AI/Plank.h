@@ -8,9 +8,6 @@ movement. It is responisble for setting value on a ground robots position.
 #pragma once
 #include <iostream>
 #include "structs.h"
-#include "World.h"
-
-extern World world;
 
 class Plank {
     private:

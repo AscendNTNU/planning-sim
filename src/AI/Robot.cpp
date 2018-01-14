@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include <cmath>
 
 Robot::Robot() {
     this->index = -1;

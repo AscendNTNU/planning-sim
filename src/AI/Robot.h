@@ -7,8 +7,8 @@ This class handles all Robot functions. This includes getters and setters and ch
 
 #pragma once
 
-#include <cmath>
 #include "Plank.h"
+#include "structs.h"
 
 class Robot{
 private:

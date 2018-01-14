@@ -136,18 +136,9 @@ struct tree_action_t{
     float reward;
 };
 
-static float getDistanceBetweenPoints(point_t point1, point_t point2){
 
-    float x_Distance = point1.x - point2.x;
-    float y_Distance = point1.y - point2.y;
+static float getDistanceBetweenPoints(point_t point1, point_t point2);
 
-    return sqrt(pow(x_Distance,2) + pow(y_Distance,2));
-}
+bool pointsWithinThreshold(point_t point_one, point_t point_two, float threshold);
 
-bool pointsWithinThreshold(point_t point_one, point_t point_two, float threshold){
-    float distance = getDistanceBetweenPoints(point_one, point_two);
-    if(distance <= threshold){
-        return true;
-    }
-    return  false;
-}
+float getGridValue(float X, float Y);

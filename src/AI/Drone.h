@@ -8,8 +8,8 @@ It also includes functions for determining the drones relation to other parts of
 #pragma once
 
 #include <iostream>
-#include "structs.h"
 #include "Robot.h"
+#include "structs.h"
 
 class Drone{
 private:

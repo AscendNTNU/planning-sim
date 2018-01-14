@@ -1,7 +1,6 @@
 #pragma once
 
 #include <list>
-#include "../structs.h"
 #include "AccessToSim.h"
 
 class Node {

@@ -103,11 +103,11 @@ float Plank::calculateReward(){
     float value = 0.0;
 
     for (int i = 0; i < 10; i++) {
-        value = world.getGridValue(this->plank_points[i].point.x, this->plank_points[i].point.y);
+        value = getGridValue(this->plank_points[i].point.x, this->plank_points[i].point.y);
         reward += value * step_length;
     }
     return reward;
-}
+}   
 
 void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start){
     this->end_point.is_ahead   = true;

@@ -4,7 +4,7 @@
 
 This class handles the AI state machine.
 */
-
+#pragma once
 #include "AI.h"
 
 ///The different AI states.

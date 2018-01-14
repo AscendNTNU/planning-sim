@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Node.h"
 #include <queue>
+#include "Node.h"
 
 class TreeSearch {
     private:
