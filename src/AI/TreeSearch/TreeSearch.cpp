@@ -6,6 +6,7 @@ TreeSearch::TreeSearch(Observation state) {
 
     std::list<Node> children;
     this->root_p = &root;
+    this->best_node_p = this->root_p;
 }
 
 Node* TreeSearch::getRootPointer() {
@@ -17,18 +18,25 @@ Node* TreeSearch::getBestNodePointer() {
 }
 
 void TreeSearch::DFSBestAction(Node* node_p) {
-
     if(node_p->getReward() > this->best_node_p->getReward()){
+        std::cout << "updating best node" << std::endl;
         this->best_node_p = node_p;
     }
 
-    std::list<Node*> children = node_p->getChildren();
     std::list<Node*>::iterator it;
 
-    for (it = children.begin(); it != children.end(); it++) {
-        Node* child_p = *it;
-        this->DFSBestAction(child_p);
+    std::cout << "children contains " << node_p->children.size() << " elements.\n" << std::endl;
+    if(node_p->children.size()<10 && node_p->children.size()>0){
+        for (it = node_p->children.begin(); it != node_p->children.end(); it++) {
+            std::cout << "deref iterator" << std::endl;
+            Node* child_p = *it;
+            std::cout << "recursion call" << std::endl;
+            this->DFSBestAction(child_p);
+            std::cout << "recursion out" << std::endl;
+
+        }
     }
+    std::cout << "done" << std::endl;
 }
 
 

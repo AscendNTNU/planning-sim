@@ -13,7 +13,7 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
     else{
         this->time_elapsed = parent_p->time_elapsed + (this->state.getTimeStamp() - parent_p->getTimeStamp());
     }
-    this->children = createChildren(10.0);
+    createChildren(30.0);
 }
 
 Node* Node::getParentPointer(){
@@ -40,9 +40,10 @@ float Node::getTimeStamp(){
     return this->time_stamp;
 }
 
-std::list<Node*> Node::getChildren(){
-    return this->children;
-}
+// std::list<Node*> Node::getChildren(){
+//     std::cout << "children contains " << this->children.size() << " elements.\n";
+//     return this->children;
+// }
 
 bool Node::isRoot(){
     if(this->parent_p == NULL){
@@ -52,15 +53,15 @@ bool Node::isRoot(){
 }
 
 
-std::list<Node*> Node::createChildren(float tree_time_depth) {
-    std::list<Node*> children;
+void Node::createChildren(float tree_time_depth) {
+
     Observation state;
 
-    for(int i=0; i<10; i++) {
-        Robot robot = this->state.getRobot(i);
-        std::array<point_t, 10> action_points;
+    for(int i=0; i<2; i++) {
 
-        for(int j=1; j<11;j++){
+        Robot robot = this->state.getRobot(i);
+
+        for(int j=1; j<11;j = j+3){
             action_t action;
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
 
@@ -69,11 +70,15 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
             state = simulateAction(action, sim);
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout << "here" << std::endl;
+                std::cout<<"creating new node" <<std::endl;
                 Node node = Node(this, state, action);
-                std::cout << "lets go" << std::endl;
+                std::cout << "node created" << std::endl;
                 Node* node_p = &node;
-                children.push_back(node_p);
+                std::cout<<"pushing Node" <<std::endl;
+                this->children.push_back(node_p);
+                std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
+
+
             }
 
             sim = AccessToSim(this->state);
@@ -81,18 +86,19 @@ std::list<Node*> Node::createChildren(float tree_time_depth) {
             state = simulateAction(action, sim);
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout << "here" << std::endl;
+                std::cout<<"creating new node" <<std::endl;
                 Node node = Node(this, state, action);
-                std::cout << "lets go" << std::endl;
+                std::cout << "node created" << std::endl;
+
                 Node* node_p = &node;
-                children.push_back(node_p);
+                std::cout<<"pushing Node" <<std::endl;
+                this->children.push_back(node_p);
+                std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
             }
         }
     }
 
-    this->children = children;
-
-    return children;
+    
 }
 
 Observation simulateAction(action_t action, AccessToSim sim) {
@@ -100,7 +106,7 @@ Observation simulateAction(action_t action, AccessToSim sim) {
     fly_to.type = search;
     Observation state = sim.simulateAction(action);
     int tick = 0;
-    while(tick < 10*60/5 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
+    while(tick < 20 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
         state = sim.stepNoCommand();
         tick++;
     }
