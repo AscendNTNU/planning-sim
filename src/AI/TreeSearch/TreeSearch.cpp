@@ -23,15 +23,15 @@ void TreeSearch::DFSBestAction(Node* node_p) {
         this->best_node_p = node_p;
     }
 
-    std::list<Node*>::iterator it;
+    // std::list<Node>::iterator it;
 
     std::cout << "children contains " << node_p->children.size() << " elements.\n" << std::endl;
     if(node_p->children.size()<10 && node_p->children.size()>0){
-        for (it = node_p->children.begin(); it != node_p->children.end(); it++) {
+        for (auto it = node_p->children.begin(); it != node_p->children.end(); it++) {
             std::cout << "deref iterator" << std::endl;
-            Node* child_p = *it;
+            Node child = *it;
             std::cout << "recursion call" << std::endl;
-            this->DFSBestAction(child_p);
+            this->DFSBestAction(&child);
             std::cout << "recursion out" << std::endl;
 
         }

@@ -71,11 +71,9 @@ void Node::createChildren(float tree_time_depth) {
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 std::cout<<"creating new node" <<std::endl;
-                Node node = Node(this, state, action);
                 std::cout << "node created" << std::endl;
-                Node* node_p = &node;
                 std::cout<<"pushing Node" <<std::endl;
-                this->children.push_back(node_p);
+                this->children.push_back(Node(this, state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
 
 
@@ -87,12 +85,10 @@ void Node::createChildren(float tree_time_depth) {
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 std::cout<<"creating new node" <<std::endl;
-                Node node = Node(this, state, action);
                 std::cout << "node created" << std::endl;
 
-                Node* node_p = &node;
                 std::cout<<"pushing Node" <<std::endl;
-                this->children.push_back(node_p);
+                this->children.push_back(Node(this, state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
             }
         }

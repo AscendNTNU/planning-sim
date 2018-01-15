@@ -13,7 +13,7 @@ class Node {
         float time_elapsed;
 
     public:
-        std::list<Node*> children;
+        std::list<Node> children;
 
 
         Node(Node* parent_p, Observation state, action_t action);
