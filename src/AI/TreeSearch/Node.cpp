@@ -1,8 +1,15 @@
 #include "Node.h"
 
 Node::Node(){
-    
+    std::cout<<"called empty node constructor"<<std::endl;
+    this->from_action = empty_action;
+    this->reward = 0;
+    this->time_stamp = 0;
+    this->root = false;
+    this->time_elapsed = 0;
+    this->parent_p=NULL;
 }
+
 
 Node::Node(Observation state){
     this->state = state;
@@ -15,7 +22,7 @@ Node::Node(Observation state){
     createChildren(30.0);
 }
 
-Node::Node(Node* parent_p, Observation state, action_t action) {
+Node::Node(std::shared_ptr<Node> parent_p, Observation state, action_t action) {
     this->state = state;
     this->from_action = action;
     this->reward = this->state.getStateValue();
@@ -26,7 +33,7 @@ Node::Node(Node* parent_p, Observation state, action_t action) {
     createChildren(30.0);
 }
 
-Node* Node::getParentPointer(){
+std::shared_ptr<Node> Node::getParentPointer(){
     return this->parent_p;
 }
 
@@ -83,7 +90,7 @@ void Node::createChildren(float tree_time_depth) {
                 std::cout<<"creating new node" <<std::endl;
                 std::cout << "node created" << std::endl;
                 std::cout<<"pushing Node" <<std::endl;
-                this->children.push_back(Node(this, state, action));
+                this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
 
 
@@ -98,7 +105,7 @@ void Node::createChildren(float tree_time_depth) {
                 std::cout << "node created" << std::endl;
 
                 std::cout<<"pushing Node" <<std::endl;
-                this->children.push_back(Node(this, state, action));
+                this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
             }
         }

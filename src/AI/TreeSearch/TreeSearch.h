@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <memory>
 #include "Node.h"
 
 class TreeSearch {
@@ -12,9 +13,9 @@ class TreeSearch {
     public:
         TreeSearch(Observation state);
 
-        Node getRootPointer();
-        Node getBestNodePointer();
+        Node getRoot();
+        Node getBestNode();
 
         void DFSBestAction(Node node);
-        std::queue<action_t> getActionQueue(Node node);
+        std::queue<action_t> getActionQueue(Node& node);
 };

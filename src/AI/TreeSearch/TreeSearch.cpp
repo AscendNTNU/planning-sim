@@ -9,45 +9,41 @@ TreeSearch::TreeSearch(Observation state) {
     this->best_node = this->root;
 }
 
-Node TreeSearch::getRootPointer() {
+Node TreeSearch::getRoot() {
     return this->root;
 }
 
-Node TreeSearch::getBestNodePointer() {
+Node TreeSearch::getBestNode() {
     return this->best_node;
 }
 
 void TreeSearch::DFSBestAction(Node node) {
     if(node.getReward() > this->best_node.getReward()){
-        std::cout << "updating best node" << std::endl;
         this->best_node = node;
     }
 
     // std::list<Node>::iterator it;
 
     std::cout << "children contains " << node.children.size() << " elements.\n" << std::endl;
-    if(node.children.size()<10 && node.children.size()>0){
-        for (auto it = node.children.begin(); it != node.children.end(); it++) {
-            std::cout << "deref iterator" << std::endl;
-            Node child = *it;
-            std::cout << "recursion call" << std::endl;
-            this->DFSBestAction(child);
-            std::cout << "recursion out" << std::endl;
+    for (auto it = node.children.begin(); it != node.children.end(); it++) {
+        std::cout << "deref iterator" << std::endl;
+        Node child = *it;
+        std::cout << "recursion call" << std::endl;
+        this->DFSBestAction(child);
 
-        }
     }
     std::cout << "done" << std::endl;
 }
 
- std::queue<action_t> TreeSearch::getActionQueue(Node node) {
+ std::queue<action_t> TreeSearch::getActionQueue(Node& node) {
     std::queue<action_t> action_queue;
 
     std::cout<<"1"<<std::endl;
 
-    if (!node.getParentPointer()->isRoot()) {
+    if (!node.parent_p->isRoot()) {
         std::cout<<"2"<<std::endl;
 
-        action_queue = this->getActionQueue(*(node.getParentPointer()));
+        action_queue = this->getActionQueue(*(node.parent_p));
     }
 
     std::cout<<"3"<<std::endl;

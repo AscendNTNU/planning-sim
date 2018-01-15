@@ -2,10 +2,11 @@
 
 #include <list>
 #include "AccessToSim.h"
+#include <memory>
+
 
 class Node {
     private:
-        Node* parent_p;
         Observation state;
         action_t from_action;
         float reward;
@@ -15,16 +16,18 @@ class Node {
 
     public:
         std::list<Node> children;
+        std::shared_ptr<Node> parent_p;
+
         Node();
         Node(Observation state);
-        Node(Node* parent_p, Observation state, action_t action);
+        Node(std::shared_ptr<Node> parent_p, Observation state, action_t action);
 
         float getTimeElapsed();
         float getTimeStamp();
         float getReward();
         Observation getState();
-        // std::list<Node*> getChildren();
-        Node* getParentPointer();
+        //std::list<Node*> getChildren();
+        std::shared_ptr<Node> getParentPointer();
         action_t getAction();
 
         bool isRoot();
