@@ -11,11 +11,12 @@ class Node {
         float reward;
         float time_stamp;
         float time_elapsed;
+        bool root;
 
     public:
         std::list<Node> children;
-
-
+        Node();
+        Node(Observation state);
         Node(Node* parent_p, Observation state, action_t action);
 
         float getTimeElapsed();

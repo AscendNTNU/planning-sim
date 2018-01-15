@@ -1,18 +1,28 @@
 #include "Node.h"
 
+Node::Node(){
+    
+}
+
+Node::Node(Observation state){
+    this->state = state;
+    this->from_action = empty_action;
+    this->reward = this->state.getStateValue();
+    this->time_stamp = state.getTimeStamp();
+    this->root = true;
+    this->time_elapsed = 0;
+    this->parent_p=NULL;
+    createChildren(30.0);
+}
+
 Node::Node(Node* parent_p, Observation state, action_t action) {
     this->state = state;
     this->from_action = action;
     this->reward = this->state.getStateValue();
     this->time_stamp = state.getTimeStamp();
     this->parent_p = parent_p;
-
-    if(parent_p == NULL){
-        this->time_elapsed = 0;
-    }
-    else{
-        this->time_elapsed = parent_p->time_elapsed + (this->state.getTimeStamp() - parent_p->getTimeStamp());
-    }
+    this->root = false;
+    this->time_elapsed = parent_p->time_elapsed + (this->state.getTimeStamp() - parent_p->getTimeStamp());
     createChildren(30.0);
 }
 
@@ -46,7 +56,7 @@ float Node::getTimeStamp(){
 // }
 
 bool Node::isRoot(){
-    if(this->parent_p == NULL){
+    if(this->root){
         return true;
     }
     return false;
