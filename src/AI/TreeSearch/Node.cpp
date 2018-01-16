@@ -1,12 +1,11 @@
 #include "Node.h"
 
 Node::Node(){
-    std::cout<<"called empty node constructor"<<std::endl;
     this->from_action = empty_action;
-    this->reward = 0;
-    this->time_stamp = 0;
+    this->reward = -10000;
+    this->time_stamp = -1;
     this->root = false;
-    this->time_elapsed = 0;
+    this->time_elapsed = -1;
     this->parent_p=NULL;
 }
 
@@ -26,6 +25,7 @@ Node::Node(std::shared_ptr<Node> parent_p, Observation state, action_t action) {
     this->state = state;
     this->from_action = action;
     this->reward = this->state.getStateValue();
+    std::cout << "reward for node is " << this->reward << std::endl;
     this->time_stamp = state.getTimeStamp();
     this->parent_p = parent_p;
     this->root = false;
@@ -71,10 +71,9 @@ bool Node::isRoot(){
 
 
 void Node::createChildren(float tree_time_depth) {
-
     Observation state;
 
-    for(int i=0; i<2; i++) {
+    for(int i=0; i<10 ; i++) {
 
         Robot robot = this->state.getRobot(i);
 
@@ -85,11 +84,12 @@ void Node::createChildren(float tree_time_depth) {
             AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
-
+            std::cout << this->getTimeElapsed() << std::endl;
+            std::cout << state.getTimeStamp() << std::endl;
+            std::cout << this->getTimeStamp() << std::endl;
+            std::cout << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout<<"creating new node" <<std::endl;
-                std::cout << "node created" << std::endl;
-                std::cout<<"pushing Node" <<std::endl;
+                std::cout<<"Created child node" <<std::endl;
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
 
@@ -101,10 +101,7 @@ void Node::createChildren(float tree_time_depth) {
             state = simulateAction(action, sim);
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout<<"creating new node" <<std::endl;
-                std::cout << "node created" << std::endl;
-
-                std::cout<<"pushing Node" <<std::endl;
+                std::cout<<"Created child node" <<std::endl;
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
                 std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
             }
