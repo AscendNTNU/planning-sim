@@ -2,6 +2,7 @@
 
 TreeSearch::TreeSearch(Observation state) {
     this->state = state;
+    std::cout<<"Creating root node" << std::endl;
     Node root = Node(state);
 
     std::list<Node> children;
@@ -20,6 +21,7 @@ Node TreeSearch::getBestNode() {
 void TreeSearch::DFSBestAction(Node node) {
     if(node.getReward() > this->best_node.getReward()){
         this->best_node = node;
+        std::cout << "new best reward is " << this->best_node.getReward();
     }
 
     for (auto it = node.children.begin(); it != node.children.end(); it++) {
@@ -33,8 +35,8 @@ void TreeSearch::DFSBestAction(Node node) {
     std::queue<action_t> action_queue;
 
     if (!node.isRoot()) {
+        action_queue.push(node.getAction());
         action_queue = this->getActionQueue(*(node.parent_p));
     }
-    action_queue.push(node.getAction());
     return action_queue;
 }

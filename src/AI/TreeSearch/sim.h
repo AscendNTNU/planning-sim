@@ -129,7 +129,7 @@ void               sim_write_snapshot(char*, sim_Observed_State);
 //                        Tweakable simulation parameters
 // ***********************************************************************
 
-#define Sim_Timestep (1.0f / 10.0f)       // Simulation timestep
+#define Sim_Timestep (1.0f)       // Simulation timestep
 
 // Note:
 // Increasing Sim_Timestep will decrease the accuracy of the simulation,

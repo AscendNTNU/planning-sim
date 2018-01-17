@@ -13,19 +13,19 @@ AccessToSim::AccessToSim(Observation observation) {
     
         Robot robot = observation.getRobot(i);
     
-        if(robot.getVisibility()){
+        // if(robot.getVisibility()){
             point_t pos = robot.getPosition();
 
             robots[i].x = pos.x;
             robots[i].y = pos.y;
             robots[i].q = robot.getOrientation();
-        }
+        // }
 
-        else{
-            robots[i].x = -1;
-            robots[i].y = -1;
-            robots[i].q = 0;
-        }
+        // else{
+        //     robots[i].x = -1;
+        //     robots[i].y = -1;
+        //     robots[i].q = 0;
+        // }
     }
 
     for (int i = 0; i < Num_Obstacles; i++) {
@@ -68,9 +68,8 @@ Observation AccessToSim::step(action_t action) {
 Observation AccessToSim::stepNoCommand() {
     sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
-    for(int i=0; i < 60; i++){
-        this->state = sim_tick(this->state, cmd);
-    }
+    this->state = sim_tick(this->state, cmd);
+
     return getObservation();
 }
 

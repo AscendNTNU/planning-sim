@@ -18,7 +18,7 @@ Node::Node(Observation state){
     this->root = true;
     this->time_elapsed = 0;
     this->parent_p=NULL;
-    createChildren(30.0);
+    createChildren(15.0);
 }
 
 Node::Node(std::shared_ptr<Node> parent_p, Observation state, action_t action) {
@@ -30,7 +30,7 @@ Node::Node(std::shared_ptr<Node> parent_p, Observation state, action_t action) {
     this->parent_p = parent_p;
     this->root = false;
     this->time_elapsed = parent_p->time_elapsed + (this->state.getTimeStamp() - parent_p->getTimeStamp());
-    createChildren(30.0);
+    createChildren(15.0);
 }
 
 std::shared_ptr<Node> Node::getParentPointer(){
@@ -72,7 +72,7 @@ bool Node::isRoot(){
 
 void Node::createChildren(float tree_time_depth) {
     Observation state;
-
+    std::cout<<"Created child node" <<std::endl;
     for(int i=0; i<10 ; i++) {
 
         Robot robot = this->state.getRobot(i);
@@ -84,14 +84,8 @@ void Node::createChildren(float tree_time_depth) {
             AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
-            std::cout << this->getTimeElapsed() << std::endl;
-            std::cout << state.getTimeStamp() << std::endl;
-            std::cout << this->getTimeStamp() << std::endl;
-            std::cout << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout<<"Created child node" <<std::endl;
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
-                std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
 
 
             }
@@ -101,9 +95,7 @@ void Node::createChildren(float tree_time_depth) {
             state = simulateAction(action, sim);
 
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
-                std::cout<<"Created child node" <<std::endl;
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
-                std::cout << "children now contains " << this->children.size() << " elements.\n" << std::endl;
             }
         }
     }
@@ -116,7 +108,7 @@ Observation simulateAction(action_t action, AccessToSim sim) {
     fly_to.type = search;
     Observation state = sim.simulateAction(action);
     int tick = 0;
-    while(tick < 20 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
+    while(tick < 20 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 2)) {
         state = sim.stepNoCommand();
         tick++;
     }
