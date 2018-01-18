@@ -15,8 +15,7 @@ pipeline:
   build-only:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     when:
-      event: [ push, pull_request ]
-      branch: dev
+      event: push
     commands:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make
