@@ -6,7 +6,7 @@ pipeline:
     commands:
       - cppcheck src/* #--error-exitcode=1
   tests:
-    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     when:
       event: push
     commands:
