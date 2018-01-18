@@ -6,6 +6,7 @@
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
+#include "planning_ros_sim/track.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
 #include "ai-sim/sim.h"
@@ -69,10 +70,8 @@ int main(int argc, char **argv)
   std_msgs::Float32 time_msg; 
   std_msgs::Bool command_done_msg;
 
-  ros::Publisher ground_robots_pub = l.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
-  ros::Publisher drone_pub = m.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
   ros::Subscriber droneCmd_sub = n.subscribe("drone_cmd_chatter", 100, droneCmd_chatterCallback);
-  ros::Publisher elapsed_time_pub = o.advertise<std_msgs::Float32>("time_chatter",100);
+  ros::Publisher tracker_pub = o.advertise<std_msgs::Float32>("tracker_chatter",100);
   ros::Publisher command_done_pub = command_done_node.advertise<std_msgs::Bool>("command_done_chatter", 100);
   ros::Rate loop_rate(10);
 
@@ -93,11 +92,7 @@ int main(int argc, char **argv)
 
     command_done_msg.data = obs_state.drone_cmd_done;
     command_done_pub.publish(command_done_msg);
-    ground_robots_pub.publish(groundrobot_msg);
-    drone_pub.publish(drone_msg);
-
-    time_msg.data = obs_state.elapsed_time;
-    elapsed_time_pub.publish(time_msg);
+    tracker_pub.publish(groundrobot_msg);
     ros::spinOnce();
   }
 

@@ -6,6 +6,7 @@
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
+#include "planning_ros_sim/track.h"
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
 #include "AI/AIController.h"
@@ -23,22 +24,16 @@ void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
 }
 
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
+void tracker_chatterCallback(planning_ros_sim::track msg){
     observation_t robotObs = observation_Empty;
-    for(int i = 0; i < 10; i++) {
-            robotObs.robot_x[i] = msg.groundRobot[i].x;
-            robotObs.robot_y[i] = msg.groundRobot[i].y;
-            robotObs.robot_q[i] = msg.groundRobot[i].theta;
-            robotObs.robot_visible[i] = msg.groundRobot[i].visible;
+    for(int i = 0; i < msg.num_targets; i++) {
+            robotObs.robot_x[i] = msg.position_x[i];
+            robotObs.robot_y[i] = msg.position_y[i];
+            robotObs.robot_q[i] = 0;
+            robotObs.robot_visible[i] = true;
     }
-    ai_controller.observation.updateRobot(robotObs, elapsed_time);
-}
-
-void drone_chatterCallback(geometry_msgs::Pose2D msg) {
-    observation_t droneObs = observation_Empty;
-    droneObs.drone_x = msg.x;
-    droneObs.drone_y = msg.y;
-    ai_controller.observation.updateDrone(droneObs, elapsed_time);
+    elapsed_time = 20 - msg.time_until_180;
+    ai_controller.observation.updateRobot(robotObs, elapsed_time);   
 }
 
 void command_done_chatterCallback(std_msgs::Bool msg) {
@@ -60,16 +55,11 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
-    ros::NodeHandle ground_robot_node;
-    ros::NodeHandle drone_node;
-    ros::NodeHandle command_node;
     ros::NodeHandle time_node;
-    ros::NodeHandle command_done_node;
+    ros::NodeHandle command_node;
 
-    ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
-    ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
+
+    ros::Subscriber tracker_sub = time_node.subscribe("tracker_chatter", 1000, tracker_chatterCallback);
     
     ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
     
@@ -78,6 +68,12 @@ int main(int argc, char **argv) {
     world.startTimer();
 
     action_t action = empty_action;
+
+    observation_t droneObs = observation_Empty;
+    droneObs.drone_x = 10.0;
+    droneObs.drone_y = 10.0;
+    ai_controller.observation.updateDrone(droneObs, elapsed_time);
+
 
     while (ros::ok()) {
         ros::Duration(0.4).sleep();
