@@ -11,14 +11,14 @@ pipeline:
       event: push
     commands:
       - cd /catkin_ws
-      - /ros_entrypoint.sh bash -c "source devel/setup.bash && catkin_make run_tests"
+      - /ros_entrypoint.sh bash -c "cd /catkin_ws && source devel/setup.bash && catkin_make run_tests"
   build-only:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     when:
       event: push
     commands:
       - cd /catkin_ws
-      - /ros_entrypoint.sh bash -c "source devel/setup.bash && catkin_make"
+      - /ros_entrypoint.sh bash -c "cd /catkin_ws && source devel/setup.bash && catkin_make"
   publish-docs:
     image: drillster/drone-rsync
     hosts: [ ascendntnu.no ]
