@@ -11,7 +11,7 @@ pipeline:
       event: push
     commands:
       - cd /catkin_ws
-      - /ros_entrypoint.sh catkin_make run_tests
+      - /ros_entrypoint.sh bash -c "source devel/setup.bash && catkin_make run_tests"
   build-only:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     when:
