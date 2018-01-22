@@ -59,8 +59,6 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
         robot = robots[i];
         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-        if (robot.getIndex() != -1 && robot.getVisibility()) {
-
             if(getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
                 best_pos = drone.getInterceptPoint(robot);
                 best_reward = getGridValue(best_pos.x, best_pos.y);

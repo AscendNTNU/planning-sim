@@ -150,7 +150,7 @@ std::array<Robot, 10> AccessToSim::getRobots() {
         position.x = observation.robot_x[i];
         position.y = observation.robot_y[i];
         float orientation = observation.robot_q[i];
-        robot.update(i, position, orientation, elapsed_time);
+        robot.update(i, position, orientation, elapsed_time, true);
 
         robots[i] = robot;
     }
@@ -170,7 +170,7 @@ std::array<Robot, 4> AccessToSim::getObstacles() {
         position.x = observation.robot_x[i];
         position.y = observation.robot_y[i];
         float orientation = observation.robot_q[i];
-        obstacle.update(i, position, orientation, elapsed_time);
+        obstacle.update(i, position, orientation, elapsed_time, true);
 
         obstacles[i] = obstacle;
     }
