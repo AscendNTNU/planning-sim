@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
     ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
 
-    ClientType client("perception_control", true);
+    ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
