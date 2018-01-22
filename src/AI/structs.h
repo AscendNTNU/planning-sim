@@ -81,6 +81,7 @@ struct observation_t
     float robot_x[10];
     float robot_y[10];
     float robot_q[10];
+    float robot_visible[10];
 
     float obstacle_x[4];
     float obstacle_y[4];

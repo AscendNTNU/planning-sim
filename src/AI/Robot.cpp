@@ -54,7 +54,7 @@ bool Robot::isMoving() {
     }
 }
 
-void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time) {
+void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
 
     this->old_Position = this->position;
@@ -62,6 +62,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->index = index;
     this->position = new_Position;
     this->time_After_Turn_Start = fmod(elapsed_time, 20);
+    this->visible = visible;
     
     if (this->time_After_Turn_Start < 2) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);

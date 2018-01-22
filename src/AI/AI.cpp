@@ -57,6 +57,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
+        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
         if (robot.getIndex() != -1 && robot.getVisibility()) {
 

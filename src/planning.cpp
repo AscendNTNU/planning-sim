@@ -14,7 +14,6 @@ planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
-
 bool action_done = true;
 
 AIController ai_controller = AIController();
@@ -26,9 +25,10 @@ void time_chatterCallback(std_msgs::Float32 msg) {
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
     observation_t robotObs = observation_Empty;
     for(int i = 0; i < 10; i++) {
-          robotObs.robot_x[i] = msg.groundRobot[i].x;
-          robotObs.robot_y[i] = msg.groundRobot[i].y;
-          robotObs.robot_q[i] = msg.groundRobot[i].theta;
+            robotObs.robot_x[i] = msg.groundRobot[i].x;
+            robotObs.robot_y[i] = msg.groundRobot[i].y;
+            robotObs.robot_q[i] = msg.groundRobot[i].theta;
+            robotObs.robot_visible[i] = msg.groundRobot[i].visible;
     }
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }

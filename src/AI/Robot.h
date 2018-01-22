@@ -80,7 +80,7 @@ public:
     @param time Time to add to robots elapsed time since the last turn started
     */
     void addToTimer(float time);
-    void update(int index, point_t position,float q, float elapsed_time);
+    void update(int index, point_t position,float q, float elapsed_time, bool visible);
     
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
