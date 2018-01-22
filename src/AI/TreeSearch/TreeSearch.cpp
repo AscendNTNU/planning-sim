@@ -27,17 +27,17 @@ void TreeSearch::DFSBestAction(Node node) {
     for (auto it = node.children.begin(); it != node.children.end(); it++) {
         Node child = *it;
         this->DFSBestAction(child);
+        std::cout << "out of dfs" << std::endl;
 
     }
 }
 
 std::queue<action_t> TreeSearch::getActionQueue(Node& node) {
-    std::queue<action_t> action_queue;
-    std::cout<<"getting out best action queue"<< std::endl;
+    std::queue<action_t> action_queue;  
 
     if (!node.isRoot()) {
-        action_queue.push(node.getAction());
         action_queue = this->getActionQueue(*(node.parent_p));
+        action_queue.push(node.getAction());
     }
     return action_queue;
 }

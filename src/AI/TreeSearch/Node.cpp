@@ -73,7 +73,7 @@ bool Node::isRoot(){
 void Node::createChildren(float tree_time_depth) {
     Observation state;
     std::cout<<"Created child node" <<std::endl;
-    for(int i=0; i<11 ; i++) {
+    for(int i=0; i<1 ; i++) {
 
         Robot robot = this->state.getRobot(i);
 
