@@ -31,8 +31,9 @@ void TreeSearch::DFSBestAction(Node node) {
     }
 }
 
- std::queue<action_t> TreeSearch::getActionQueue(Node& node) {
+std::queue<action_t> TreeSearch::getActionQueue(Node& node) {
     std::queue<action_t> action_queue;
+    std::cout<<"getting out best action queue"<< std::endl;
 
     if (!node.isRoot()) {
         action_queue.push(node.getAction());

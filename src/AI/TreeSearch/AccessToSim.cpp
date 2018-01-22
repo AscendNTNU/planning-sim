@@ -50,10 +50,9 @@ AccessToSim::AccessToSim(Observation observation) {
 
 Observation AccessToSim::simulateAction(action_t action){
     sim_Command cmd = convertToSimAction(action);
-    state = sim_tick(this->state, cmd);
+    this->state = sim_tick(this->state, cmd);
     cmd.type = sim_CommandType_NoCommand;
-
-    while(!state.drone.cmd_done){
+    while(!this->state.drone.cmd_done){
         this->state = sim_tick(this->state, cmd);
     }
     return getObservation();

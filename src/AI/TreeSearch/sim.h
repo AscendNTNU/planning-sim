@@ -129,7 +129,7 @@ void               sim_write_snapshot(char*, sim_Observed_State);
 //                        Tweakable simulation parameters
 // ***********************************************************************
 
-#define Sim_Timestep (1.0f)       // Simulation timestep
+#define Sim_Timestep (1.0f/10.0f)       // Simulation timestep
 
 // Note:
 // Increasing Sim_Timestep will decrease the accuracy of the simulation,
@@ -756,13 +756,13 @@ static void
 robot_integrate(sim_Robot *robot, float dt)
 {
     float v = 0.5f * (robot->vl + robot->vr);
-    //float w = (robot->vr - robot->vl) / (robot->L*0.5f);
+    float w = (robot->vr - robot->vl) / (robot->L*0.5f);
     robot->x += v * cosf(robot->q) * dt;
     robot->y += v * sinf(robot->q) * dt;
-    //robot->q += w * dt;
+    robot->q += w * dt;
 
     // Wrap angles
-    //robot->q = wrap_angle(robot->q);
+    robot->q = wrap_angle(robot->q);
 
     robot->forward_x = cosf(robot->q);
     robot->forward_y = sinf(robot->q);
@@ -929,8 +929,8 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
     DRONE->yr = 10.0f;
     DRONE->v_max = 1.0f;
     DRONE->cmd.type = sim_CommandType_NoCommand;
-    DRONE->cmd.x = 0.0f;
-    DRONE->cmd.y = 0.0f;
+    DRONE->cmd.x = 19.2f;
+    DRONE->cmd.y = 19.2f;
     DRONE->cmd.i = 0;
     DRONE->landing = false;
     DRONE->on_ground = false;
@@ -1032,7 +1032,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
         DRONE->cmd_done = false;
         DRONE->cmd = new_cmd;
     }
-
     //manage on ground or not
     if(DRONE->z < Sim_Robot_Height )
     {
@@ -1040,6 +1039,10 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
     }else{
         DRONE->on_ground = false;
     }
+
+    // std::cout << "Drone_x " << DRONE->x << " Drone_y " << DRONE->y << std::endl;
+    // std::cout << "Target id is " << DRONE->cmd.i << std::endl;
+    // std::cout << "Target_x " << TARGETS[DRONE->cmd.i].x << " Target_y " << TARGETS[DRONE->cmd.i].y << std::endl;
 
     switch (DRONE->cmd.type)
     {
@@ -1055,6 +1058,7 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
 
         case sim_CommandType_LandOnTopOf:
         {
+
             if(DRONE->z < Sim_Average_Flying_Heigth && ! DRONE->landing )
 
             {
@@ -1109,6 +1113,7 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
 
         case sim_CommandType_LandInFrontOf:
         {
+
             if(DRONE->z < Sim_Average_Flying_Heigth && ! DRONE->landing )
             {
                 DRONE->z += (Sim_Average_Flying_Heigth/Sim_Take_Off_Time)*Sim_Timestep;
@@ -1193,13 +1198,11 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
 
                 if (len < Sim_Drone_Goto_Proximity)
                 {
-                        printf ("%s", "OKEI\n");
                     DRONE->cmd.type = sim_CommandType_NoCommand;
                     DRONE->cmd_done = true;
                 }
                 else
                 {
-                    printf ("%s", "NOT\n");
                     float v = DRONE->v_max / len;
                     float vx = v * dx;
                     float vy = v * dy;
