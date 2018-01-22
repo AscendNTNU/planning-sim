@@ -118,6 +118,7 @@ int main(int argc, char **argv)
       groundrobot_msg.groundRobot[n].x = state.target_x[n];
       groundrobot_msg.groundRobot[n].y = state.target_y[n];
       groundrobot_msg.groundRobot[n].theta = state.target_q[n];
+      groundrobot_msg.groundRobot[n].visible = obs_state.target_in_view[n];
     }
 
     // Check if command done in sim and that
