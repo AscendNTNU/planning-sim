@@ -59,7 +59,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     return target;
 }
 
-action_t AI::squareSearch(Robot target, Drone drone) {
+action_t AI::triangleSearch(Drone drone) {
     action_t search_Action = empty_action;
 
     point_t next_search_point = point_Zero;
@@ -69,28 +69,33 @@ action_t AI::squareSearch(Robot target, Drone drone) {
     float y = pos.y;
     float track_width = 20;
     float track_height = 20;
-    float track_center_x = track_width / 2;
-    float track_center_y = track_height / 2;
-    float padding = 3;
 
-    // The drone flies in a square path in a clockwise order
-    if (x > track_center_x && y > track_center_y) {
-        next_search_point.x = track_width - padding;
-        next_search_point.y = padding;
-    } else if (x > track_center_x && y < track_center_y) {
-        next_search_point.x = padding;
-        next_search_point.y = padding;
-    } else if (x <= track_center_x && y <= track_center_y) {
+    point_t track_center = point_Zero;
+    track_center.x = track_width / 2;
+    track_center.y = track_height / 2;
+    float padding = 5;
+
+    // The drone flies in a triangle path in a clockwise order
+    if (drone.getDistanceToPoint(track_center) < 3) {
         next_search_point.x = padding;
         next_search_point.y = track_height - padding;
-    } else if (x < track_center_x && y > track_center_y) {
+    } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x > track_center.x && y < track_center.y) { // 2. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x <= track_center.x && y <= track_center.y) { // 3. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
         next_search_point.x = track_width - padding;
         next_search_point.y = track_height - padding;
     }
 
     search_Action.type = search;
     search_Action.where_To_Act = next_search_point;
-    search_Action.target = 0;
+    //search_Action.target = 0;
 
     return search_Action;
 }
@@ -119,7 +124,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     }
     // If no target is visible, we do a patrol round
     else {
-        best_Action = this->squareSearch(target, drone);
+        best_Action = this->triangleSearch(drone);
     }
 
     return best_Action;
