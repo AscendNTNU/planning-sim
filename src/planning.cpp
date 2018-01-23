@@ -58,7 +58,7 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 }
 
 int main(int argc, char **argv) {
-
+    printf("Planning");
     ros::init(argc, argv, "planning");
     ros::NodeHandle ground_robot_node;
     ros::NodeHandle drone_node;
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     action_t action = empty_action;
 
     while (ros::ok()) {
-        ros::Duration(0.4).sleep();
+        // ros::Duration(0.4).sleep();
         ros::spinOnce();
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
@@ -93,5 +93,20 @@ int main(int argc, char **argv) {
                 command_pub.publish(drone_action);
             }
         }
+
+        if(elapsed_time > 600) {
+            printf("Time: %f\n", elapsed_time);
+            break;
+        }
+ 
     }
+    printf("Sim finished");
+    int numOut = 0;
+    for(int i = 0; i < 10; i++) {
+        printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
+        if(ai_controller.observation.getRobot(i).getPosition().y>20) {
+            numOut += 1;
+        }
+    }
+    printf("# Robots out green: %d \n", numOut);
 }
