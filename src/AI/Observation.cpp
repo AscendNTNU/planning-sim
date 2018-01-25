@@ -46,7 +46,7 @@ float Observation::getTimeStamp(){
 
 
 float Observation::getStateValue() {
-    float state_value;
+    float state_value = 0;
     int num_robots = 0;
     Robot robot;
 
@@ -56,6 +56,12 @@ float Observation::getStateValue() {
             num_robots += 1;
             state_value += robot.current_Plank.getReward();
         }
+    }
+
+    if (state_value > -0.0001 && state_value < 0.0001) { // state_value
+        std::cout << "state_value: " << state_value << ", state valeu will be set to -10000" << std::endl;
+        // prediction: this happens when ground robots are turning?
+        return -10000;
     }
 
     this->state_value = state_value / num_robots;

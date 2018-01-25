@@ -28,6 +28,7 @@ void TreeSearch::DFSBestAction(Node node) {
         Node child = *it;
         this->DFSBestAction(child);
         std::cout << "out of dfs" << std::endl;
+        //std::cout << "iterator: " << it << std::endl;
 
     }
 }
