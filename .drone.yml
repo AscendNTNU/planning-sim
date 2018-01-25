@@ -45,5 +45,5 @@ clone:
     recursive: false
 
 workspace:
-  base: /catkin_ws/src
-  path: planning-sim
+  base: /catkin_ws/src/planning-sim
+  path: ./
