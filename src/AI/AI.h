@@ -59,7 +59,8 @@ public:
     @return Best possible action stack.
     Checks the best action for each robot and returns the action stack for performing the action with best reward/
     */
-    action_t getBestGeneralAction(Observation observation);
+    
+    std::queue<action_t> getBestGeneralActionQueue(Observation observation);
 
     /**
     @brief Returns action stack for the best action for a target robot.

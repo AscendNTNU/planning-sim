@@ -72,7 +72,6 @@ bool Node::isRoot(){
 
 void Node::createChildren(float tree_time_depth) {
     Observation state;
-    AccessToSim sim;
     std::cout<<"Created child node" <<std::endl;
     for(int i=0; i<1 ; i++) { //hvorfor ser vi kun på en robot?
 
@@ -82,7 +81,7 @@ void Node::createChildren(float tree_time_depth) {
             action_t action;
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
 
-            sim = AccessToSim(this->state);
+            AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
 

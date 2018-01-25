@@ -59,7 +59,10 @@ void AIController::noInputDataState(){
 
 void AIController::idleState(){
     printf("Idle state\n");
-    this->current_action_ = ai_.getBestGeneralAction(this->observation);
+
+    std::queue<action_t> current_action_queue_ = ai_.getBestGeneralActionQueue(this->observation);
+    this->current_action_ = current_action_queue_.front();
+
 	this->state_ = fly_to;
 	return;
 }

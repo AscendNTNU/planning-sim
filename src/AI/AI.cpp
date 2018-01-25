@@ -2,7 +2,7 @@
 #include <array>
 #include <queue>
 
-action_t AI::getBestGeneralAction(Observation observation) {
+std::queue<action_t> AI::getBestGeneralActionQueue(Observation observation) {
     
     std::cout << "--building tree--" << std::endl;
     TreeSearch tree = TreeSearch(observation);
@@ -13,7 +13,7 @@ action_t AI::getBestGeneralAction(Observation observation) {
     std::cout << "returning action queue" << std::endl;
     std::queue<action_t> queue = tree.getActionQueue(best_node);
     std::cout << "number of actions in action queue: " << queue.size() << std::endl;
-    return queue.front();
+    return queue;
     //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
     //return getBestAction(target, observation);
 }
