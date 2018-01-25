@@ -18,7 +18,7 @@ services:
   tests:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     tty: true
-    command: bash -c "cd /catkin_ws && ls -lah && ls -lah src && catkin_make run_tests"
+    command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   syntax:
