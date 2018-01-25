@@ -26,14 +26,13 @@ sim_Command action_ROS2Sim(GoalType goal){
   switch(goal.cmd){
 
     case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
-      // What happens here
+        command.type = sim_CommandType_Search;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF:
       command.type = sim_CommandType_LandOnTopOf;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
       command.type = sim_CommandType_LandInFrontOf; 
-      // How do we know if we should send LandInFrontOf of LandAtPoint?
       break;
     case ascend_msgs::ControlFSMGoal::SEARCH:
       command.type = sim_CommandType_Search;
@@ -118,7 +117,7 @@ int main(int argc, char **argv)
       groundrobot_msg.groundRobot[n].x = state.target_x[n];
       groundrobot_msg.groundRobot[n].y = state.target_y[n];
       groundrobot_msg.groundRobot[n].theta = state.target_q[n];
-      groundrobot_msg.groundRobot[n].visible = obs_state.target_in_view[n];
+      groundrobot_msg.groundRobot[n].visible = state.target_in_view[n];
     }
 
     // Check if command done in sim and that
