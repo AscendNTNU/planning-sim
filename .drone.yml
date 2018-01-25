@@ -13,7 +13,6 @@ pipeline:
       - cd /catkin_ws
       - ls -lah
       - ls -lah src
-      - cat /ros_entrypoint.sh
       - /ros_entrypoint.sh catkin_make run_tests
   build-only:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.5
@@ -46,5 +45,5 @@ clone:
     recursive: false
 
 workspace:
-  base: /catkin_ws
-  path: src/planning-sim/
+  base: /catkin_ws/src
+  path: planning-sim
