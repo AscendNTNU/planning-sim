@@ -72,8 +72,9 @@ bool Node::isRoot(){
 
 void Node::createChildren(float tree_time_depth) {
     Observation state;
+    AccessToSim sim;
     std::cout<<"Created child node" <<std::endl;
-    for(int i=0; i<1 ; i++) {
+    for(int i=0; i<1 ; i++) { //hvorfor ser vi kun på en robot?
 
         Robot robot = this->state.getRobot(i);
 
@@ -81,10 +82,11 @@ void Node::createChildren(float tree_time_depth) {
             action_t action;
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
 
-            AccessToSim sim = AccessToSim(this->state);
+            sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
-            std::cout << "time elapsed " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
+
+            std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
             }
@@ -92,7 +94,7 @@ void Node::createChildren(float tree_time_depth) {
             sim = AccessToSim(this->state);
             action.type = land_In_Front_Of;
             state = simulateAction(action, sim);
-            std::cout << "time elapsed " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
+            std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
             }

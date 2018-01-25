@@ -59,12 +59,15 @@ float Observation::getStateValue() {
     }
 
     if (state_value > -0.0001 && state_value < 0.0001) { // state_value
-        std::cout << "state_value: " << state_value << ", state valeu will be set to -10000" << std::endl;
+        std::cout << "last robot is turning?: " << robot.isMoving() << std::endl;
+        std::cout << "state_value: " << state_value << ", (no visible robots) state value will be set to -10000" << std::endl;
         // prediction: this happens when ground robots are turning?
-        return -10000;
+        this->state_value = -10000;
+    }
+    else {
+        this->state_value = state_value / num_robots;
     }
 
-    this->state_value = state_value / num_robots;
     return this->state_value;
 }
 
