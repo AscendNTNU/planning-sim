@@ -12,7 +12,7 @@ services:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     tty: true
     environment:
-      - ROS_ENV
+      - ASCEND_ENV
     command: bash -c "cd /catkin_ws && catkin_make"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
@@ -21,7 +21,7 @@ services:
     image: registry.ascendntnu.no/ascend-ros-kinetic:0.4
     tty: true
     environment:
-      - ROS_ENV
+      - ASCEND_ENV
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
