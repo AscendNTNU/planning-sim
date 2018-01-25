@@ -114,11 +114,11 @@ int main(int argc, char **argv)
     // Generate messages from observation
     drone_msg.x = state.drone_x;
     drone_msg.y = state.drone_y;
-    for (int n = 0; n<10; n++) { // Will it always be 10 targets in the observed state? What if not?
+    for (int n = 0; n < 10; n++) { // Will it always be 10 targets in the observed state? What if not?
       groundrobot_msg.groundRobot[n].x = state.target_x[n];
       groundrobot_msg.groundRobot[n].y = state.target_y[n];
       groundrobot_msg.groundRobot[n].theta = state.target_q[n];
-      groundrobot_msg.groundRobot[n].visible = obs_state.target_in_view[n];
+      groundrobot_msg.groundRobot[n].visible = state.target_in_view[n];
     }
 
     // Check if command done in sim and that
