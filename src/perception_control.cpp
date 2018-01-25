@@ -26,14 +26,13 @@ sim_Command action_ROS2Sim(GoalType goal){
   switch(goal.cmd){
 
     case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
-      // What happens here
+        command.type = sim_CommandType_Search;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF:
       command.type = sim_CommandType_LandOnTopOf;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
       command.type = sim_CommandType_LandInFrontOf; 
-      // How do we know if we should send LandInFrontOf of LandAtPoint?
       break;
     case ascend_msgs::ControlFSMGoal::SEARCH:
       command.type = sim_CommandType_Search;

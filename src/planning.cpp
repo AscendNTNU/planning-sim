@@ -19,7 +19,6 @@ planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
-bool action_done = true;
 
 World world = World(0);
 AIController ai_controller = AIController();
@@ -57,10 +56,6 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
         case land_In_Front_Of:
-            // GO_TO_XYZ until robot is close enough to not be able to drift away?
-            drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
-            break;
-        case land_At_Point:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case search:
