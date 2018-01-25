@@ -11,23 +11,16 @@
 #include "AI/AIController.h"
 #include "AI/structs.h"
 
-<<<<<<< HEAD
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 
-
-=======
->>>>>>> dev
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
-<<<<<<< HEAD
-
-=======
 bool action_done = true;
->>>>>>> dev
+
 World world = World(0);
 AIController ai_controller = AIController();
 
