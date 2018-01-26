@@ -99,37 +99,52 @@ int main(int argc, char **argv) {
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
-    
     action_t action = empty_action;
+    bool ready_for_new_action = true;
 
     ros::Rate rate(30.0);
     while (ros::ok()) {
         ros::spinOnce();
 
-        action = ai_controller.stateHandler();
+        if(ready_for_new_action) {
+            action = ai_controller.stateHandler();
 
-        if (robotsAtTurnTime(elapsed_time)) {
-            continue;
-        }
-
-        drone_action = action_plank2ROS(action);
-        client.sendGoal(drone_action);
-
-        // Can be passed ros::Duration(20) to timeout after 20 seconds
-        bool client_result = client.waitForResult(); 
-        //Check status
-        if(client_result) { // Quick fix for timer drift
-            auto state = client.getState();
-            if(state == state.SUCCEEDED) {
-                // Let stateHandler do its job in next iteration
-                continue;
-            } else if(state == state.ABORTED) {
-                // Ups, something went wrong, Control aborted action, or we timed it out
-                // Fly higher to see more?
-                // Lift off ground so we dont get disqualified?
+            if (robotsAtTurnTime(elapsed_time)) {
                 continue;
             }
+
+            drone_action = action_plank2ROS(action);
+            client.sendGoal(drone_action);
         }
-    }
+
+        auto action_state = client.getState();
+
+        // When no break is present, it falls through to next case
+        case(action_state){
+            case PENDING:
+                // Control node is processing the action
+            case ACTIVE:
+                ready_for_new_action = false;
+                break;
+            case RECALLED:
+                // We, the planning node emediately canceled
+            case PREEMPTING:
+                // Waiting for control node to confirm cancellation
+            case PREEMPTED:
+                // We, the planning node cancel the goal after a while
+            case REJECTED:
+                // Control rejected the action
+            case ABORTED:
+                // Control node aborted the goal
+                    // Fly higher to see more?
+                    // Lift off ground so we dont get disqualified?
+            case SUCCEEDED:
+                // The goal was successfull!
+            case LOST:
+                // Control node has no goal
+            default:
+                ready_for_new_action = true;
+                break;
+        }
     rate.sleep();
 }

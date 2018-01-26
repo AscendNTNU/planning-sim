@@ -26,7 +26,7 @@ sim_Command action_ROS2Sim(GoalType goal){
   switch(goal.cmd){
 
     case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
-        command.type = sim_CommandType_Search;
+      command.type = sim_CommandType_Search;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF:
       command.type = sim_CommandType_LandOnTopOf;
