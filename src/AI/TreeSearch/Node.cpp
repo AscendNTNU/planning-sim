@@ -13,7 +13,7 @@ Node::Node(){
 Node::Node(Observation state){
     this->state = state;
     this->from_action = empty_action;
-    this->reward = this->state.getStateValue();
+    this->reward = -10000;
     this->time_stamp = state.getTimeStamp();
     this->root = true;
     this->time_elapsed = 0;
@@ -81,7 +81,7 @@ void Node::createChildren(float tree_time_depth) {
         for(int j=1; j<11;j = j+3){
             action_t action;
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
-
+            std::cout << action << std::endl;
             AccessToSim sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
@@ -109,9 +109,10 @@ Observation simulateAction(action_t action, AccessToSim sim) {
     fly_to.type = search;
     Observation state = sim.simulateAction(fly_to);
     int tick = 0;
-    while(tick < 20*10 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 2)) {
+    while(tick < 40*10 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
         state = sim.stepNoCommand();
         tick++;
     }
+    //if tictimeout blah blah
     return sim.simulateAction(action);
 }

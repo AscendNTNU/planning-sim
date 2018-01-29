@@ -61,9 +61,15 @@ void AIController::idleState(){
     printf("Idle state\n");
 
     std::queue<action_t> current_action_queue_ = ai_.getBestGeneralActionQueue(this->observation);
-    this->current_action_ = current_action_queue_.front();
 
-	this->state_ = fly_to;
+    if (current_action_queue_.size() == 0) {
+        this->state_ = idle;
+    }
+    else {
+        this->current_action_ = current_action_queue_.front();
+        this->state_ = fly_to;
+    }
+    
 	return;
 }
 

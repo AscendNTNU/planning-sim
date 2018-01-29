@@ -19,15 +19,18 @@ Node TreeSearch::getBestNode() {
 }
 
 void TreeSearch::DFSBestAction(Node node) {
+    std::cout << "current best node reward: " << this->best_node.getReward() << std::endl;
+    std::cout << "this node reward: " << node.getReward() << std::endl;
+    std::cout << "root node reward: " << this->root.getReward() << std::endl;
+    
     if(node.getReward() > this->best_node.getReward()){
         this->best_node = node;
-        std::cout << "new best reward is " << this->best_node.getReward();
+        std::cout << "new best reward is " << this->best_node.getReward() << std::endl;
     }
 
     for (auto it = node.children.begin(); it != node.children.end(); it++) {
         Node child = *it;
         this->DFSBestAction(child);
-        std::cout << "out of dfs" << std::endl;
 
     }
 }
