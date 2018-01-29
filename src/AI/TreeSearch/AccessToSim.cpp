@@ -14,11 +14,10 @@ AccessToSim::AccessToSim(Observation observation) {
         Robot robot = observation.getRobot(i);
     
         // if(robot.getVisibility()){
-            point_t pos = robot.getPosition();
-
-            robots[i].x = pos.x;
-            robots[i].y = pos.y;
-            robots[i].q = robot.getOrientation();
+        point_t pos = robot.getPosition();
+        robots[i].x = pos.x;
+        robots[i].y = pos.y;
+        robots[i].q = robot.getOrientation();
         // }
 
         // else{
@@ -54,22 +53,19 @@ Observation AccessToSim::simulateAction(action_t action){
     this->state = sim_tick(this->state, cmd);
     cmd.type = sim_CommandType_NoCommand;
     while(!this->state.drone.cmd_done){
-        this->state = sim_tick(this->state, cmd);
+        for(int i = 0; i < 10; i++){
+            this->state = sim_tick(this->state, cmd);
+        }
     }
-    return getObservation();
-}
-
-Observation AccessToSim::step(action_t action) {
-    sim_Command cmd = convertToSimAction(action);
-    this->state = sim_tick(this->state, cmd);
     return getObservation();
 }
 
 Observation AccessToSim::stepNoCommand() {
     sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
-    this->state = sim_tick(this->state, cmd);
-
+    for(int i = 0; i < 10; i++){
+        this->state = sim_tick(this->state, cmd);
+    }
     return getObservation();
 }
 

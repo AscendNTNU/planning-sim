@@ -72,6 +72,7 @@ bool Node::isRoot(){
 
 void Node::createChildren(float tree_time_depth) {
     Observation state;
+    AccessToSim sim = AccessToSim(this->state);
     std::cout<<"Created child node" <<std::endl;
     for(int i=0; i<1 ; i++) { //hvorfor ser vi kun på en robot?
 

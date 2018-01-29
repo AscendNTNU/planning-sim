@@ -1256,11 +1256,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
 
                 }
             }
-
-
-
-
-
         } break;
     }
 

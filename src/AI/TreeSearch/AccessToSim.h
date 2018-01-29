@@ -10,7 +10,6 @@ class AccessToSim {
     public:
         AccessToSim(Observation observation);
         Observation simulateAction(action_t action);
-        Observation step(action_t action);
         Observation stepNoCommand();
         Observation getState();
         Observation getObservation();
