@@ -26,7 +26,7 @@ add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Dron
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-if(NOT $ENV{ROS_ENV} STREQUAL "production")
+if(NOT $ENV{ASCEND_ENV} STREQUAL "production")
 	add_executable(perception_control src/perception_control.cpp)
 	target_link_libraries(perception_control ${catkin_LIBRARIES})
 	add_dependencies(perception_control planning_ros_sim_generate_messages_cpp
