@@ -82,7 +82,7 @@ void Node::createChildren(float tree_time_depth) {
             action_t action;
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
             std::cout << action << std::endl;
-            AccessToSim sim = AccessToSim(this->state);
+            sim = AccessToSim(this->state);
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
 

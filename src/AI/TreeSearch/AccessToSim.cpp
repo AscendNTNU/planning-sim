@@ -13,18 +13,10 @@ AccessToSim::AccessToSim(Observation observation) {
     
         Robot robot = observation.getRobot(i);
     
-        // if(robot.getVisibility()){
         point_t pos = robot.getPosition();
         robots[i].x = pos.x;
         robots[i].y = pos.y;
         robots[i].q = robot.getOrientation();
-        // }
-
-        // else{
-        //     robots[i].x = -1;
-        //     robots[i].y = -1;
-        //     robots[i].q = 0;
-        // }
     }
 
     for (int i = 0; i < Num_Obstacles; i++) {
