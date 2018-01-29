@@ -969,6 +969,12 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
         robot.removed = false;
 
         TARGETS[i] = robot;
+
+        if (i == 0) {
+            std::cout << "Position of robot 0, from sim.h" << std::endl;
+            std::cout << "x: " << TARGETS[0].x << std::endl;
+            std::cout << "y: " << TARGETS[0].y << std::endl;
+        }
     }
 
     for (unsigned int i = 0; i < Num_Obstacles; i++)

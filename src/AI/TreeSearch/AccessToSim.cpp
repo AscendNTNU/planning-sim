@@ -34,6 +34,11 @@ AccessToSim::AccessToSim(Observation observation) {
     drone.y = pos.y;
     drone.q = pos.z;
 
+
+    std::cout << "Position of robot 0, from observation" << std::endl;
+    std::cout << "x: " << robots[0].x << std::endl;
+    std::cout << "y: " << robots[0].y << std::endl;
+
     sim_State state = sim_init_state(observation.getTimeStamp(), drone, robots, obstacles);
 
     this->state = state;

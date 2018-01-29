@@ -9,10 +9,10 @@ std::queue<action_t> AI::getBestGeneralActionQueue(Observation observation) {
     std::cout << "--searching tree--" << std::endl;
     tree.DFSBestAction(tree.getRoot());
     Node best_node  = tree.getBestNode();
-    std::cout << "Is best node the root? " << best_node.isRoot() << std::endl;
-    std::cout << "returning action queue" << std::endl;
+    std::cout << "--Is best node the root? " << best_node.isRoot() << std::endl;
+    std::cout << "--returning action queue" << std::endl;
     std::queue<action_t> queue = tree.getActionQueue(best_node);
-    std::cout << "number of actions in action queue: " << queue.size() << std::endl;
+    std::cout << "--number of actions in action queue: " << queue.size() << std::endl;
     return queue;
     //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
     //return getBestAction(target, observation);
