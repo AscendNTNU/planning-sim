@@ -14,6 +14,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
+using GoalState = actionlib::SimpleClientGoalState;
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -117,34 +118,35 @@ int main(int argc, char **argv) {
             client.sendGoal(drone_action);
         }
 
-        auto action_state = client.getState();
+        GoalState action_state = client.getState();
+
+        std::cout << action_state.toString() << std::endl;
 
         // When no break is present, it falls through to next case
-        case(action_state){
-            case PENDING:
+        switch(action_state){
+            case action_state.PENDING:
                 // Control node is processing the action
-            case ACTIVE:
+            case action_state.ACTIVE:
                 ready_for_new_action = false;
                 break;
-            case RECALLED:
+            case action_state.RECALLED:
                 // We, the planning node emediately canceled
-            case PREEMPTING:
-                // Waiting for control node to confirm cancellation
-            case PREEMPTED:
+            case action_state.PREEMPTED:
                 // We, the planning node cancel the goal after a while
-            case REJECTED:
+            case action_state.REJECTED:
                 // Control rejected the action
-            case ABORTED:
+            case action_state.ABORTED:
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
-            case SUCCEEDED:
+            case action_state.SUCCEEDED:
                 // The goal was successfull!
-            case LOST:
+            case action_state.LOST:
                 // Control node has no goal
             default:
                 ready_for_new_action = true;
                 break;
         }
-    rate.sleep();
+        rate.sleep();
+    }
 }
