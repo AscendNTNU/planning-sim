@@ -59,18 +59,14 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
-    ros::NodeHandle ground_robot_node;
-    ros::NodeHandle drone_node;
-    ros::NodeHandle command_node;
-    ros::NodeHandle time_node;
-    ros::NodeHandle command_done_node;
+    ros::NodeHandle node;
 
-    ros::Subscriber time_sub = time_node.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = ground_robot_node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = drone_node.subscribe("drone_chatter", 1000, drone_chatterCallback);
-    ros::Subscriber command_done_sub = command_done_node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
+    ros::Subscriber time_sub = node.subscribe("time_chatter", 1000, time_chatterCallback);
+    ros::Subscriber ground_robot_sub = node.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
+    ros::Subscriber drone_sub = node.subscribe("drone_chatter", 1000, drone_chatterCallback);
+    ros::Subscriber command_done_sub = node.subscribe("command_done_chatter", 100, command_done_chatterCallback);
 
-    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
+    ros::Publisher command_pub = node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
 
     planning_ros_sim::droneCmd drone_action;
 
