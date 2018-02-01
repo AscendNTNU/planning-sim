@@ -3,7 +3,7 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
-#include <ascend_msgs/DetectedRobots.h>
+#include <ascend_msgs/DetectedRobotsGlobalPositions.h>
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
@@ -25,7 +25,7 @@ void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
 }
 
-void tracker_chatterCallback(planning_ros_sim::track msg){
+void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions msg){
     observation_t robotObs = observation_Empty;
     for(int i = 0; i < 10; i++) {
     	if(i < msg.count){
