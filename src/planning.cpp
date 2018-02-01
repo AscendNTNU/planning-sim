@@ -120,33 +120,33 @@ int main(int argc, char **argv) {
 
         GoalState action_state = client.getState();
 
-        std::cout << action_state.toString() << std::endl;
-
         // When no break is present, it falls through to next case
-        switch(action_state){
-            case action_state.PENDING:
+        switch(action_state.state_){
+            case GoalState::PENDING:
                 // Control node is processing the action
-            case action_state.ACTIVE:
+            case GoalState::ACTIVE:
+                std::cout << "Hei-------------";
                 ready_for_new_action = false;
                 break;
-            case action_state.RECALLED:
+            case GoalState::RECALLED:
                 // We, the planning node emediately canceled
-            case action_state.PREEMPTED:
+            case GoalState::PREEMPTED:
                 // We, the planning node cancel the goal after a while
-            case action_state.REJECTED:
+            case GoalState::REJECTED:
                 // Control rejected the action
-            case action_state.ABORTED:
+            case GoalState::ABORTED:
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
-            case action_state.SUCCEEDED:
+            case GoalState::SUCCEEDED:
                 // The goal was successfull!
-            case action_state.LOST:
+            case GoalState::LOST:
                 // Control node has no goal
             default:
                 ready_for_new_action = true;
                 break;
         }
+        ready_for_new_action = false;
         rate.sleep();
     }
 }
