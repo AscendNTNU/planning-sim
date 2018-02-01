@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 
     ros::Subscriber data_sub = node.subscribe("/target_tracker/tracks", 1000, tracker_chatterCallback);
     
-    ros::Publisher data_pub = node.advertise<ascend_msgs::DetectedRobotsGlobalPositions>("groundRobotDetectionTopic", 1000);
+    ros::Publisher data_pub = node.advertise<ascend_msgs::DetectedRobotsGlobalPositions>("globalGroundRobotPosition", 1000);
     
     while (ros::ok()) {
         ros::Duration(0.1).sleep();

@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle node;
 
-    ros::Subscriber tracker_sub = node.subscribe("groundRobotDetectionTopic", 1000, tracker_chatterCallback);
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1000, tracker_chatterCallback);
     
     ros::Publisher command_pub = node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
     
