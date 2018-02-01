@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs mess
 
 #add_service_files(DIRECTORY srv FILES)
 
-add_message_files(FILES groundRobot.msg groundRobotList.msg droneCmd.msg)
+add_message_files(FILES groundRobot.msg groundRobotList.msg droneCmd.msg track.msg)
 
 ## Generate added messages and services
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
