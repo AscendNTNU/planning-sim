@@ -26,6 +26,10 @@ add_executable(planning src/planning.cpp)
 target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp ascend_msgs)
 
+add_executable(ai_conv src/conv.cpp)
+target_link_libraries(ai_conv ${catkin_LIBRARIES})
+add_dependencies(ai_conv planning_ros_sim_generate_messages_cpp ascend_msgs)
+
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)

@@ -2,19 +2,14 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
-#include "geometry_msgs/Pose2D.h"
 #include <ascend_msgs/DetectedRobotsGlobalPositions.h>
-#include "planning_ros_sim/groundRobotList.h"
-#include "planning_ros_sim/groundRobot.h"
+
 #include "planning_ros_sim/droneCmd.h"
-#include "planning_ros_sim/track.h"
+
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
-
-planning_ros_sim::groundRobotList GroundRobots;
-geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
 bool action_done = true;
