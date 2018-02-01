@@ -11,12 +11,33 @@ xterm -title 'build' -e 'catkin_make'
 cd $WORKDIR
 cd ..
 #g++ ai-sim/sim_no_gui.cpp -o sim_no_gui -lGL `sdl2-config --cflags --libs`
-if [ $? -eq 0 ]; then
-    echo COMPILED SUCCESS
-    xterm -title 'App1' -hold -e 'roscore' &
-	xterm -title 'App2' -hold -e 'rosrun planning_ros_sim benchmark_perception_control' &
-	xterm -title 'App3' -hold -e 'rosrun planning_ros_sim planning'
-else
-    echo COMPILED ERROR
-    $SHELL
-fi
+numRuns=5
+totalRobotsOut=0
+xterm -title 'roscore' -e 'roscore' &
+for i in $(seq 1 $numRuns);
+do
+	if [ $? -eq 0 ]; then
+	    echo COMPILED SUCCESS
+		statusfile1=$(mktemp)
+		statusfile2=$(mktemp)
+		xterm -title 'Perception_Control' -e sh -c 'rosrun planning_ros_sim benchmark_perception_control; echo $? > '$statusfile2 &
+	#	xterm -title 'Planning' -hold -e 'rosrun planning_ros_sim planning'
+		xterm -title 'Planning' -e -hold sh -c 'rosrun planning_ros_sim planning; echo $? > '$statusfile1
+		robotsOut=$(cat $statusfile1)
+		status=$(cat $statusfile2)
+		totalRobotsOut=$((totalRobotsOut+robotsOut))
+		rm $statusfile1
+		rm $statusfile2
+		echo "Robots Out: $robotsOut"
+		echo "Test: $status" 
+	else
+	    echo COMPILED ERROR
+	    $SHELL
+	fi
+done
+echo "Total Robots Out: $totalRobotsOut"
+#AverageRobotsOut = $((totalRobotsOut/numRuns))
+average=$(echo "scale=5;$totalRobotsOut/$numRuns" | bc)
+echo "Average Robots Out: $average"
+
+

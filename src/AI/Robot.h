@@ -22,6 +22,7 @@ private:
                                  ///< Remember that the robot turns for about 2 seconds.
     float speed;
     bool visible;
+    bool wasInteractedWith;
 public:
     ///Robot constructors
     Robot();
@@ -87,5 +88,17 @@ public:
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */
     bool isMoving();
+
+    /**
+    @brief returns whether or not the robot has interacted with the drone
+    @return if the robot has interacted with the drone or not
+    */
+    bool getWasInteractedWith();
+
+    /**
+    @brief sets the wasInteractedWith variable to true. Only sets to true, since it should never be reset to false after it is first set to true.
+    */
+    void setInteractedWithTrue();
+
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

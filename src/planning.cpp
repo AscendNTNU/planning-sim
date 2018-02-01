@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
 
-            action = ai_controller.stateHandler();
+            action = empty_action; //ai_controller.stateHandler();
 
             if(action.type != no_Command){
                 printf("sending command\n");
@@ -100,13 +100,18 @@ int main(int argc, char **argv) {
         }
  
     }
-    printf("Sim finished");
+    printf("Sim finished \n");
     int numOut = 0;
     for(int i = 0; i < 10; i++) {
         printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
-        if(ai_controller.observation.getRobot(i).getPosition().y>20) {
+        printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
+        // printf(ai_controller.observation.getRobot(i));
+        // std::cout << ai_controller.observation.getRobot(i) << std::endl;
+        if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
             numOut += 1;
         }
     }
     printf("# Robots out green: %d \n", numOut);
+    printf("%d", numOut);
+    exit(numOut);
 }
