@@ -3,6 +3,7 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
+#include <ascend_msgs/DetectedRobots.h>
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
@@ -26,13 +27,18 @@ void time_chatterCallback(std_msgs::Float32 msg) {
 
 void tracker_chatterCallback(planning_ros_sim::track msg){
     observation_t robotObs = observation_Empty;
-    for(int i = 0; i < msg.num_targets; i++) {
-            robotObs.robot_x[i] = msg.position_x[i];
-            robotObs.robot_y[i] = msg.position_y[i];
-            robotObs.robot_q[i] = 0;
+    for(int i = 0; i < 10; i++) {
+    	if(i < msg.count){
+            robotObs.robot_x[i] = msg.global_robot_position[i].x;
+            robotObs.robot_y[i] = msg.global_robot_position[i].y;
+            robotObs.robot_q[i] = msg.direction[i];
             robotObs.robot_visible[i] = true;
+        }
+        else{
+            robotObs.robot_visible[i] = false;
+        }
     }
-    elapsed_time = 20 - msg.time_until_180;
+    elapsed_time = 10;
     ai_controller.observation.updateRobot(robotObs, elapsed_time);   
 }
 
