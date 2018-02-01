@@ -34,7 +34,8 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
             robotObs.robot_x[i] = msg.groundRobot[i].x;
             robotObs.robot_y[i] = msg.groundRobot[i].y;
             robotObs.robot_q[i] = msg.groundRobot[i].theta;
-            robotObs.robot_visible[i] = msg.groundRobot[i].visible;
+            // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
+            robotObs.robot_visible[i] = true;
     }
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }
@@ -108,24 +109,28 @@ int main(int argc, char **argv) {
         ros::spinOnce();
 
         if(ready_for_new_action) {
+            printf("Getting new action");
             action = ai_controller.stateHandler();
+            printf("Got new action");
 
-            if (robotsAtTurnTime(elapsed_time)) {
+            if (robotsAtTurnTime(elapsed_time) || action.type == no_Command) {
+                printf("Continue loop");
                 continue;
             }
-
             drone_action = action_plank2ROS(action);
             client.sendGoal(drone_action);
+            printf("Sendt goal");
         }
 
         GoalState action_state = client.getState();
-
+        std::cout << "Action type: " << action.type << std::endl;
+        std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
         // When no break is present, it falls through to next case
         switch(action_state.state_){
             case GoalState::PENDING:
                 // Control node is processing the action
             case GoalState::ACTIVE:
-                std::cout << "Hei-------------";
+                printf("busy\n");
                 ready_for_new_action = false;
                 break;
             case GoalState::RECALLED:
@@ -143,10 +148,11 @@ int main(int argc, char **argv) {
             case GoalState::LOST:
                 // Control node has no goal
             default:
+                printf("free\n");
                 ready_for_new_action = true;
                 break;
         }
-        ready_for_new_action = false;
+
         rate.sleep();
     }
 }
