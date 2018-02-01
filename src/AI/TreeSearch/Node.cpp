@@ -18,19 +18,19 @@ Node::Node(Observation state){
     this->root = true;
     this->time_elapsed = 0;
     this->parent_p=NULL;
-    createChildren(15.0);
+    createChildren(10.0);
 }
 
 Node::Node(std::shared_ptr<Node> parent_p, Observation state, action_t action) {
     this->state = state;
     this->from_action = action;
     this->reward = this->state.getStateValue();
-    std::cout << "reward for node is " << this->reward << std::endl;
+    // std::cout << "reward for node is " << this->reward << std::endl;
     this->time_stamp = state.getTimeStamp();
     this->parent_p = parent_p;
     this->root = false;
     this->time_elapsed = parent_p->time_elapsed + (this->state.getTimeStamp() - parent_p->getTimeStamp());
-    createChildren(15.0);
+    createChildren(10.0);
 }
 
 std::shared_ptr<Node> Node::getParentPointer(){
@@ -77,16 +77,20 @@ void Node::createChildren(float tree_time_depth) {
     for(int i=0; i<1 ; i++) { //hvorfor ser vi kun på en robot?
 
         Robot robot = this->state.getRobot(i);
+        // std::cout << "robot index " << robot.getIndex() << std::endl;
 
         for(int j=1; j<11;j = j+3){
+            std::cout<<"==================" << std::endl;
             action_t action;
+            action.target = robot.getIndex();
             action.where_To_Act = robot.getCurrentPlank().getPoint(j).point;
             std::cout << action << std::endl;
             sim = AccessToSim(this->state);
+            
             action.type = land_On_Top_Of;
             state = simulateAction(action, sim);
 
-            std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
+            // std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
             }
@@ -94,10 +98,11 @@ void Node::createChildren(float tree_time_depth) {
             sim = AccessToSim(this->state);
             action.type = land_In_Front_Of;
             state = simulateAction(action, sim);
-            std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
+            // std::cout << "time elapsed since root node timestamp: " << this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) << std::endl;
             if(this->getTimeElapsed() + (state.getTimeStamp()-this->getTimeStamp()) < tree_time_depth){
                 this->children.push_back(Node(std::make_shared<Node>(*this), state, action));
             }
+            std::cout<<"==================" << std::endl;
         }
     }
 
@@ -109,9 +114,13 @@ Observation simulateAction(action_t action, AccessToSim sim) {
     fly_to.type = search;
     Observation state = sim.simulateAction(fly_to);
     int tick = 0;
-    while(tick < 40*10 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
+    while(tick < 10 && !pointsWithinThreshold(action.where_To_Act, state.getRobot(action.target).getPosition(), 0.5)) {
         state = sim.stepNoCommand();
         tick++;
+    }
+    if(tick >= 10
+        ){
+        std::cout << "time out :( " << std::endl;
     }
     //if tictimeout blah blah
     return sim.simulateAction(action);

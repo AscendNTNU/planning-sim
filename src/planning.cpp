@@ -28,7 +28,7 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
             robotObs.robot_x[i] = msg.groundRobot[i].x;
             robotObs.robot_y[i] = msg.groundRobot[i].y;
             robotObs.robot_q[i] = msg.groundRobot[i].theta;
-            robotObs.robot_visible[i] = msg.groundRobot[i].visible;
+            robotObs.robot_visible[i] = true;// msg.groundRobot[i].visible;
     }
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }

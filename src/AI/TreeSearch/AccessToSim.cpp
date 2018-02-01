@@ -35,9 +35,9 @@ AccessToSim::AccessToSim(Observation observation) {
     drone.q = pos.z;
 
 
-    std::cout << "Position of robot 0, from AccessToSim constructor" << std::endl;
-    std::cout << "x: " << robots[0].x << std::endl;
-    std::cout << "y: " << robots[0].y << std::endl;
+    // std::cout << "Position of robot 0, from AccessToSim constructor" << std::endl;
+    // std::cout << "x: " << robots[0].x << std::endl;
+    // std::cout << "y: " << robots[0].y << std::endl;
 
     sim_State state = sim_init_state(observation.getTimeStamp(), drone, robots, obstacles);
 
@@ -54,10 +54,15 @@ Observation AccessToSim::simulateAction(action_t action){
             this->state = sim_tick(this->state, cmd);
         }
     }
-
+    Observation obs = getObservation();
+    std::cout << "----Action is done simulating----" << std::endl;
+    std::cout << "Elapsed time: " << obs.getTimeStamp() << std::endl;
     std::cout << "Position of robot 0, from simulateAction in AccessToSim" << std::endl;
-    std::cout << "x: " << getObservation().getRobot(0).getPosition().x << std::endl;
-    std::cout << "y: " << getObservation().getRobot(0).getPosition().y << std::endl;
+    std::cout << "x: " << obs.getRobot(0).getPosition().x << std::endl;
+    std::cout << "y: " << obs.getRobot(0).getPosition().y << std::endl;
+    std::cout << "Position of drone, from simulateAction in AccessToSim" << std::endl;
+    std::cout << "x: " << obs.getDrone().getPosition().x << std::endl;
+    std::cout << "y: " << obs.getDrone().getPosition().y << std::endl;   
 
     return getObservation();
 }
@@ -68,10 +73,6 @@ Observation AccessToSim::stepNoCommand() {
     for(int i = 0; i < 10; i++){
         this->state = sim_tick(this->state, cmd);
     }
-    return getObservation();
-}
-
-Observation AccessToSim::getState() {
     return getObservation();
 }
 

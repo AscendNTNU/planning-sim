@@ -661,10 +661,10 @@ robot_fsm(sim_Robot *robot,robot_State state,
                 internal->reverse_count ++;
                 TransitionTo(Reverse);
             }
-            else if (event.elapsed_time - internal->last_noise > Noise_Interval)
-            {
-                TransitionTo(TrajectoryNoise);
-            }
+            // else if (event.elapsed_time - internal->last_noise > Noise_Interval)
+            // {
+            //     TransitionTo(TrajectoryNoise);
+            // }
             else if (event.is_bumper)
             {
                 TransitionTo(TargetCollision);
@@ -924,7 +924,7 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
 
     DRONE->x = drone.x;
     DRONE->y = drone.y;
-    DRONE->z = drone.q;
+    DRONE->z = Sim_Average_Flying_Heigth;
     DRONE->xr = 10.0f;
     DRONE->yr = 10.0f;
     DRONE->v_max = 1.0f;
@@ -971,7 +971,7 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
         TARGETS[i] = robot;
 
         if (i == 0) {
-            std::cout << "Position of robot 0, from sim.h" << std::endl;
+            std::cout << "Initial position of robot 0, from sim.h" << std::endl;
             std::cout << "x: " << TARGETS[0].x << std::endl;
             std::cout << "y: " << TARGETS[0].y << std::endl;
         }
