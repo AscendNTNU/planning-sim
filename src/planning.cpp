@@ -61,13 +61,11 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
-    ros::NodeHandle time_node;
-    ros::NodeHandle command_node;
+    ros::NodeHandle node;
 
-
-    ros::Subscriber tracker_sub = time_node.subscribe("tracker_chatter", 1000, tracker_chatterCallback);
+    ros::Subscriber tracker_sub = node.subscribe("groundRobotDetectionTopic", 1000, tracker_chatterCallback);
     
-    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
+    ros::Publisher command_pub = node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
     
     planning_ros_sim::droneCmd drone_action;
     
