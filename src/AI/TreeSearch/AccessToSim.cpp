@@ -35,7 +35,7 @@ AccessToSim::AccessToSim(Observation observation) {
     drone.q = pos.z;
 
 
-    std::cout << "Position of robot 0, from observation" << std::endl;
+    std::cout << "Position of robot 0, from AccessToSim constructor" << std::endl;
     std::cout << "x: " << robots[0].x << std::endl;
     std::cout << "y: " << robots[0].y << std::endl;
 
@@ -54,6 +54,11 @@ Observation AccessToSim::simulateAction(action_t action){
             this->state = sim_tick(this->state, cmd);
         }
     }
+
+    std::cout << "Position of robot 0, from simulateAction in AccessToSim" << std::endl;
+    std::cout << "x: " << getObservation().getRobot(0).getPosition().x << std::endl;
+    std::cout << "y: " << getObservation().getRobot(0).getPosition().y << std::endl;
+
     return getObservation();
 }
 
@@ -94,6 +99,7 @@ Observation AccessToSim::getObservation() {
 
     Observation observation = Observation();
     observation.update(new_observation, state.elapsed_time);
+
     return observation;
 }
 
