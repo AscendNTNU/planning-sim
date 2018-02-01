@@ -50,7 +50,7 @@ action_t AIController::stateHandler(){
 }
 
 void AIController::noInputDataState(){
-    // printf("No Input data state\n");
+    printf("No Input data state\n");
 	if(this->observation.getRobot(0).getPosition().x != 0){
     	this->state_ = idle;
     }
@@ -58,14 +58,14 @@ void AIController::noInputDataState(){
 }
 
 void AIController::idleState(){
-    // printf("Idle state\n");
+    printf("Idle state\n");
     this->current_action_ = ai_.getBestGeneralAction(this->observation);
 	this->state_ = fly_to;
 	return;
 }
 
 action_t AIController::flyToState(){
-    // printf("fly to state\n");	
+    printf("fly to state\n");	
 	if(this->current_action_.type==search){
 		this->state_ = idle;
 		return this->current_action_;
@@ -78,7 +78,7 @@ action_t AIController::flyToState(){
 }
 
 void AIController::waitingState(){
-    // printf("waiting state\n");
+    printf("waiting state\n");
     int target_id = this->current_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
@@ -105,7 +105,7 @@ void AIController::waitingState(){
 }
 
 action_t AIController::performActionState(){
-    // printf("action state\n");
+    printf("action state\n");
 	this->state_ = idle;
 	return this->current_action_; 
 }

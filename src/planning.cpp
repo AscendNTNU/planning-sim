@@ -82,14 +82,14 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
 
 // 
 bool robotsAtTurnTime(float elapsed_time) {
-    if (2.5 > fmod(elapsed_time, 20) || fmod(elapsed_time, 20) < 17.5) {
+    float rest = fmod(elapsed_time, 20); 
+    if (rest < 2.5 || rest > 17.5) {
         return true;
     }
     return false;
 }
 
 int main(int argc, char **argv) {
-
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
@@ -104,22 +104,20 @@ int main(int argc, char **argv) {
     action_t action = empty_action;
     bool ready_for_new_action = true;
 
-    ros::Rate rate(30.0);
+    ros::Rate rate(2.0);
     while (ros::ok()) {
         ros::spinOnce();
 
         if(ready_for_new_action) {
-            printf("Getting new action");
             action = ai_controller.stateHandler();
-            printf("Got new action");
 
             if (robotsAtTurnTime(elapsed_time) || action.type == no_Command) {
-                printf("Continue loop");
+                rate.sleep();
                 continue;
             }
+            ready_for_new_action = false;
             drone_action = action_plank2ROS(action);
             client.sendGoal(drone_action);
-            printf("Sendt goal");
         }
 
         GoalState action_state = client.getState();
