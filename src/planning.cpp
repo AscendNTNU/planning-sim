@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 
         if(action_done && 2.5 < fmod(elapsed_time, 20) && fmod(elapsed_time, 20) < 17.5 ) {
 
-            action = empty_action; //ai_controller.stateHandler();
+            action = ai_controller.stateHandler();
 
             if(action.type != no_Command){
                 printf("sending command\n");

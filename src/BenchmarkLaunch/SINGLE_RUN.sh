@@ -18,7 +18,7 @@ if [ $? -eq 0 ]; then
     echo COMPILED SUCCESS
 	statusfile1=$(mktemp)
 	statusfile2=$(mktemp)
-	xterm -title 'Perception_Control' -hold -e sh -c 'rosrun planning_ros_sim benchmark_perception_control; echo $? > '$statusfile2 &
+	xterm -title 'Perception_Control' -hold -e sh -c 'rosrun planning_ros_sim benchmark_perception_control 744; echo $? > '$statusfile2 &
 #	xterm -title 'Planning' -hold -e 'rosrun planning_ros_sim planning'
 	xterm -title 'Planning' -hold -e sh -c 'rosrun planning_ros_sim planning; echo $? > '$statusfile1
 	robotsOut=$(cat $statusfile1)

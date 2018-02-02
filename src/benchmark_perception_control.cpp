@@ -79,14 +79,23 @@ void droneCmd_chatterCallback(planning_ros_sim::droneCmd droneCmd_msg)
 
 int main(int argc, char **argv)
 {
-  printf("Perception/Control");
+  printf("Perception/Control \n");
+
+  int seed = 10;
+  if(argc > 1) {
+    std::cout << argv[0] << std::endl;
+    std::cout << argv[1] << std::endl;
+    std::string myString = argv[1];
+    seed = atoi(myString.c_str()); //value = 45
+    // printf("%s \n ", ~param_int);
+  }
+
+  printf("Seed: %d\n", seed);
+
   // sim_init_msgs(true);
   // sim_init(seed);  
   sim_State state;
-  if(argc > 0) {
-    std::cout << argv[0] << std::endl;
-  }
-  state = sim_init(10);
+  state = sim_init(seed);
   bool running = true;
   std::cout << "Time: " << state.elapsed_time << std::endl;
 
@@ -96,7 +105,10 @@ int main(int argc, char **argv)
   cmd.y = 0;
   cmd.i = 0;
 
+
+  
   ros::init(argc, argv, "perception_control");
+
   ros::NodeHandle l;
   ros::NodeHandle m;
   ros::NodeHandle n;
@@ -151,7 +163,7 @@ int main(int argc, char **argv)
     // printf("%f \n", obs_state.elapsed_time-prevTime);
     prevTime = obs_state.elapsed_time;
 
-    printf("%f\n", obs_state.elapsed_time);
+    // printf("%f\n", obs_state.elapsed_time);
     if(obs_state.elapsed_time > 600) {
       break;
     }
