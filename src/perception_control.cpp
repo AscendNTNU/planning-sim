@@ -67,6 +67,9 @@ int main(int argc, char **argv)
   std_msgs::Float32 time_msg; 
   std_msgs::Bool command_done_msg;
 
+  geometry_msgs::Point32 robot_position;
+  std_msgs::Float32 direction;
+
   ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::DetectedRobotsGlobalPositions>("globalGroundRobotPosition", 100);
   ros::Publisher drone_pub = node.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
   ros::Subscriber droneCmd_sub = node.subscribe("drone_cmd_chatter", 100, droneCmd_chatterCallback);
@@ -80,9 +83,11 @@ int main(int argc, char **argv)
     sim_Observed_State obs_state = state;
 
     for (int n = 0; n<10; n++){
-      groundrobot_msg.global_robot_position[n].x = obs_state.target_x[n];
-      groundrobot_msg.global_robot_position[n].y = obs_state.target_y[n];
-      groundrobot_msg.direction[n]= obs_state.target_q[n];
+      robot_position.x = obs_state.target_x[n];
+      robot_position.y = obs_state.target_y[n];
+      // direction.data = obs_state.target_q[n];
+      groundrobot_msg.global_robot_position.push_back(robot_position);
+      groundrobot_msg.direction.push_back(obs_state.target_q[n]);
     }
 
     drone_msg.x = obs_state.drone_x;
