@@ -33,7 +33,7 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions msg){
             robotObs.robot_visible[i] = false;
         }
     }
-    elapsed_time = 10;
+    // elapsed_time = 10;
     ai_controller.observation.updateRobot(robotObs, elapsed_time);   
 }
 
