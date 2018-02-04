@@ -60,22 +60,18 @@ int main(int argc, char **argv)
   cmd.i = 0;
 
   ros::init(argc, argv, "perception_control");
-  ros::NodeHandle l;
-  ros::NodeHandle m;
-  ros::NodeHandle n;
-  ros::NodeHandle o;
-  ros::NodeHandle command_done_node;
+  ros::NodeHandle node;
 
-  planning_ros_sim::groundRobotList groundrobot_msg;
+  ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
   geometry_msgs::Pose2D drone_msg;
   std_msgs::Float32 time_msg; 
   std_msgs::Bool command_done_msg;
 
-  ros::Publisher ground_robots_pub = l.advertise<ascend_msgs::DetectedRobotsGlobalPositions >("globalGroundRobotPosition", 100);
-  ros::Publisher drone_pub = m.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
-  ros::Subscriber droneCmd_sub = n.subscribe("drone_cmd_chatter", 100, droneCmd_chatterCallback);
-  ros::Publisher elapsed_time_pub = o.advertise<std_msgs::Float32>("time_chatter",100);
-  ros::Publisher command_done_pub = command_done_node.advertise<std_msgs::Bool>("command_done_chatter", 100);
+  ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::DetectedRobotsGlobalPositions>("globalGroundRobotPosition", 100);
+  ros::Publisher drone_pub = node.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
+  ros::Subscriber droneCmd_sub = node.subscribe("drone_cmd_chatter", 100, droneCmd_chatterCallback);
+  ros::Publisher elapsed_time_pub = node.advertise<std_msgs::Float32>("time_chatter",100);
+  ros::Publisher command_done_pub = node.advertise<std_msgs::Bool>("command_done_chatter", 100);
   ros::Rate loop_rate(10);
 
   while (ros::ok())
@@ -84,9 +80,9 @@ int main(int argc, char **argv)
     sim_Observed_State obs_state = state;
 
     for (int n = 0; n<10; n++){
-      groundrobot_msg.global_robot_position[i].x = obs_state.target_x[n];
-      groundrobot_msg.global_robot_position[i].y = obs_state.target_y[n];
-      groundrobot_msg.direction[i]= obs_state.target_q[n];
+      groundrobot_msg.global_robot_position[n].x = obs_state.target_x[n];
+      groundrobot_msg.global_robot_position[n].y = obs_state.target_y[n];
+      groundrobot_msg.direction[n]= obs_state.target_q[n];
     }
 
     drone_msg.x = obs_state.drone_x;
