@@ -33,16 +33,14 @@
 #include <stdarg.h>
 #include <array>
 
+#define Sim_Robot_Wheel_Distance (0.5f)   // Meters between iRobot wheels
+
 #ifndef SIM_HEADER_INCLUDE
 #define SIM_HEADER_INCLUDE
 #define Num_Obstacles (4)  // Number of robots with pole
 #define Num_Targets   (10) // Number of robots without pole
 #define Num_Robots    (Num_Obstacles + Num_Targets)
-#define Num_max_text_length (128) // Maximum number of bytes for each target text
 
-
-
-#define pixels_each_meter (1) //for heatmap
 
 enum sim_CommandType
 {
@@ -62,8 +60,6 @@ struct sim_Command
     float x;
     float y;
     int i; //if sim_CommandType_Land is used, should only be applied for debug purposes
-    float heatmap[pixels_each_meter*pixels_each_meter*20*20];
-    char text[Num_max_text_length*Num_Targets+Num_max_text_length];
 
     float reward;
 };
@@ -77,10 +73,7 @@ struct sim_Observed_State
     bool  drone_cmd_done;
     int num_Targets;
 
-    bool  target_in_view[Num_Targets];
-    bool  target_reversing[Num_Targets];
     bool  target_removed[Num_Targets];
-    float target_reward[Num_Targets];
 
     float target_x[Num_Targets];
     float target_y[Num_Targets];
@@ -170,8 +163,6 @@ void               sim_write_snapshot(char*, sim_Observed_State);
                                           // drive behind an edge, before it
                                           // is removed.
 
-#define Sim_Robot_Wheel_Distance (0.5f)   // Meters between iRobot wheels
-
 #define Sim_Target_Init_Radius (1.0f)     // Initial target spawn radius
 
 #define Sim_Obstacle_Init_Radius (5.0f)   // Initial obstacle spawn radius
@@ -243,7 +234,6 @@ struct robot_Internal
     sim_Time last_reverse;
     sim_Time time_since_last_reverse;
     sim_Time time_to_next_reverse;
-    int reverse_count;
     bool initialized;
 };
 
@@ -267,11 +257,7 @@ struct robot_Action
     //   r := Wheel radius
     float left_wheel;
     float right_wheel;
-    bool red_led;
-    bool green_led;
 
-    bool was_top_touched;
-    bool was_bumped;
 };
 
 struct sim_Robot
@@ -294,7 +280,6 @@ struct sim_Robot
     float forward_y;
 
     bool removed;
-    int reward;
 };
 
 struct sim_Drone
@@ -315,13 +300,6 @@ struct sim_Drone
 
 struct sim_State
 {
-    // Random-number-generator state
-    unsigned int seed;
-    unsigned int xor128_x;
-    unsigned int xor128_y;
-    unsigned int xor128_z;
-    unsigned int xor128_w;
-
     sim_Time elapsed_time;
     sim_Drone drone;
     sim_Robot robots[Num_Robots];
@@ -351,75 +329,6 @@ static sim_Robot *ROBOTS;
 static sim_Robot *OBSTACLES;
 static sim_Robot *TARGETS;
 static sim_Drone *DRONE;
-
-// This algorithm has a maximal period of 2^128 − 1.
-// https://en.wikipedia.org/wiki/Xorshift
-static void
-xor128(unsigned int *in_out_x,
-       unsigned int *in_out_y,
-       unsigned int *in_out_z,
-       unsigned int *in_out_w)
-{
-    unsigned int x = *in_out_x;
-    unsigned int y = *in_out_y;
-    unsigned int z = *in_out_z;
-    unsigned int w = *in_out_w;
-    unsigned int t = x ^ (x << 11);
-    *in_out_x = y;
-    *in_out_y = z;
-    *in_out_z = w;
-    *in_out_w = w ^ (w >> 19) ^ t ^ (t >> 8);
-}
-
-static unsigned int
-_xor128()
-{
-    xor128(&INTERNAL->xor128_x,
-           &INTERNAL->xor128_y,
-           &INTERNAL->xor128_z,
-           &INTERNAL->xor128_w);
-    unsigned int result = INTERNAL->xor128_w;
-    return result;
-}
-
-static int
-random_0_64()
-{
-    return _xor128() % 65;
-}
-
-//used for returning a text which can be used for debug. The first string is the text which
-//goes into the text field of the drone.
-//The next is the groundrobot texts starting with 0 at the first position, and looping up to Num_Targets
-static void
-get_char_text(char cmd_text[Num_max_text_length+Num_max_text_length*Num_Targets], const char*  drone_text,  char const * ground_robots[],int size=Num_Targets)
-{
-
-    for(int i = 0; i < Num_max_text_length*Num_Targets+Num_max_text_length; i++){
-        cmd_text[i] = '$';
-    }
-    for(int i = 0; i < strlen(drone_text); i++){
-        cmd_text[i] = drone_text[i];
-    }
-
-    for (int i = 0; i < size; i++) {
-        char str[strlen(ground_robots[i])];
-        strncpy(str,ground_robots[i],strlen(ground_robots[i]));
-
-        int k = 0;
-        str[strlen(str)] = '$';
-
-        for (int bit = i*Num_max_text_length+Num_max_text_length; bit < i*Num_max_text_length+Num_max_text_length*2; bit++){
-             if(k>=strlen(str)){
-                break;
-             }
-             cmd_text[bit] = str[k];
-             k++;
-
-        }
-     }
-
-}
 
 struct sim_Command command_Empty = {
     .type = sim_CommandType_NoCommand,
@@ -466,7 +375,7 @@ ObstacleWaitStart(robot_Event event,
                   robot_Internal *internal,
                   robot_Action *action)
 {
-    action->red_led = 1;
+    return;
 }
 
 static void
@@ -474,8 +383,6 @@ ObstacleRunStart(robot_Event event,
                  robot_Internal *internal,
                  robot_Action *action)
 {
-    action->red_led = 1;
-    action->green_led = 0;
     action->left_wheel = Robot_Speed - 9 * Millimeters / Seconds;
     action->right_wheel = Robot_Speed + 9 * Millimeters / Seconds;
 }
@@ -487,8 +394,6 @@ ObstacleCollisionStart(robot_Event event,
 {
     action->left_wheel = 0.0f;
     action->right_wheel = 0.0f;
-    action->red_led = 1;
-    action->green_led = 1;
 }
 
 static void
@@ -496,7 +401,7 @@ TargetWaitStart(robot_Event event,
                 robot_Internal *internal,
                 robot_Action *action)
 {
-    action->green_led = 1;
+    return;
 }
 
 static void
@@ -506,8 +411,6 @@ TargetRunStart(robot_Event event,
 {
     action->left_wheel = Robot_Speed;
     action->right_wheel = Robot_Speed;
-    action->green_led = 1;
-    action->red_led = 0;
 }
 
 static void
@@ -515,12 +418,7 @@ TrajectoryNoiseStart(robot_Event event,
                      robot_Internal *internal,
                      robot_Action *action)
 {
-    int offset = random_0_64() - 32;
-    float offset_mps = (float)offset * Millimeters / Seconds;
-    action->left_wheel = Robot_Speed - offset_mps;
-    action->right_wheel = Robot_Speed + offset_mps;
-    action->red_led = 1;
-    internal->begin_noise = event.elapsed_time;
+    return;
 }
 
 static void
@@ -530,7 +428,6 @@ ReverseStart(robot_Event event,
 {
     action->left_wheel = -Robot_Speed / 2.0f;
     action->right_wheel = Robot_Speed / 2.0f;
-    action->red_led = 1;
     internal->begin_reverse = event.elapsed_time;
 }
 
@@ -550,7 +447,6 @@ TopTouchStart(robot_Event event,
 {
     action->left_wheel = -Robot_Speed / 2.0f;
     action->right_wheel = Robot_Speed / 2.0f;
-    action->red_led = 1;
     internal->begin_top_touch = event.elapsed_time;
 }
 
@@ -560,18 +456,14 @@ robot_fsm(sim_Robot *robot,robot_State state,
           robot_Event event,
           robot_Action *action)
 {
-    action->was_bumped = 0;
-    action->was_top_touched = 0;
     internal->time_since_last_reverse =  event.elapsed_time - internal->last_reverse;
     internal->time_to_next_reverse =  Reverse_Interval - internal->time_since_last_reverse;
 
 
     if (!internal->initialized)
     {
-        internal->begin_noise = event.elapsed_time;
         internal->begin_reverse = event.elapsed_time;
         internal->begin_top_touch = event.elapsed_time;
-        internal->last_noise = event.elapsed_time;
         internal->last_reverse = event.elapsed_time;
 
         internal->initialized = true;
@@ -658,7 +550,6 @@ robot_fsm(sim_Robot *robot,robot_State state,
                 internal->time_since_last_reverse =  event.elapsed_time - internal->last_reverse;
                 internal->time_to_next_reverse =  Reverse_Interval - internal->time_since_last_reverse;
 
-                internal->reverse_count ++;
                 TransitionTo(Reverse);
             }
             // else if (event.elapsed_time - internal->last_noise > Noise_Interval)
@@ -714,15 +605,12 @@ robot_fsm(sim_Robot *robot,robot_State state,
 
         case Robot_TargetCollision:
         {
-            action->was_bumped = 1;
-            internal->reverse_count ++;
             robot->plank_angle = robot->plank_angle - PI;
             TransitionTo(Reverse);
         } break;
 
         case Robot_TopTouch:
         {
-            action->was_top_touched = 1;
             if (event.is_wait_sig)
             {
                 TransitionTo(TargetWait);
@@ -756,7 +644,8 @@ static void
 robot_integrate(sim_Robot *robot, float dt)
 {
     float v = 0.5f * (robot->vl + robot->vr);
-    float w = (robot->vr - robot->vl) / (robot->L*0.5f);
+
+    float w = (robot->vr - robot->vl) / (Sim_Robot_Wheel_Distance*0.5f);
     robot->x += v * cosf(robot->q) * dt;
     robot->y += v * sinf(robot->q) * dt;
     robot->q += w * dt;
@@ -794,23 +683,6 @@ sim_State sim_init(unsigned int seed)
 
     INTERNAL->elapsed_time = 0.0f;
 
-    // Use the seed to set the initial state of the xorshift
-    {
-        // Pick out some pieces of the number
-        // TODO: Does this pattern generate bad sequences?
-        INTERNAL->seed = seed;
-        INTERNAL->xor128_x = seed & 0xaa121212;
-        INTERNAL->xor128_y = seed & 0x21aa2121;
-        INTERNAL->xor128_z = seed & 0x1212aa12;
-        INTERNAL->xor128_w = seed & 0x212a12aa;
-
-        // Seeds must be nonzero
-        if (INTERNAL->xor128_x == 0) INTERNAL->xor128_x++;
-        if (INTERNAL->xor128_y == 0) INTERNAL->xor128_y++;
-        if (INTERNAL->xor128_z == 0) INTERNAL->xor128_z++;
-        if (INTERNAL->xor128_w == 0) INTERNAL->xor128_w++;
-    }
-
     DRONE->x = 10.0f;
     DRONE->y = 10.0f;
     DRONE->z = Sim_Average_Flying_Heigth; // TODO: Dynamics for z when landing
@@ -840,8 +712,6 @@ sim_State sim_init(unsigned int seed)
         // the +-9mm/s number. (Does it actually refer to
         // angular velocity?).
 
-        robot.L = Sim_Robot_Wheel_Distance;
-
         // Spawn each ground robot in a circle
 
         float t = TWO_PI * i / (float)(Num_Targets);
@@ -868,8 +738,6 @@ sim_State sim_init(unsigned int seed)
 
         sim_Robot robot = {};
 
-        robot.L = Sim_Robot_Wheel_Distance;
-
         // The obstacles are also spawned in a circle,
         // but at an initial radius of 5 meters.
         robot.x = 10.0f + Sim_Obstacle_Init_Radius * cosf(t);
@@ -878,7 +746,6 @@ sim_State sim_init(unsigned int seed)
         robot.internal.initialized = false;
         robot.state = Robot_Start;
         robot.removed = false;
-        robot.reward = 0;
 
         OBSTACLES[i] = robot;
     }
@@ -895,7 +762,6 @@ sim_State sim_init(unsigned int seed)
 // Robots are a list of x, y and angle points.
 sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_Position, Num_Targets> robots, std::array<sim_Position, Num_Obstacles> obstacles)
 {
-    unsigned int seed = 0;
     sim_State result;
     INTERNAL = &result;
     DRONE = &INTERNAL->drone;
@@ -904,23 +770,6 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
     OBSTACLES = INTERNAL->robots + Num_Targets;
 
     INTERNAL->elapsed_time = elapsed_time;
-
-    // Use the seed to set the initial state of the xorshift
-    {
-        // Pick out some pieces of the number
-        // TODO: Does this pattern generate bad sequences?
-        INTERNAL->seed = seed;
-        INTERNAL->xor128_x = seed & 0xaa121212;
-        INTERNAL->xor128_y = seed & 0x21aa2121;
-        INTERNAL->xor128_z = seed & 0x1212aa12;
-        INTERNAL->xor128_w = seed & 0x212a12aa;
-
-        // Seeds must be nonzero
-        if (INTERNAL->xor128_x == 0) INTERNAL->xor128_x++;
-        if (INTERNAL->xor128_y == 0) INTERNAL->xor128_y++;
-        if (INTERNAL->xor128_z == 0) INTERNAL->xor128_z++;
-        if (INTERNAL->xor128_w == 0) INTERNAL->xor128_w++;
-    }
 
     DRONE->x = drone.x;
     DRONE->y = drone.y;
@@ -950,8 +799,6 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
         // equations, the measurements, or how I'm interpreting
         // the +-9mm/s number. (Does it actually refer to
         // angular velocity?).
-
-        robot.L = Sim_Robot_Wheel_Distance;
 
         // Spawn each ground robot in a circle
 
@@ -983,8 +830,6 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
 
         sim_Robot robot = {};
 
-        robot.L = Sim_Robot_Wheel_Distance;
-
         // The obstacles are also spawned in a circle,
         // but at an initial radius of 5 meters.
         robot.x = obstacles[i].x;
@@ -993,7 +838,6 @@ sim_State sim_init_state(float elapsed_time, sim_Position drone, std::array<sim_
         robot.internal.initialized = false;
         robot.state = Robot_Start;
         robot.removed = false;
-        robot.reward = 0;
 
         OBSTACLES[i] = robot;
     }
@@ -1105,13 +949,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
                         DRONE->cmd.type = sim_CommandType_NoCommand;
                     }
                 }
-                // if (TARGETS[DRONE->cmd.i].action.was_top_touched)
-                // {
-                //     DRONE->land_timer = 0.0f;
-                //     DRONE->landing = false;
-                //     DRONE->cmd_done = true;
-                //     DRONE->cmd.type = sim_CommandType_NoCommand;
-                // }
             }
 
 
@@ -1158,12 +995,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
                         DRONE->cmd.type = sim_CommandType_NoCommand;
                     }
                 }
-                // if (TARGETS[DRONE->cmd.i].action.was_bumped)
-                // {
-                //     DRONE->landing = false;
-                //     DRONE->cmd_done = true;
-                //     DRONE->cmd.type = sim_CommandType_NoCommand;
-                // }
           }
         } break;
 
@@ -1301,9 +1132,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
             } break;
         }
 
-
-
-
         // Check for collisions and compute the average resolve
         // delta vector. The resolve delta will be used to move
         // the robot away so it no longer collides.
@@ -1317,10 +1145,10 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
             {
                 float x1 = ROBOTS[i].x;
                 float y1 = ROBOTS[i].y;
-                float r1 = ROBOTS[i].L * 0.5f;
+                float r1 = Sim_Robot_Wheel_Distance * 0.5f;
                 float x2 = ROBOTS[n].x;
                 float y2 = ROBOTS[n].y;
-                float r2 = ROBOTS[n].L * 0.5f;
+                float r2 = Sim_Robot_Wheel_Distance * 0.5f;
                 float dx = x1 - x2;
                 float dy = y1 - y2;
                 float L = vector_length(dx, dy);
@@ -1348,39 +1176,6 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
         // Compute the average resolve
         // delta vector. The resolve delta will be used to move
         // the robot away so it no longer collides.
-       if (DRONE->on_ground){
-            float x1 = ROBOTS[i].x;
-            float y1 = ROBOTS[i].y;
-            float r1 = ROBOTS[i].L * 0.5f;
-            float x2 = DRONE->x;
-            float y2 = DRONE->y;
-            float r2 = Sim_Drone_Radius;
-            float dx = x1 - x2;
-            float dy = y1 - y2;
-            float L = vector_length(dx, dy);
-            float intersection = r2 + r1 - L;
-            if (intersection > 0.0f)
-            {
-                collision[i].hits++;
-                collision[i].resolve_delta_x += (dx / L) * intersection;
-                collision[i].resolve_delta_y += (dy / L) * intersection;
-
-                // The robot only reacts (in a fsm sense) if the collision
-                // triggers the bumper sensor in front of the robot. (We
-                // still resolve physical collisions anyway, though).
-                // TODO: Determine the angular region that the bumper
-                // sensor covers (I have assumed 180 degrees).
-                bool on_bumper = (dx * ROBOTS[i].forward_x +
-                                  dy * ROBOTS[i].forward_y) <= 0.0f;
-                if (on_bumper)
-                    collision[i].bumper_hits++;
-            }
-        }
-
-
-
-
-
 
         if (collision[i].hits > 0)
         {
@@ -1401,12 +1196,11 @@ sim_State sim_tick(sim_State state, sim_Command new_cmd)
             ROBOTS[i].y < -Sim_Target_Removal_Margin)
         {
             ROBOTS[i].removed = true;
-            ROBOTS[i].reward--;
         }
         else if(ROBOTS[i].y > 20.0f + Sim_Target_Removal_Margin){
             ROBOTS[i].removed = true;
-            ROBOTS[i].reward++;
         }
+        
         if (collision[i].hits > 0)
         {
             ROBOTS[i].x += collision[i].resolve_delta_x * 1.02f;
@@ -1439,21 +1233,12 @@ sim_Observed_State sim_observe_state(sim_State state)
     result.num_Targets = Num_Targets;
     sim_Robot *targets = state.robots;
     sim_Robot *obstacles = state.robots + Num_Targets;
-    float visible_radius = 2*compute_drone_view_radius(state.drone.z);
     for (unsigned int i = 0; i < Num_Targets; i++)
     {
-        float dx = state.drone.x - targets[i].x;
-        float dy = state.drone.y - targets[i].y;
-        if (vector_length(dx, dy) <= visible_radius)
-            result.target_in_view[i] = true;
-        else
-            result.target_in_view[i] = false;
         result.target_removed[i] = targets[i].removed;
-        result.target_reward[i] = targets[i].reward;
         result.target_x[i] = targets[i].x;
         result.target_y[i] = targets[i].y;
         result.target_q[i] = targets[i].q;
-        result.target_reversing[i] = (targets[i].state == Robot_Reverse);
 
     }
     for (unsigned int i = 0; i < Num_Obstacles; i++)
@@ -1476,18 +1261,12 @@ sim_Observed_State sim_observe_everything(sim_State state)
     result.drone_cmd_done = state.drone.cmd_done;
     sim_Robot *targets = state.robots;
     sim_Robot *obstacles = state.robots + Num_Targets;
-    float visible_radius = compute_drone_view_radius(state.drone.z);
     for (unsigned int i = 0; i < Num_Targets; i++)
     {
-        float dx = state.drone.x - targets[i].x;
-        float dy = state.drone.y - targets[i].y;
-        result.target_in_view[i] = true;
         result.target_removed[i] = targets[i].removed;
-        result.target_reward[i] = targets[i].reward;
         result.target_x[i] = targets[i].x;
         result.target_y[i] = targets[i].y;
         result.target_q[i] = targets[i].q;
-        result.target_reversing[i] = (targets[i].state == Robot_Reverse);
 
     }
     for (unsigned int i = 0; i < Num_Obstacles; i++)
@@ -1511,35 +1290,5 @@ static FILE *stbi__fopen(char const *filename, char const *mode)
 #endif
    return f;
 }
-
-sim_Observed_State sim_load_snapshot(char *filename)
-{
-    FILE *file = stbi__fopen(filename, "rb+");
-    assert(file);
-
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    rewind(file);
-
-    char *buffer = (char*)malloc(size);
-    assert(buffer);
-
-    size_t read_bytes = fread(buffer, 1, size, file);
-    assert(read_bytes == sizeof(sim_Observed_State));
-
-    sim_Observed_State result = *(sim_Observed_State*)buffer;
-    fclose(file);
-    free(buffer);
-    return result;
-}
-
-void sim_write_snapshot(char *filename, sim_Observed_State state)
-{
-    FILE *file = stbi__fopen(filename, "wb+");
-    assert(file);
-    fwrite((char*)&state, 1, sizeof(sim_Observed_State), file);
-    fclose(file);
-}
-
 
 #endif // SIM_IMPLEMENTATION
