@@ -86,7 +86,7 @@ int main(int argc, char **argv)
     for (int n = 0; n<10; n++){
       robot_position.x = obs_state.target_x[n];
       robot_position.y = obs_state.target_y[n];
-      // direction.data = obs_state.target_q[n];
+      direction.data = obs_state.target_q[n];
       groundrobot_msg.global_robot_position.push_back(robot_position);
       groundrobot_msg.direction.push_back(obs_state.target_q[n]);
     }
