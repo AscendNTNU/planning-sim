@@ -81,7 +81,8 @@ int main(int argc, char **argv)
   {
     sim_recv_state(&state);
     sim_Observed_State obs_state = state;
-
+    
+    groundrobot_msg.count = 10;
     for (int n = 0; n<10; n++){
       robot_position.x = obs_state.target_x[n];
       robot_position.y = obs_state.target_y[n];

@@ -47,6 +47,7 @@ bool Robot::getVisibility() {
 bool Robot::isMoving() {
     if (this->old_Position.x == this->position.x &&
         this->old_Position.y == this->position.y) {
+        std::cout << "not moving!!!"<<std::endl;
         return false;
     } else {
         return true;
