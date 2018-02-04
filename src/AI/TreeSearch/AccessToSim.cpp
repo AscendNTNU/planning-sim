@@ -44,27 +44,77 @@ AccessToSim::AccessToSim(Observation observation) {
     this->state = state;
 }
 
-Observation AccessToSim::simulateAction(action_t action){
 
-    sim_Command cmd = convertToSimAction(action);
-    this->state = sim_tick(this->state, cmd);
+bool AccessToSim::simulateActionSequence(action_t action, float time_limit){
+    bool time_out = false;
+    time_out = simulateFlyToAction(action, time_limit);
+    time_out = simulateWaitForRobot(action, time_limit);
+    time_out = simulateRobotAction(action, time_limit);
+
+    return time_out;
+}
+
+bool AccessToSim::simulateFlyToAction(action_t action, float time_limit){
+    action.type = search;
+    bool time_out = this->simulateAction(action, time_limit);
+    return time_out;
+}
+
+bool AccessToSim::simulateRobotAction(action_t action, float time_limit){
+    bool time_out = this->simulateAction(action, time_limit);
+    return time_out;
+}
+
+bool AccessToSim::simulateWaitForRobot(action_t action, float time_limit){
+    sim_Command cmd;
     cmd.type = sim_CommandType_NoCommand;
-    while(!this->state.drone.cmd_done){
-        for(int i = 0; i < 10; i++){
+
+    float start_time = this->state.elapsed_time;
+    bool target_nearby = false;
+
+    while(!this->state.drone.cmd_done && !target_nearby){
+
+        for(int i = 0; i < 20; i++){
             this->state = sim_tick(this->state, cmd);
         }
-    }
-    Observation obs = getObservation();
-    std::cout << "----Action is done simulating----" << std::endl;
-    std::cout << "Elapsed time: " << obs.getTimeStamp() << std::endl;
-    std::cout << "Position of robot 0, from simulateAction in AccessToSim" << std::endl;
-    std::cout << "x: " << obs.getRobot(0).getPosition().x << std::endl;
-    std::cout << "y: " << obs.getRobot(0).getPosition().y << std::endl;
-    std::cout << "Position of drone, from simulateAction in AccessToSim" << std::endl;
-    std::cout << "x: " << obs.getDrone().getPosition().x << std::endl;
-    std::cout << "y: " << obs.getDrone().getPosition().y << std::endl;   
 
-    return getObservation();
+        target_nearby = pointsWithinThreshold(action.where_To_Act, this->getRobot(action.target).getPosition(), 0.5);
+
+        if(this->state.elapsed_time - start_time > time_limit){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AccessToSim::simulateAction(action_t action, float time_limit){
+
+    sim_Command cmd = convertToSimAction(action);
+    float start_time = this->state.elapsed_time;
+
+    this->state = sim_tick(this->state, cmd);
+
+    cmd.type = sim_CommandType_NoCommand;
+
+    while(!this->state.drone.cmd_done){
+        for(int i = 0; i < 20; i++){
+            this->state = sim_tick(this->state, cmd);
+        }
+        if(this->state.elapsed_time - start_time > time_limit){
+            return true;
+        }
+    }
+    // Observation obs = getObservation();
+    // std::cout << "----Action is done simulating----" << std::endl;
+    // std::cout << "Elapsed time: " << obs.getTimeStamp() << std::endl;
+    // std::cout << "Position of robot 0, from simulateAction in AccessToSim" << std::endl;
+    // std::cout << "x: " << obs.getRobot(0).getPosition().x << std::endl;
+    // std::cout << "y: " << obs.getRobot(0).getPosition().y << std::endl;
+    // std::cout << "Position of drone, from simulateAction in AccessToSim" << std::endl;
+    // std::cout << "x: " << obs.getDrone().getPosition().x << std::endl;
+    // std::cout << "y: " << obs.getDrone().getPosition().y << std::endl; 
+
+    return false;
 }
 
 Observation AccessToSim::stepNoCommand() {
@@ -77,27 +127,9 @@ Observation AccessToSim::stepNoCommand() {
 }
 
 Observation AccessToSim::getObservation() {
-    sim_Observed_State state = sim_observe_everything(this->state);
 
-    observation_t new_observation;
-    new_observation.elapsed_time = state.elapsed_time;
-    new_observation.num_Targets = Num_Targets;
-    new_observation.drone_x = state.drone_x;
-    new_observation.drone_y = state.drone_y;
-    new_observation.drone_cmd_done = state.drone_cmd_done;
-
-    for (int i = 0; i < Num_Targets; i++) {
-        new_observation.robot_x[i] = state.target_x[i];
-        new_observation.robot_y[i] = state.target_y[i];
-        new_observation.robot_q[i] = state.target_q[i];
-    }
-
-    for (int i = 0; i < Num_Obstacles; i++) {
-        new_observation.obstacle_x[i] = state.obstacle_x[i];
-        new_observation.obstacle_y[i] = state.obstacle_y[i];
-        new_observation.obstacle_q[i] = state.obstacle_q[i];
-    }
-
+    observation_t new_observation = this->getObservationStruct();
+    
     Observation observation = Observation();
     observation.update(new_observation, state.elapsed_time);
 
@@ -136,6 +168,20 @@ Drone AccessToSim::getDrone() {
     drone.update(observation);
 
     return drone;
+}
+
+Robot AccessToSim::getRobot(int i){
+    
+    observation_t observation = this->getObservationStruct();
+    float elapsed_time = observation.elapsed_time;
+    Robot robot = Robot();
+    point_t position;
+    position.x = observation.robot_x[i];
+    position.y = observation.robot_y[i];
+    float orientation = observation.robot_q[i];
+    robot.update(i, position, orientation, elapsed_time, true);
+
+    return robot;
 }
 
 std::array<Robot, 10> AccessToSim::getRobots() {

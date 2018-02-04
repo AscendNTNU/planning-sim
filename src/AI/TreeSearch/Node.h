@@ -12,7 +12,7 @@ class Node {
         float reward;
         float time_stamp;
         float time_elapsed;
-        bool root;
+        int depth;
 
     public:
         std::list<Node> children;
@@ -29,6 +29,8 @@ class Node {
         //std::list<Node*> getChildren();
         std::shared_ptr<Node> getParentPointer();
         action_t getAction();
+
+        int getDepth();
 
         bool isRoot();
         void createChildren(float tree_time_depth);
