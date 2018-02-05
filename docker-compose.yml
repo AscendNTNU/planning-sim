@@ -4,13 +4,26 @@ services:
   nodes:
     image: ascendntnu/ros-kinetic:1.0
     tty: true
+    environment:
+      - ASCEND_ENV
     command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && roslaunch planning_ros_sim run_nodes.launch"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
+  build-only:
+    image: ascendntnu/ros-kinetic:1.0
+    tty: true
+    environment:
+      - ASCEND_ENV
+    command: bash -c "cd /catkin_ws && catkin_make"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
   tests:
     image: ascendntnu/ros-kinetic:1.0
     tty: true
+    environment:
+      - ASCEND_ENV
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
