@@ -130,7 +130,7 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     action_t action;
     action.where_To_Act = position.point;
 
-    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
+    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
                                     position.time_since_start_turn);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
                                     position.time_since_start_turn);
