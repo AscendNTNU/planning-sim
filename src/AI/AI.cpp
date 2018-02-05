@@ -2,20 +2,6 @@
 #include <array>
 #include <queue>
 
-std::queue<action_t> AI::getBestGeneralActionQueue(Observation observation) {
-    
-    std::cout << "--building tree--" << std::endl;
-    TreeSearch tree = TreeSearch(observation);
-    std::cout << "--searching tree--" << std::endl;
-    tree.DFSBestAction(tree.getRoot());
-    Node best_node  = tree.getBestNode();
-    std::cout << "--Is best node the root? " << best_node.isRoot() << std::endl;
-    std::cout << "--returning action queue" << std::endl;
-    std::queue<action_t> queue = tree.getActionQueue(best_node);
-    std::cout << "--number of actions in action queue: " << queue.size() << std::endl;
-    return queue;
-    //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
-    //return getBestAction(target, observation);
 bool robotsAtTurnTime(float elapsed_time) {
     float rest = fmod(elapsed_time, 20); 
     if (rest < 3) {
@@ -24,9 +10,24 @@ bool robotsAtTurnTime(float elapsed_time) {
     return false;
 }
 
-action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
-    return getBestAction(target, observation);
+std::queue<action_t> AI::getBestGeneralActionQueue(Observation observation) {
+    std::queue<action_t> queue;
+    if(robotsAtTurnTime(observation.getTimeStamp())){
+        queue.push(empty_action); //TODO: Check that this returns an empty queue
+    }
+
+    std::cout << "--building tree--" << std::endl;
+    TreeSearch tree = TreeSearch(observation);
+    std::cout << "--searching tree--" << std::endl;
+    tree.DFSBestAction(tree.getRoot());
+    Node best_node  = tree.getBestNode();
+    std::cout << "--Is best node the root? " << best_node.isRoot() << std::endl;
+    std::cout << "--returning action queue" << std::endl;
+    queue = tree.getActionQueue(best_node);
+    std::cout << "--number of actions in action queue: " << queue.size() << std::endl;
+    return queue;
+    //Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
+    //return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {
