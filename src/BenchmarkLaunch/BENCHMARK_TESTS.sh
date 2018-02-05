@@ -11,8 +11,8 @@ xterm -title 'build' -e 'catkin_make'
 cd $WORKDIR
 cd ..
 #g++ ai-sim/sim_no_gui.cpp -o sim_no_gui -lGL `sdl2-config --cflags --libs`
-numRunsPerSeed=2
-numSeeds=2
+numRunsPerSeed=6
+numSeeds=100
 totalRobotsOut=0
 numRuns=$(($numRunsPerSeed*$numSeeds))
 wins=0

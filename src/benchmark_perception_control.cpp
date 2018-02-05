@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <sstream>
 
-int step_length = 4; //SO this is in units of step length, and one step length as of this writing is .1 sec //60*4/10; //Frames?
+int step_length = 5; //SO this is in units of step length, and one step length as of this writing is .1 sec //60*4/10; //Frames?
 
 int prevCommand = -1;
 bool printFlag = false;
