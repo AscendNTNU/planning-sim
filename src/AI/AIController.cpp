@@ -47,7 +47,7 @@ action_t AIController::stateHandler(){
             break;
     }
     return action;
- }
+}
 
 void AIController::noInputDataState(){
     printf("No Input data state\n");
@@ -55,10 +55,17 @@ void AIController::noInputDataState(){
     	this->state_ = idle;
     }
     return;
- }
+}
 
 void AIController::idleState(){
     printf("Idle state\n");
+    this->current_action_ = ai_.getBestGeneralAction(this->observation);
+    
+    if(this->current_action_.type == no_Command){
+        return;
+    }
+	
+    this->state_ = fly_to;
 
     std::queue<action_t> current_action_queue_ = ai_.getBestGeneralActionQueue(this->observation);
 
@@ -104,7 +111,10 @@ void AIController::waitingState(){
     
 	action_t updated_action = this->ai_.getBestAction(target, this->observation);
 
-    /*
+    if(updated_action.type == no_Command){
+        return;
+    }
+
     if(!similarity(updated_action, this->current_action_)) {
     	this->state_ = idle;
     	return;

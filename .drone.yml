@@ -6,12 +6,23 @@ pipeline:
     commands:
       - cppcheck src/* #--error-exitcode=1
   tests:
-    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    image: ascendntnu/ros-kinetic:1.0
     when:
       event: push
+    environment:
+      - ASCEND_ENV=production
     commands:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
+  build-only:
+    image: ascendntnu/ros-kinetic:1.0
+    when:
+      event: push
+    environment:
+      - ASCEND_ENV=production
+    commands:
+      - cd /catkin_ws
+      - /ros_entrypoint.sh catkin_make
   publish-docs:
     image: drillster/drone-rsync
     hosts: [ ascendntnu.no ]
@@ -36,5 +47,5 @@ clone:
     recursive: false
 
 workspace:
-  base: /catkin_ws
-  path: src/planning-sim/
+  base: /catkin_ws/src/planning-sim
+  path: ./
