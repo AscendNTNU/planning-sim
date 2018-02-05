@@ -15,7 +15,6 @@ It is responsible for creating acoordinate system and appropriate reward values 
 class World{
 private:
 	point_t origin;
-	time_t start_Time;
 	float orientation;
 	bounds_t bounds;
 
@@ -31,9 +30,6 @@ public:
 	///returns the point defined as the origin of the world
 	point_t getOrigin();
 
-	///returns the current time (unreliable method)
-	float getCurrentTime();
-	
 	///returns the orientation of the field (deg or rad?)
 	float getOrientation();
 	
@@ -48,7 +44,4 @@ public:
     @return the points value at the (x, y) position given
 	*/
 	float getGridValue(float X, float Y);
-
-	///Start or restart the world timer
-	bool startTimer();
 };
