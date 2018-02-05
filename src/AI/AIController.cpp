@@ -101,11 +101,28 @@ void AIController::waitingState(){
 		return;
 	}
 
+    
 	action_t updated_action = this->ai_.getBestAction(target, this->observation);
 
+    /*
     if(!similarity(updated_action, this->current_action_)) {
     	this->state_ = idle;
     	return;
+    }
+    */
+
+    bool intersection = false;
+    point_t robotpos;
+    for (int i = 0; i < 10; i++) { // currently 10 plank points
+        robotpos = target.getCurrentPlank().getPoint(i).point;
+        if (pointsWithinThreshold(robotpos, this->current_action_.where_To_Act, SIMILARITY_THRESHOLD)) {
+            intersection = true;
+        }
+    }
+
+    if (!intersection) {
+        this->state_ = idle;
+        return;
     }
 
     this->current_action_ = updated_action;
