@@ -11,10 +11,11 @@ xterm -title 'build' -e 'catkin_make'
 cd $WORKDIR
 cd ..
 #g++ ai-sim/sim_no_gui.cpp -o sim_no_gui -lGL `sdl2-config --cflags --libs`
-numRunsPerSeed=5
-numSeeds=100
+numRunsPerSeed=2
+numSeeds=2
 totalRobotsOut=0
 numRuns=$(($numRunsPerSeed*$numSeeds))
+wins=0
 echo "Num Runs: $numRuns"
 xterm -title 'roscore' -e 'roscore' &
 
@@ -35,6 +36,10 @@ if [ $? -eq 0 ]; then
 			totalRobotsOut=$((totalRobotsOut+robotsOut))
 			rm $statusfile1
 			echo "Robots Out: $robotsOut"
+			if [ $robotsOut -gt 3 ]; then
+				wins=$((wins+1))
+				echo "wins: $wins"
+			fi
 		done
 	done
 else
@@ -44,6 +49,8 @@ fi
 echo "Total Robots Out: $totalRobotsOut"
 #AverageRobotsOut = $((totalRobotsOut/numRuns))
 average=$(echo "scale=5;$totalRobotsOut/$numRuns" | bc)
+winRate=$(echo "scale=5;$wins/$numRuns" | bc)
 echo "Average Robots Out: $average"
+echo "Win Rate: $winRate"
 
 
