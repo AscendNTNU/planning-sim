@@ -1,15 +1,15 @@
-version: '2'
+version: '3'
 
 services:
   nodes:
-    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    image: ascendntnu/ros-kinetic:1.0
     tty: true
     command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && roslaunch planning_ros_sim run_nodes.launch"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
   tests:
-    image: registry.ascendntnu.no/ascend-ros-kinetic:0.2
+    image: ascendntnu/ros-kinetic:1.0
     tty: true
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
     volumes:
