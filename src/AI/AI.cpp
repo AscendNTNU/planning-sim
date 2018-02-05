@@ -2,12 +2,23 @@
 #include "Robot.h"
 #include <array>
 
+bool robotsAtTurnTime(float elapsed_time) {
+    float rest = fmod(elapsed_time, 20); 
+    if (rest < 3) {
+        return true;
+    }
+    return false;
+}
+
 action_t AI::getBestGeneralAction(Observation observation) {
     Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
     return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {
+    if (robotsAtTurnTime(observation.getTimeStamp())){
+        return empty_action;
+    }
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }

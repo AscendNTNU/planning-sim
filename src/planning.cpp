@@ -80,14 +80,6 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     return drone_action;
 }
 
-// 
-bool robotsAtTurnTime(float elapsed_time) {
-    float rest = fmod(elapsed_time, 20); 
-    if (rest < 2.5 || rest > 17.5) {
-        return true;
-    }
-    return false;
-}
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
@@ -104,31 +96,46 @@ int main(int argc, char **argv) {
     action_t action = empty_action;
     bool ready_for_new_action = true;
 
-    ros::Rate rate(2.0);
+    // For only printing current action when it is changed
+    // --------------------------------
+    int current_action_type = -1;
+    std::__cxx11::basic_string<char> current_action_state = "None";
+    // --------------------------------
+
+    ros::Rate rate(120.0);
     while (ros::ok()) {
         ros::spinOnce();
 
         if(ready_for_new_action) {
             action = ai_controller.stateHandler();
 
-            if (robotsAtTurnTime(elapsed_time) || action.type == no_Command) {
+            if (action.type == no_Command) {
                 rate.sleep();
+                printf("Action type is no command\n");
                 continue;
+            } else {
+                ready_for_new_action = false;
+                drone_action = action_plank2ROS(action);
+                client.sendGoal(drone_action);
             }
-            ready_for_new_action = false;
-            drone_action = action_plank2ROS(action);
-            client.sendGoal(drone_action);
         }
 
         GoalState action_state = client.getState();
-        std::cout << "Action type: " << action.type << std::endl;
-        std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
+
+        if (action.type != current_action_type || action_state.toString() != current_action_state){
+            std::cout << std::endl << "Action type: " << action.type << std::endl;
+            std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
+            current_action_type = action.type;
+            current_action_state = action_state.toString();
+        } else {
+            printf("/");
+        }
+
         // When no break is present, it falls through to next case
         switch(action_state.state_){
             case GoalState::PENDING:
                 // Control node is processing the action
             case GoalState::ACTIVE:
-                printf("busy\n");
                 ready_for_new_action = false;
                 break;
             case GoalState::RECALLED:
@@ -146,7 +153,6 @@ int main(int argc, char **argv) {
             case GoalState::LOST:
                 // Control node has no goal
             default:
-                printf("free\n");
                 ready_for_new_action = true;
                 break;
         }
