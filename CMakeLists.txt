@@ -29,8 +29,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 	add_executable(perception_control src/perception_control.cpp)
 	target_link_libraries(perception_control ${catkin_LIBRARIES})
-	add_dependencies(perception_control planning_ros_sim_generate_messages_cpp
-		ascend_msgs_generate_messages_cpp)
+	add_dependencies(perception_control planning_ros_sim_generate_messages_cpp)
 endif()
 
 add_executable(planning src/planning.cpp)
