@@ -6,8 +6,6 @@
 
 #include <ascend_msgs/DetectedRobotsGlobalPositions.h>
 
-#include "planning_ros_sim/droneCmd.h"
-
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
 #include "AI/AIController.h"
@@ -34,13 +32,14 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
-void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions msg){
+void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     observation_t robotObs = observation_Empty;
+    std::cout<<"tracker call" << std::endl;
     for(int i = 0; i < 10; i++) {
-    	if(i < (int)msg.count){
-            robotObs.robot_x[i] = msg.global_robot_position[i].x;
-            robotObs.robot_y[i] = msg.global_robot_position[i].y;
-            robotObs.robot_q[i] = msg.direction[i];
+    	if(i < (int)msg->count){
+            robotObs.robot_x[i] = msg->global_robot_position[i].x;
+            robotObs.robot_y[i] = msg->global_robot_position[i].y;
+            robotObs.robot_q[i] = msg->direction[i];
             robotObs.robot_visible[i] = true;
         }
         else{
@@ -52,9 +51,6 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions msg){
     ai_controller.observation.updateRobot(robotObs, elapsed_time);   
 }
 
-void command_done_chatterCallback(std_msgs::Bool msg) {
-    action_done = (bool)msg.data;
-}
 ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     // Instansiate the action message
     ascend_msgs::ControlFSMGoal drone_action;
@@ -97,10 +93,6 @@ int main(int argc, char **argv) {
     ros::Subscriber drone_sub = node.subscribe("drone_chatter", 1000, drone_chatterCallback);
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1000, tracker_chatterCallback);
     
-    
-    planning_ros_sim::droneCmd drone_action;
-    
-
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
 

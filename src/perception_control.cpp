@@ -90,12 +90,11 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "perception_control");
   ros::NodeHandle node;
 
-  ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
+
+
   geometry_msgs::Pose2D drone_msg;
   std_msgs::Float32 time_msg; 
 
-  geometry_msgs::Point32 robot_position;
-  std_msgs::Float32 direction;
 
   ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::DetectedRobotsGlobalPositions>("globalGroundRobotPosition", 100);
   ros::Publisher drone_pub = node.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
@@ -103,7 +102,7 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(10);
 
   // Define action server
-  ActionServerType server(nh, "control_action_server", false);
+  ActionServerType server(node, "control_action_server", false);
   server.registerGoalCallback(boost::bind(newGoalCB, &server));
   server.registerPreemptCallback(boost::bind(preemptCB, &server));
   server.start();
@@ -116,8 +115,11 @@ int main(int argc, char **argv)
     sim_recv_state(&state);
     sim_Observed_State obs_state = state;
     
+    ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
     groundrobot_msg.count = 10;
     for (int n = 0; n<10; n++){
+      geometry_msgs::Point32 robot_position;
+      std_msgs::Float32 direction;
       robot_position.x = obs_state.target_x[n];
       robot_position.y = obs_state.target_y[n];
       direction.data = obs_state.target_q[n];

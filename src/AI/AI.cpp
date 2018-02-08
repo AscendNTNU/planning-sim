@@ -50,7 +50,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     point_t best_pos = point_Zero;
-    float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+    float best_reward = Plank().getReward();
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
