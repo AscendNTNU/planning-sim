@@ -1,5 +1,4 @@
-#ifndef STATE_INTERFACE_HPP
-#define STATE_INTERFACE_HPP
+#pragma once
 
 /** @page fsm_description FSM design
  *  @brief Describes the design pattern
@@ -11,7 +10,7 @@
  *  The active states StateInterface::loopState method will always run in a loop.
  *  The StateInterface::stateEnd method will be called before the fsm transition to another state.
  *  
- *  Transitioning between states is done with the AIFSM::transtionTo method. 
+ *  Transitioning between states is done with the PlanningFSM::transtionTo method. 
  *  
  *  FSM is not async so do not run any blocking code 
  *  in any of these methods.
@@ -26,7 +25,7 @@
 #include <iostream>
 #include <list>
 
-class AIFSM;
+class PlanningFSM;
 
 ///Abstract interface class inherited by all states
 /*
@@ -64,25 +63,25 @@ public:
     StateInterface(const StateInterface&) = delete;
 
     ///Used for state setup - remember to implement isReady if overriding
-    virtual void stateInit(AIFSM& fsm) { is_ready_ = true; }
+    virtual void stateInit(PlanningFSM& fsm) { is_ready_ = true; }
 
     ///Used to check if state is ready for flight
-    virtual bool stateIsReady(AIFSM &fsm) { return is_ready_; }
+    virtual bool stateIsReady(PlanningFSM &fsm) { return is_ready_; }
 
     ///Virtual destructor - override if needed
     virtual ~StateInterface() {}
      
     ///Runs on current state AFTER transition
     /**stateBegin is only implemented if needed by state.*/
-    virtual void stateBegin(AIFSM& fsm, const EventData& event) {}
+    virtual void stateBegin(PlanningFSM& fsm) {}
 
     ///Runs on current state BEFORE transition
     /**stateEnd is only implemented if needed by state*/
-    virtual void stateEnd(AIFSM& fsm, const EventData& event) {}
+    virtual void stateEnd(PlanningFSM& fsm) {}
     
     ///Runs state specific code
     /**loopState is only implemented if needed by state*/
-    virtual void loopState(AIFSM& fsm) {}
+    virtual void loopState(PlanningFSM& fsm) {}
     
     ///Should return name of the state - used for debugging purposes
     virtual std::string getStateName() const = 0;
