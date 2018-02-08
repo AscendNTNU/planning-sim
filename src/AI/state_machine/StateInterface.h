@@ -1,32 +1,9 @@
-#ifndef STATE_INTERFACE_HPP
-#define STATE_INTERFACE_HPP
-
-/** @page fsm_description FSM design
- *  @brief Describes the design pattern
- *  
- *  All states inherits the StateInterface class, and the
- *  FSM use polymorphism to switch between different states. 
- *  
- *  On transition between states, the StateInterface::stateBegin method will be called in the new state. 
- *  The active states StateInterface::loopState method will always run in a loop.
- *  The StateInterface::stateEnd method will be called before the fsm transition to another state.
- *  
- *  Transitioning between states is done with the AIFSM::transtionTo method. 
- *  
- *  FSM is not async so do not run any blocking code 
- *  in any of these methods.
- *  EventData is passed by reference and is NOT guaranteed to remain in scope.
- *  DO NOT store event data by reference.
- *  States should handle all exceptions.
- *  Unhandled exceptions will be catched by try-catch in fsm loop, but it can lead to
- *  undefined behaviour. All state methods should gurantee nothrow!
- */
-
+#pragma once
 
 #include <iostream>
 #include <list>
 
-class AIFSM;
+class PlanningFSM;
 
 ///Abstract interface class inherited by all states
 /*
@@ -42,8 +19,6 @@ undefined behaviour. All state methods should gurantee nothrow!
 class StateInterface;
 class StateInterface {
 private:
-    ///Flag used to check if state is ready - should be set by state init
-    bool is_ready_ = false;
 
     /**
      * get vector of all instianciated states
@@ -63,26 +38,20 @@ public:
     ///States should never be copied
     StateInterface(const StateInterface&) = delete;
 
-    ///Used for state setup - remember to implement isReady if overriding
-    virtual void stateInit(AIFSM& fsm) { is_ready_ = true; }
-
-    ///Used to check if state is ready for flight
-    virtual bool stateIsReady(AIFSM &fsm) { return is_ready_; }
-
     ///Virtual destructor - override if needed
     virtual ~StateInterface() {}
      
     ///Runs on current state AFTER transition
     /**stateBegin is only implemented if needed by state.*/
-    virtual void stateBegin(AIFSM& fsm, const EventData& event) {}
+    virtual void stateBegin(PlanningFSM& fsm, const EventData& event) {}
 
     ///Runs on current state BEFORE transition
     /**stateEnd is only implemented if needed by state*/
-    virtual void stateEnd(AIFSM& fsm, const EventData& event) {}
+    virtual void stateEnd(PlanningFSM& fsm, const EventData& event) {}
     
     ///Runs state specific code
     /**loopState is only implemented if needed by state*/
-    virtual void loopState(AIFSM& fsm) {}
+    virtual void loopState(PlanningFSM& fsm) {}
     
     ///Should return name of the state - used for debugging purposes
     virtual std::string getStateName() const = 0;
@@ -96,5 +65,3 @@ public:
     ///Returns number of instanciated states
     static size_t getNumStates() { return getAllStatesVector()->size(); }
 };
-
-#endif
