@@ -22,7 +22,7 @@ private:
     //Static instances of the different states
     //Also add them to allStates_ vector in constructor
     static BeginState BEGIN_STATE;
-    static PrestartState PREFLIGHT_STATE;
+    static PrestartState PRESTART_STATE;
     static NoInputState NO_INPUT_STATE;
     static IdleState IDLE_STATE;
     static PositioningState POSITIONING_STATE;
