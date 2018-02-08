@@ -126,7 +126,6 @@ public:
     ///Loops the current running state
     void loopCurrentState(void);
 
-    
     ///Returns setpoint from current state
     mavros_msgs::PositionTarget getMavrosSetpoint();
 
