@@ -6,7 +6,6 @@
 class NoInputState : public StateInterface {
 public:
     NoInputState();
-    void handleEvent(AIFSM& fsm) override;
     void stateBegin(AIFSM& fsm) override;
     std::string getStateName() const override { return "No Input"; }
     void handleManual(AIFSM &fsm) override;
