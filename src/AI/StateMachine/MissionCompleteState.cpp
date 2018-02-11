@@ -1,17 +1,17 @@
-#include "NoInputState.h"
+#include "MissionCompleteState.h"
 
-NoInputState::NoInputState() {
+MissionCompleteState::MissionCompleteState() {
 
 }
 
-void NoInputState::stateBegin(AIFSM &fsm) {
+void MissionCompleteState::stateBegin(PlanningFSM &fsm) {
     
 }
 
-void loopState(ControlFSM& fsm) {
+void MissionCompleteState::loopState(PlanningFSM& fsm) {
 
 }
 
-void stateEnd(ControlFSM& fsm) {
+void MissionCompleteState::stateEnd(PlanningFSM& fsm) {
 
 }

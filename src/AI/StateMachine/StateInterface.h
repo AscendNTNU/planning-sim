@@ -43,11 +43,11 @@ public:
      
     ///Runs on current state AFTER transition
     /**stateBegin is only implemented if needed by state.*/
-    virtual void stateBegin(PlanningFSM& fsm, const EventData& event) {}
+    virtual void stateBegin(PlanningFSM& fsm) {}
 
     ///Runs on current state BEFORE transition
     /**stateEnd is only implemented if needed by state*/
-    virtual void stateEnd(PlanningFSM& fsm, const EventData& event) {}
+    virtual void stateEnd(PlanningFSM& fsm) {}
     
     ///Runs state specific code
     /**loopState is only implemented if needed by state*/

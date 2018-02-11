@@ -75,8 +75,6 @@ int main(int argc, char **argv) {
     
     planning_ros_sim::droneCmd drone_action;
     
-    world.startTimer();
-
     action_t action = empty_action;
 
     while (ros::ok()) {

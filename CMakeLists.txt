@@ -17,11 +17,15 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 ## Declare a catkin package
 catkin_package(
 	CATKIN_DEPENDS message_runtime roscpp ascend_msgs
-	LIBRARIES libAI
+	LIBRARIES AI_lib
 	roscpp ascend_msgs
 )
 
-add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
+file(GLOB AI_SRC "src/AI/*.cpp")
+file(GLOB Planning_FSM_SRC "src/AI/StateMachine/*.cpp")
+
+add_library(AI_lib ${AI_SRC})
+add_library(Planning_FSM ${Planning_FSM_SRC})
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS})
@@ -33,7 +37,7 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 endif()
 
 add_executable(planning src/planning.cpp)
-target_link_libraries(planning libAI ${catkin_LIBRARIES})
+target_link_libraries(planning AI_lib ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
 
@@ -44,9 +48,9 @@ catkin_add_gtest(Drone src/test/drone_test.cpp)
 catkin_add_gtest(Robot src/test/robot_test.cpp)
 catkin_add_gtest(AI src/test/ai_test.cpp)
 
-target_link_libraries(Plank libAI ${catkin_LIBRARIES})
-target_link_libraries(Drone libAI ${catkin_LIBRARIES})
-target_link_libraries(Robot libAI ${catkin_LIBRARIES})
-target_link_libraries(AI libAI ${catkin_LIBRARIES})
+target_link_libraries(Plank AI_lib ${catkin_LIBRARIES})
+target_link_libraries(Drone AI_lib ${catkin_LIBRARIES})
+target_link_libraries(Robot AI_lib ${catkin_LIBRARIES})
+target_link_libraries(AI AI_lib ${catkin_LIBRARIES})
 
 # %EndTag(FULLTEXT)%

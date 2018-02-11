@@ -1,13 +1,13 @@
 #pragma once
 
-#include "state_interface.h"
+#include "StateInterface.h"
 
 ///Runs preflight checks and transition to idle when ready
-class NoInputState : public StateInterface {
+class MissionCompleteState : public StateInterface {
 public:
-    NoInputState();
-    void stateBegin(ControlFSM& fsm) override;
-    void loopState(ControlFSM& fsm) override;
-    void stateEnd(ControlFSM& fsm) override;
+    MissionCompleteState();
+    void stateBegin(PlanningFSM& fsm) override;
+    void loopState(PlanningFSM& fsm) override;
+    void stateEnd(PlanningFSM& fsm) override;
     std::string getStateName() const { return "NoInput";}
 };

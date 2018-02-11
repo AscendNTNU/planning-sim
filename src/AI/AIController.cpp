@@ -27,7 +27,7 @@ action_t AIController::stateHandler(){
     action_t action = empty_action;
     switch(this->state_){
         case no_input_data:
-            this->noInputDataState(event);
+            this->noInputDataState();
             break;
 
         case idle:

@@ -1,17 +1,17 @@
-#include "NoInputState.h"
+#include "BeginState.h"
 
-NoInputState::NoInputState() {
+BeginState::BeginState() {
 
 }
 
-void NoInputState::stateBegin(AIFSM &fsm) {
+void BeginState::stateBegin(PlanningFSM &fsm) {
     
 }
 
-void loopState(ControlFSM& fsm) {
+void BeginState::loopState(PlanningFSM& fsm) {
 
 }
 
-void stateEnd(ControlFSM& fsm) {
+void BeginState::stateEnd(PlanningFSM& fsm) {
 
 }

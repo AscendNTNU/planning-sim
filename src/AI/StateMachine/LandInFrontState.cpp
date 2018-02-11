@@ -1,17 +1,17 @@
-#include "NoInputState.h"
+#include "LandInFrontState.h"
+#include "PlanningFSM.h"
 
-NoInputState::NoInputState() {
-
-}
-
-void NoInputState::stateBegin(AIFSM &fsm) {
-    
-}
-
-void loopState(ControlFSM& fsm) {
+LandInFrontState::LandInFrontState() {
 
 }
 
-void stateEnd(ControlFSM& fsm) {
+void LandInFrontState::stateBegin(PlanningFSM &fsm) {   
+}
 
+void LandInFrontState::loopState(PlanningFSM& fsm) {
+	fsm.current_action_  = fsm.planned_action_;
+	fsm.transitionTo(PlanningFSM::IDLE_STATE, this);
+}
+
+void LandInFrontState::stateEnd(PlanningFSM& fsm) {
 }

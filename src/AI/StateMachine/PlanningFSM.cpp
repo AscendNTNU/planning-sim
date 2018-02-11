@@ -1,7 +1,6 @@
-#include "PlanninFsm.h"
-#include <ros/ros.h>
-#include <tf2/LinearMath/Matrix3x3.h>
-#include <tf2/LinearMath/Quaternion.h>
+#include <assert.h>
+
+#include "PlanningFSM.h"
 
 BeginState PlanningFSM::BEGIN_STATE;
 PrestartState PlanningFSM::PRESTART_STATE;
@@ -20,15 +19,16 @@ void PlanningFSM::transitionTo(StateInterface& state, StateInterface* caller_p) 
     //Only current running state is allowed to change state
     if(getState() == caller_p) {
         //Run stateEnd on current running state before transitioning
-        getState()->stateEnd(*this, event);
+        getState()->stateEnd(*this);
         //Set the current state pointer
         state_vault_.current_state_p_ = &state;
         //Pass event to new current state
-        getState()->stateBegin(*this, event);
+        getState()->stateBegin(*this);
         //Notify state has changed
         on_state_changed_();
     } else {
-        control::handleErrorMsg("Transition request made by not active state");
+        std::cout << "transitionTo error" << std::endl;
+        return; //TODO
     }
 }
 
@@ -40,9 +40,7 @@ void PlanningFSM::loopCurrentState(void) {
     } catch(const std::exception& e) {
         //If exceptions aren't handled by states - notify and try to go to blind hover
         //Will lead to undefined behaviour- but still safer than nothing!
-        control::handleCriticalMsg(e.what());
-        RequestEvent abort_event(RequestType::ABORT);
-        transitionTo(BLIND_HOVER_STATE, getState(), abort_event);
+        std::cout << "loopCurrentState error" << std::endl;
     }
 }
 
@@ -53,7 +51,4 @@ PlanningFSM::PlanningFSM() {
     //Initialize all states
     this->initStates();
 
-    //Subscribe to neccesary topics
-    std::string& stateTopic = control::Config::mavros_state_changed_topic;
-    subscribers_.mavros_state_changed_sub = node_handler_.subscribe(stateTopic, 1, &PlanningFSM::mavrosStateChangedCB, this);
 }

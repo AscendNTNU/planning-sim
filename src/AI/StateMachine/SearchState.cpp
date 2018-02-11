@@ -1,17 +1,17 @@
-#include "NoInputState.h"
+#include "SearchState.h"
 
-NoInputState::NoInputState() {
+SearchState::SearchState() {
 
 }
 
-void NoInputState::stateBegin(AIFSM &fsm) {
+void SearchState::stateBegin(PlanningFSM &fsm) {
     
 }
 
-void loopState(ControlFSM& fsm) {
+void SearchState::loopState(PlanningFSM& fsm) {
 
 }
 
-void stateEnd(ControlFSM& fsm) {
+void SearchState::stateEnd(PlanningFSM& fsm) {
 
 }

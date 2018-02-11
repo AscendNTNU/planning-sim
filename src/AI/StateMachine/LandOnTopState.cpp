@@ -1,17 +1,19 @@
-#include "NoInputState.h"
+#include "LandOnTopState.h"
+#include "PlanningFSM.h"
 
-NoInputState::NoInputState() {
+LandOnTopState::LandOnTopState() {
 
 }
 
-void NoInputState::stateBegin(AIFSM &fsm) {
+void LandOnTopState::stateBegin(PlanningFSM &fsm) {
     
 }
 
-void loopState(ControlFSM& fsm) {
-
+void LandOnTopState::loopState(PlanningFSM& fsm) {
+	fsm.current_action_  = fsm.planned_action_;
+	fsm.transitionTo(PlanningFSM::IDLE_STATE, this);
 }
 
-void stateEnd(ControlFSM& fsm) {
+void LandOnTopState::stateEnd(PlanningFSM& fsm) {
 
 }

@@ -1,10 +1,21 @@
-#ifndef CONTROL_FSM_HPP
-#define CONTROL_FSM_HPP
+#ifndef PLANNING_FSM_HPP
+#define PLANNING_FSM_HPP
+
+#include <functional>
 
 #include "StateInterface.h"
+#include "BeginState.h"
+#include "PrestartState.h"
 #include "NoInputState.h"
 #include "IdleState.h"
+#include "PositioningState.h"
+#include "SearchState.h"
+#include "LandOnTopState.h"
+#include "LandInFrontState.h"
+#include "MissionCompleteState.h"
 
+#include "../AI.h"
+#include "../structs.h"
 ///Main FSM logic
 class PlanningFSM {
 private:
@@ -45,24 +56,6 @@ private:
         StateInterface* current_state_p_ = nullptr; //This need to be set to a start state in constructor
     } state_vault_;
 
-    ///Current drone position
-    struct {
-        //Not all states needs direct access to position and flags
-        friend class PlanningFSM;
-        friend class EstimateAdjustState;
-    private:
-        geometry_msgs::PoseStamped position;
-        bool is_set = false;
-        bool valid_xy = true; //Assumes XY is valid if not set otherwise
-    } drone_position_;
-
-    ///Struct holding information about drones state
-    struct {
-        bool is_offboard = false;
-        bool is_armed = false;
-        bool is_preflight_completed = false;
-    } drone_state_;
-
     ///Has FSM been initiated?
     bool states_is_ready_ = false;
 
@@ -75,25 +68,20 @@ private:
     ///Assignment operator deleted
     PlanningFSM& operator=(const PlanningFSM&) = delete;
 
-    ///Shared nodehandle for all states
-    ros::NodeHandle node_handler_;
-
-    ///Struct holding all shared PlanningFSM ros subscribers
-    struct {
-        friend class PlanningFSM;
-    private:
-        ros::Subscriber mavros_state_changed_sub;
-    } subscribers_;
-
-    ///Callback for mavros state changed
-    void mavrosStateChangedCB(const mavros_msgs::State& state);
-
     ///Initializes all states
     void initStates();
 
-    ///All states needs access to obstacle avoidance
-    control::ObstacleAvoidance obstacle_avoidance_;
+    ///AI object where AI functions are called from
+    AI ai_;
 
+    //Current action that needs to be preformed by the drone/sent to control
+    action_t current_action_;
+
+    //Planned action the state machine is working towards
+    action_t planned_action_;
+
+    //Current observation
+    Observation observation;
 
 protected:
     /**
@@ -103,31 +91,20 @@ protected:
      * @param caller_p Which state that requests the transition
      * @param event Which event triggered the transition request
      */
-    void transitionTo(StateInterface& state, StateInterface* caller_p, const EventData& event);
+    void transitionTo(StateInterface& state, StateInterface* caller_p);
     
 public:
+        
     ///Constructor sets default/starting state
     PlanningFSM();
-    ///Constructor using custom obstacle avoidance
-    PlanningFSM(control::ObstacleAvoidance ob) : PlanningFSM() { obstacle_avoidance_ = ob; }
     ///Destructor not used to anything specific.
     ~PlanningFSM() {}
 
     ///Get pointer to the current running state
     StateInterface* getState() { return state_vault_.current_state_p_; }
-    
-    /**
-     * @brief Handles incoming (external) events
-     * @details Events are sent to current running state
-     * @param event Information about the external event
-     */
-    void handleEvent(const EventData& event);
-    
+     
     ///Loops the current running state
     void loopCurrentState(void);
-
-    ///Returns setpoint from current state
-    mavros_msgs::PositionTarget getMavrosSetpoint();
 
     ///Sets new callback function for onStateChanged
     void setOnStateChangedCB(std::function<void()> cb) { on_state_changed_ = cb; }
