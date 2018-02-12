@@ -11,6 +11,7 @@
 #include "AI/AIController.h"
 #include "AI/structs.h"
 
+
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 

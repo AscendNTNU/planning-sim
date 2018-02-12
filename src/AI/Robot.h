@@ -10,6 +10,8 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include <cmath>
 #include "structs.h"
 #include "Plank.h"
+#include <opencv2/opencv.hpp>
+
 
 class Robot{
 private:
@@ -22,6 +24,24 @@ private:
                                  ///< Remember that the robot turns for about 2 seconds.
     float speed;
     bool visible;
+    cv::Mat F1;//(3,3,DataType<float>::type);
+    cv::Mat F2;
+    cv::Mat H;
+    cv::Mat P_k;
+    cv::Mat P_km1;
+    cv::Mat P_km1_km1;
+    cv::Mat x_hat_k;
+    cv::Mat x_hat_km1;
+    cv::Mat R_k;
+    cv::Mat Q_k;
+    float t_k;
+    float t_km1;
+
+    double xMeasCovar;
+    double yMeasCovar;
+    double thMeasCovar_downCam;
+    double thMeasCovar_sideCam;
+    
 public:
     ///Robot constructors
     Robot();
@@ -81,11 +101,21 @@ public:
     @param time Time to add to robots elapsed time since the last turn started
     */
     void addToTimer(float time);
+
+    /**
+    The kalman filter assumes that this is updated frequently (at least once a second, but preferably more often)
+    */
     void update(int index, point_t position,float q, float elapsed_time, bool visible);
     
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */
     bool isMoving();
+
+
+    void kalmanStep(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanPredict(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanMeasurementUpdate(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

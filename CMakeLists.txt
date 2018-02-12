@@ -4,6 +4,11 @@ project(planning_ros_sim)
 
 ## Find catkin and any catkin packages + message_generation
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs message_generation)
+find_package(Eigen3 REQUIRED)
+find_package( OpenCV REQUIRED )
+
+message( STATUS "OpenCV Include Dir: " ${OpenCV_INCLUDE_DIRS} )
+
 ## Declare ROS messages and services
 
 #add_service_files(DIRECTORY srv FILES)
@@ -20,7 +25,7 @@ add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Dron
 catkin_package(LIBRARIES libAI)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 add_executable(perception_control src/perception_control.cpp)
 target_link_libraries(perception_control ${catkin_LIBRARIES})
@@ -29,7 +34,7 @@ add_dependencies(perception_control planning_ros_sim_generate_messages_cpp)
 add_executable(planning src/planning.cpp)
 target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp)
-
+#include <opencv2/opencv.hpp>
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)
@@ -41,5 +46,5 @@ target_link_libraries(Plank libAI ${catkin_LIBRARIES})
 target_link_libraries(Drone libAI ${catkin_LIBRARIES})
 target_link_libraries(Robot libAI ${catkin_LIBRARIES})
 target_link_libraries(AI libAI ${catkin_LIBRARIES})
-
+target_link_libraries(libAI ${OpenCV_LIBRARIES})
 # %EndTag(FULLTEXT)%
