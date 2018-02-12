@@ -27,8 +27,8 @@ void PositioningState::stateBegin(PlanningFSM &fsm) {
 	if(fsm.planned_action_.type==search){
 		fsm.current_action_ = fsm.planned_action_;
 		fsm.transitionTo(PlanningFSM::IDLE_STATE, this);
-		return;
 	}
+  return;
 }
 
 void PositioningState::loopState(PlanningFSM& fsm) {

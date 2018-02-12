@@ -45,10 +45,18 @@ void PlanningFSM::loopCurrentState(void) {
 }
 
 PlanningFSM::PlanningFSM() {
+
+    this->current_action_ = empty_action;
+    this->planned_action_ = empty_action;
+
     //Set starting state
     state_vault_.current_state_p_ = &BEGIN_STATE;
 
     //Initialize all states
     this->initStates();
 
+}
+
+action_t PlanningFSM::getCurrentAction(){
+    return this->current_action_;
 }

@@ -117,6 +117,8 @@ public:
 
     ///Handles loss of offboard mode
     void handleManual();
+
+    action_t getCurrentAction();
 };
 
 #endif
