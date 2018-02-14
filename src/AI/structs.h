@@ -106,6 +106,19 @@ enum action_Type_t
     search            // ascend to 3 meters and go to (x, y)
 };
 
+inline std::ostream& operator<<(std::ostream &stream, const action_Type_t &action) {
+    if(action == search){
+        stream << "fly to" << std::endl;
+    }
+    else if(action == land_On_Top_Of){
+        stream << "land on top" << std::endl;
+    }
+    else if(action == land_In_Front_Of){
+        stream << "land in front of" << std::endl;
+    }
+
+};
+
 struct action_t{
     int target;
     action_Type_t type;

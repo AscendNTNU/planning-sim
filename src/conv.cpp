@@ -7,15 +7,33 @@
 
 #define PI 3.14159265
 
-ascend_msgs::DetectedRobotsGlobalPositions data;
+ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
+
+    
+
 
 void tracker_chatterCallback(planning_ros_sim::track msg){
+    
+    if(msg.num_targets == 0){
+        return;
+    }
+
+    ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
+    
     for(int i = 0; i < 10; i++) {
-    	if(i < msg.num_targets){
-            data.global_robot_position[i].x = msg.position_x[i];
-            data.global_robot_position[i].y = msg.position_y[i];
-            data.direction[i] = atan(msg.velocity_y[i]/msg.velocity_x[i]);
+        if(i < msg.num_targets){
+            geometry_msgs::Point32 robot_position;
+            std_msgs::Float32 direction;
+    
+            robot_position.x = msg.position_x[i];
+            robot_position.y = msg.position_y[i];
+   
+            direction.data = atan(msg.velocity_y[i]/msg.velocity_x[i]);
+   
+            groundrobot_msg.global_robot_position.push_back(robot_position);
+            groundrobot_msg.direction.push_back(obs_state.target_q[n]);
         }
+    
         else{
             break;
         }

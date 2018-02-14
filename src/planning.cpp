@@ -13,9 +13,10 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
+
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
-geometry_msgs::Pose2D Drone;
+
 float elapsed_time = 0;
 
 World world = World(0);
@@ -34,7 +35,6 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
 
 void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     observation_t robotObs = observation_Empty;
-    std::cout<<"tracker call" << std::endl;
     for(int i = 0; i < 10; i++) {
     	if(i < (int)msg->count){
             robotObs.robot_x[i] = msg->global_robot_position[i].x;
@@ -43,11 +43,10 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPt
             robotObs.robot_visible[i] = true;
         }
         else{
-            std::cout<<"here" << std::endl;
             robotObs.robot_visible[i] = false;
         }
     }
-    // elapsed_time = 10;
+    elapsed_time = 10;
     ai_controller.observation.updateRobot(robotObs, elapsed_time);   
 }
 
@@ -86,19 +85,19 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
 
 
 int main(int argc, char **argv) {
+    
     ros::init(argc, argv, "planning");
     ros::NodeHandle node;
-
     ros::Subscriber time_sub = node.subscribe("time_chatter", 1000, time_chatterCallback);
     ros::Subscriber drone_sub = node.subscribe("drone_chatter", 1000, drone_chatterCallback);
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1000, tracker_chatterCallback);
     
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
-
     ascend_msgs::ControlFSMGoal drone_action;
-    action_t action = empty_action;
+
     bool ready_for_new_action = true;
+    action_t action = empty_action;
 
     // For only printing current action when it is changed
     // --------------------------------
@@ -106,7 +105,14 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(120.0);
+    //Give in a center drone position for testing when we don't get in drone position
+    observation_t droneObs = observation_Empty;
+    droneObs.drone_x = 10;
+    droneObs.drone_y = 10;
+    ai_controller.observation.updateDrone(droneObs, elapsed_time);
+
+    ros::Rate rate(0.2);
+
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -127,12 +133,10 @@ int main(int argc, char **argv) {
         GoalState action_state = client.getState();
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
-            std::cout << std::endl << "Action type: " << action.type << std::endl;
+            std::cout << std::endl << "Action: " << action << std::endl;
             std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
-        } else {
-            printf("/");
         }
 
         // When no break is present, it falls through to next case
