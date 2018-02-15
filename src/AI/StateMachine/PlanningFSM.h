@@ -119,6 +119,10 @@ public:
     void handleManual();
 
     action_t getCurrentAction();
+
+    void updateObservation(Observation obs);
+
+    Observation getObservation();
 };
 
 #endif

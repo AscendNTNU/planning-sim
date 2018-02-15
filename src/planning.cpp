@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
+#include "AI/StateMachine/PlanningFSM.h"
 
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
@@ -17,7 +18,7 @@ geometry_msgs::Pose2D Drone;
 float elapsed_time = 0;
 bool action_done = true;
 World world = World(0);
-PlanningFSM fsm = PlanningFSM();
+PlanningFSM fsm;
 
 void time_chatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
@@ -31,14 +32,23 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
             robotObs.robot_q[i] = msg.groundRobot[i].theta;
             robotObs.robot_visible[i] = msg.groundRobot[i].visible;
     }
-    ai_controller.observation.updateRobot(robotObs, elapsed_time);
+
+    Observation obs = fsm.getObservation();
+    obs.updateRobot(robotObs, elapsed_time);
+    fsm.updateObservation(obs);
+    //ai_controller.observation.updateRobot(robotObs, elapsed_time);
+
 }
 
 void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     observation_t droneObs = observation_Empty;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
-    ai_controller.observation.updateDrone(droneObs, elapsed_time);
+    
+    Observation obs = fsm.getObservation();
+    obs.updateDrone(droneObs, elapsed_time);
+    fsm.updateObservation(obs);
+    //ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
 void command_done_chatterCallback(std_msgs::Bool msg) {
@@ -60,14 +70,14 @@ planning_ros_sim::droneCmd to_ROS_Command(action_t action) {
 int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
-    ros::NodeHandle nh
+    ros::NodeHandle nh;
 
     ros::Subscriber time_sub = nh.subscribe("time_chatter", 1000, time_chatterCallback);
     ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = drone_nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
+    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
     ros::Subscriber command_done_sub = nh.subscribe("command_done_chatter", 100, command_done_chatterCallback);
     
-    ros::Publisher command_pub = command_node.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
+    ros::Publisher command_pub = nh.advertise<planning_ros_sim::droneCmd>("drone_cmd_chatter", 1000);
     
     while (ros::ok()) {
         ros::Duration(0.4).sleep();

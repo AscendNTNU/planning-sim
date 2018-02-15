@@ -60,3 +60,11 @@ PlanningFSM::PlanningFSM() {
 action_t PlanningFSM::getCurrentAction(){
     return this->current_action_;
 }
+
+void PlanningFSM::updateObservation(Observation obs) {
+    this->observation = obs;
+}
+
+Observation PlanningFSM::getObservation() {
+    return this->observation;
+}
