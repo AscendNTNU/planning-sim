@@ -25,6 +25,9 @@ private:
      * This idiom is a workaround for the "static initialiazation fiasco"
      * @return vector of instanciated states
      */
+
+    bool is_ready_ = false;
+
     static std::list<StateInterface*>* getAllStatesVector();
 
     ///Assigmnet operator should be removed
@@ -64,4 +67,7 @@ public:
   
     ///Returns number of instanciated states
     static size_t getNumStates() { return getAllStatesVector()->size(); }
+
+    ///Used for state setup - remember to implement isReady if overriding
+    virtual void stateInit(PlanningFSM& fsm) { is_ready_ = true; }
 };
