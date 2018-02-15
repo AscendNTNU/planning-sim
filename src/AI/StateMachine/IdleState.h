@@ -5,7 +5,7 @@
 
 class IdleState : public StateInterface {
 public:
-    IdleState();
+    //IdleState();
     void stateBegin(PlanningFSM& fsm) override;
     void loopState(PlanningFSM& fsm) override;
     void stateEnd(PlanningFSM& fsm) override;

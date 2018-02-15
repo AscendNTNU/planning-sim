@@ -21,8 +21,8 @@ catkin_package(
 	roscpp ascend_msgs
 )
 
-file(GLOB AI_SRC "src/AI/*.cpp")
 file(GLOB Planning_FSM_SRC "src/AI/StateMachine/*.cpp")
+file(GLOB AI_SRC "src/AI/*.cpp")
 
 add_library(AI_lib ${AI_SRC})
 add_library(Planning_FSM ${Planning_FSM_SRC})
@@ -37,7 +37,9 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 endif()
 
 add_executable(planning src/planning.cpp)
-target_link_libraries(planning AI_lib ${catkin_LIBRARIES})
+target_link_libraries(
+	planning AI_lib Planning_FSM ${catkin_LIBRARIES} 
+)
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
 
