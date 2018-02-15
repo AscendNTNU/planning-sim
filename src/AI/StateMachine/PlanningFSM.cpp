@@ -54,8 +54,18 @@ PlanningFSM::PlanningFSM() {
 
     //Initialize all states
     this->initStates();
-
 }
+
+
+void PlanningFSM::initStates() {
+    //Only init once
+    if(states_is_ready_) return; // FSM has been initalized
+    for(auto it = StateInterface::cbegin(); it != StateInterface::cend(); it++) {
+        (*it)->stateInit(*this);
+    }
+    states_is_ready_ = true;
+}
+
 
 action_t PlanningFSM::getCurrentAction(){
     return this->current_action_;
