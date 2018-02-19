@@ -2,23 +2,15 @@
 #include "Robot.h"
 #include <array>
 
-bool robotsAtTurnTime(float elapsed_time) {
-    float rest = fmod(elapsed_time, 20); 
-    if (rest < 3) {
-        return true;
-    }
-    return false;
-}
-
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
+    Robot target = chooseTarget(observation.getRobots(), observation.getDrone(), observation.getTimeStamp());
+    if (target.getIndex() == -1) {
+        return empty_action;
+    }
     return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {
-    if (robotsAtTurnTime(observation.getTimeStamp())){
-        return empty_action;
-    }
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
@@ -47,13 +39,17 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 */
 
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_time) {
     Robot robot;
     point_t best_pos = point_Zero;
     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
+
+    if (Robot::robotsAtTurnTime(elapsed_time)){
+        return target;
+    }
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
@@ -142,9 +138,9 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     action.where_To_Act = position.point;
 
     Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
-                                    position.time_since_start_turn);
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
-                                    position.time_since_start_turn);
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }
