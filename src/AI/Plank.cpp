@@ -14,9 +14,9 @@ Plank::Plank(){
     this->reward = -200000;
 }
 
-Plank::Plank(point_t position, float angle, float time_After_Turn_Start){
+Plank::Plank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME){
 	Plank();
-	this->updatePlank(position, angle, time_After_Turn_Start);
+	this->updatePlank(position, angle, time_After_Turn_Start, ROBOT_TURN_TIME);
 }
 
 float Plank::getReward(){
@@ -109,14 +109,14 @@ float Plank::calculateReward(){
     return reward;
 }
 
-void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start){
+void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME){
     this->end_point.is_ahead   = true;
     this->start_point.is_ahead = false;
     this->end_point.time_since_start_turn   = 20;
     this->start_point.time_since_start_turn = 0;
 
     this->angle = angle;
-    if(time_After_Turn_Start < 2){
+    if(time_After_Turn_Start < ROBOT_TURN_TIME){
         this->end_point.point.x = position.x;
         this->end_point.point.y = position.y;
     }
@@ -124,8 +124,8 @@ void Plank::updatePlank(point_t position, float angle, float time_After_Turn_Sta
         this->end_point.point.x = position.x + (20 - time_After_Turn_Start)*ROBOT_SPEED*cosf(angle);
         this->end_point.point.y = position.y + (20 - time_After_Turn_Start)*ROBOT_SPEED*sinf(angle);
     }
-    this->start_point.point.x = this->end_point.point.x - (20-2)*ROBOT_SPEED*cosf(this->angle); // Subtracting 2.5 because of turn time (no translation)
-    this->start_point.point.y = this->end_point.point.y - (20-2)*ROBOT_SPEED*sinf(this->angle);
+    this->start_point.point.x = this->end_point.point.x - (20-ROBOT_TURN_TIME)*ROBOT_SPEED*cosf(this->angle); // Subtracting 2.5 because of turn time (no translation)
+    this->start_point.point.y = this->end_point.point.y - (20-ROBOT_TURN_TIME)*ROBOT_SPEED*sinf(this->angle);
     
 
     float dx = this->start_point.point.x - this->end_point.point.x;
