@@ -112,6 +112,7 @@ void AIController::waitingState(){
     return;
 }
 
+/*
 // will not work if changes to stateHandler is done
 action_t AIController::PositioningState() { // combo av waitingState og flyToState
     printf("Positioning state\n");
@@ -154,6 +155,7 @@ action_t AIController::PositioningState() { // combo av waitingState og flyToSta
     //this->state_ = waiting;
     return fly_action;
 }
+*/
 
 action_t AIController::performActionState(){
     printf("action state\n");
