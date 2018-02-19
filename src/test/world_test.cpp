@@ -14,10 +14,8 @@ public:
 
 TEST (testFixture, ConstructorTest) {
 	World world = World(3.14);
-	world.startTimer();
 	EXPECT_EQ(world.getOrigin().x, point_Zero.x);
 	EXPECT_EQ(world.getOrigin().y, point_Zero.y);
-	EXPECT_NEAR(world.getCurrentTime(), 0, 0.1);
 	EXPECT_NEAR(world.getOrientation(), 3.14, 0.01);
 	EXPECT_EQ(world.getBounds().x_Max, 20);
 	EXPECT_EQ(world.getBounds().y_Max, 20);

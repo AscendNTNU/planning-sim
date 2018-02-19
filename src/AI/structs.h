@@ -81,6 +81,7 @@ struct observation_t
     float robot_x[10];
     float robot_y[10];
     float robot_q[10];
+    float robot_visible[10];
 
     float obstacle_x[4];
     float obstacle_y[4];
@@ -126,7 +127,6 @@ inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
     << "Target: " << action.target << std::endl
     << "Type: " << action.type << std::endl
     << "Reward: " << action.reward << std::endl
-    << "When to act: " << action.when_To_Act << std::endl
     << "Where to act: " << action.where_To_Act << std::endl;
     return strm;
 };
