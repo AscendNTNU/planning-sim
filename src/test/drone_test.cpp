@@ -10,7 +10,6 @@ public:
 	
 	}
 	void SetUp( ) {
-		world.startTimer();
 	}
 };
 

@@ -2,12 +2,23 @@
 #include "Robot.h"
 #include <array>
 
+bool robotsAtTurnTime(float elapsed_time) {
+    float rest = fmod(elapsed_time, 20); 
+    if (rest < 3) {
+        return true;
+    }
+    return false;
+}
+
 action_t AI::getBestGeneralAction(Observation observation) {
     Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
     return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {
+    if (robotsAtTurnTime(observation.getTimeStamp())){
+        return empty_action;
+    }
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
@@ -48,7 +59,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
         robot = robots[i];
         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-            std::cout << "index" << robot.getIndex();
+            // std::cout << "index" << robot.getIndex();
             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
                 best_pos = drone.getInterceptPoint(robot);
                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
@@ -135,7 +146,7 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     action_t action;
     action.where_To_Act = position.point;
 
-    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
+    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
                                     position.time_since_start_turn);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
                                     position.time_since_start_turn);

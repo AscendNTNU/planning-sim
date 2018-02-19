@@ -8,7 +8,6 @@ class PlankTest: public ::testing::Test {
 public: 
 
 	void SetUp( ) {
-		world.startTimer();
 	}
  };
 
