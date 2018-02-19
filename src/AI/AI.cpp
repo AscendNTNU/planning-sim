@@ -22,7 +22,7 @@ action_t AI::getBestAction(Robot target, Observation observation) {
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
-/*
+
 Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
     Robot robot;
     float best_reward = -1000000;
@@ -44,31 +44,31 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 
     return target;
 }
-*/
+
 
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
-    Robot robot;
-    point_t best_pos = point_Zero;
-    float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+// Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+//     Robot robot;
+//     point_t best_pos = point_Zero;
+//     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
-    // Return an invalid robot if none was assigned
-    Robot target = Robot(-1);
+//     // Return an invalid robot if none was assigned
+//     Robot target = Robot(-1);
 
-    for (int i = 0; i < robots.size(); i++) {
-        robot = robots[i];
-        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+//     for (int i = 0; i < robots.size(); i++) {
+//         robot = robots[i];
+//         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-            // std::cout << "index" << robot.getIndex();
-            if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
-                best_pos = drone.getInterceptPoint(robot);
-                best_reward = world.getGridValue(best_pos.x, best_pos.y);
-                target = robot;
-            }
-        }
-    }
-    return target;
-}
+//             // std::cout << "index" << robot.getIndex();
+//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+//                 best_pos = drone.getInterceptPoint(robot);
+//                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
+//                 target = robot;
+//             }
+//         }
+//     }
+//     return target;
+// }
 
 action_t AI::triangleSearch(Drone drone) {
     action_t search_Action = empty_action;
