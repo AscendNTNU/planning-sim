@@ -11,6 +11,8 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include "structs.h"
 #include "Plank.h"
 
+const float ROBOT_TURN_TIME = 2.5;
+
 class Robot{
 private:
     int index;
@@ -28,6 +30,8 @@ public:
     Robot();
     Robot(int index);
     Plank current_Plank;
+
+    static bool robotsAtTurnTime(float elapsed_time);
 
     /**
     @brief Get the index associated with the robot instance.

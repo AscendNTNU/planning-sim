@@ -106,6 +106,27 @@ enum action_Type_t
     search            // ascend to 3 meters and go to (x, y)
 };
 
+/*
+std::string actionTypeToString(action_Type_t type) {
+    switch(type) {
+        case no_Command:
+            return "no command";
+            break;
+        case land_On_Top_Of:
+            return "land on top of";
+            break;
+        case land_In_Front_Of:
+            return "land in front of";
+            break;
+        case land_At_Point:
+            return "land at point";
+            break;
+        case search:
+            return "search";
+    }
+}
+*/
+
 struct action_t{
     int target;
     action_Type_t type;
@@ -127,7 +148,6 @@ inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
     << "Target: " << action.target << std::endl
     << "Type: " << action.type << std::endl
     << "Reward: " << action.reward << std::endl
-    << "When to act: " << action.when_To_Act << std::endl
     << "Where to act: " << action.where_To_Act << std::endl;
     return strm;
 };

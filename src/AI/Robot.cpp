@@ -24,6 +24,16 @@ Robot::Robot(int index) {
     this->wasInteractedWith = false;
 }
 
+// Static function
+bool Robot::robotsAtTurnTime(float elapsed_time) {
+    float time_drift = 1.0;
+    float rest = fmod(elapsed_time, 20); 
+    if (rest < ROBOT_TURN_TIME + time_drift) {
+        return true;
+    }
+    return false;
+}
+
 int Robot::getIndex() {
     return this->index;
 }
@@ -74,12 +84,12 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->time_After_Turn_Start = fmod(elapsed_time, 20);
     this->visible = visible;
     
-    if (this->time_After_Turn_Start < 2) {
+    if (this->time_After_Turn_Start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
-        this->current_Plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start); // Will this make Plank construct a plank which the robot never will follow?
+        this->current_Plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
     } else {
         this->orientation = fmod(new_Orientation, 2*MATH_PI);
-        this->current_Plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start);
+        this->current_Plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME);
     }
 }
 

@@ -3,7 +3,10 @@
 #include <array>
 
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
+    Robot target = chooseTarget(observation.getRobots(), observation.getDrone(), observation.getTimeStamp());
+    if (target.getIndex() == -1) {
+        return empty_action;
+    }
     return getBestAction(target, observation);
 }
 
@@ -11,13 +14,17 @@ action_t AI::getBestAction(Robot target, Observation observation) {
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
-/*
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_time) {
     Robot robot;
     float best_reward = -1000000;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
+
+    if (Robot::robotsAtTurnTime(elapsed_time)){
+            return target;
+    }
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
@@ -33,33 +40,33 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 
     return target;
 }
-*/
+
 
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
-    Robot robot;
-    point_t best_pos = point_Zero;
-    float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+// Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+//     Robot robot;
+//     point_t best_pos = point_Zero;
+//     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
-    // Return an invalid robot if none was assigned
-    Robot target = Robot(-1);
+//     // Return an invalid robot if none was assigned
+//     Robot target = Robot(-1);
 
-    for (int i = 0; i < robots.size(); i++) {
-        robot = robots[i];
-        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+//     for (int i = 0; i < robots.size(); i++) {
+//         robot = robots[i];
+//         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-            std::cout << "index" << robot.getIndex();
-            if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
-                best_pos = drone.getInterceptPoint(robot);
-                best_reward = world.getGridValue(best_pos.x, best_pos.y);
-                target = robot;
-            }
-        }
-    }
-    return target;
-}
+//             // std::cout << "index" << robot.getIndex();
+//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+//                 best_pos = drone.getInterceptPoint(robot);
+//                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
+//                 target = robot;
+//             }
+//         }
+//     }
+//     return target;
+// }
 
-action_t AI::squareSearch(Robot target, Drone drone) {
+action_t AI::triangleSearch(Drone drone) {
     action_t search_Action = empty_action;
 
     point_t next_search_point = point_Zero;
@@ -69,28 +76,33 @@ action_t AI::squareSearch(Robot target, Drone drone) {
     float y = pos.y;
     float track_width = 20;
     float track_height = 20;
-    float track_center_x = track_width / 2;
-    float track_center_y = track_height / 2;
-    float padding = 3;
 
-    // The drone flies in a square path in a clockwise order
-    if (x > track_center_x && y > track_center_y) {
-        next_search_point.x = track_width - padding;
-        next_search_point.y = padding;
-    } else if (x > track_center_x && y < track_center_y) {
-        next_search_point.x = padding;
-        next_search_point.y = padding;
-    } else if (x <= track_center_x && y <= track_center_y) {
+    point_t track_center = point_Zero;
+    track_center.x = track_width / 2;
+    track_center.y = track_height / 2;
+    float padding = 5;
+
+    // The drone flies in a triangle path in a clockwise order
+    if (drone.getDistanceToPoint(track_center) < 3) {
         next_search_point.x = padding;
         next_search_point.y = track_height - padding;
-    } else if (x < track_center_x && y > track_center_y) {
+    } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x > track_center.x && y < track_center.y) { // 2. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x <= track_center.x && y <= track_center.y) { // 3. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
         next_search_point.x = track_width - padding;
         next_search_point.y = track_height - padding;
     }
 
     search_Action.type = search;
     search_Action.where_To_Act = next_search_point;
-    search_Action.target = 0;
+    //search_Action.target = 0;
 
     return search_Action;
 }
@@ -98,14 +110,17 @@ action_t AI::squareSearch(Robot target, Drone drone) {
 action_t AI::chooseAction(Robot target, Drone drone) {
     // // Temporary max rewarded action
     action_t best_Action = empty_action;
+    best_Action.reward = target.getCurrentPlank().getReward();
 
     // best_Action.where_To_Act.travel_Time = interception.travel_Time;
+
+    // Check if current plank is good enough?
 
     // Check if we have a visible target
     if (target.getIndex() != -1) {
         action_t step_Action;
 
-        for (int i = 1; i < target.current_Plank.getNumPlankPoints() - 1; i++) {
+        for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
 
             step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
@@ -119,7 +134,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     }
     // If no target is visible, we do a patrol round
     else {
-        best_Action = this->squareSearch(target, drone);
+        best_Action = this->triangleSearch(drone);
     }
 
     return best_Action;
@@ -130,10 +145,10 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     action_t action;
     action.where_To_Act = position.point;
 
-    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + (MATH_PI/4), 2*MATH_PI), 
-                                    position.time_since_start_turn);
+    Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
-                                    position.time_since_start_turn);
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }

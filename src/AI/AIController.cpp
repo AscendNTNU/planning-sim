@@ -47,7 +47,7 @@ action_t AIController::stateHandler(){
             break;
     }
     return action;
- }
+}
 
 void AIController::noInputDataState(){
     printf("No Input data state\n");
@@ -55,12 +55,17 @@ void AIController::noInputDataState(){
     	this->state_ = idle;
     }
     return;
- }
+}
 
 void AIController::idleState(){
     printf("Idle state\n");
     this->current_action_ = ai_.getBestGeneralAction(this->observation);
-	this->state_ = fly_to;
+    
+    if(this->current_action_.type == no_Command){
+        return;
+    }
+	
+    this->state_ = fly_to;
 	return;
 }
 
@@ -83,7 +88,6 @@ void AIController::waitingState(){
     Robot target = this->observation.getRobot(target_id);
 
     if(!target.isMoving()){
-        this->state_ = waiting;
         return;
     }
 
@@ -94,6 +98,10 @@ void AIController::waitingState(){
 
 	action_t updated_action = this->ai_.getBestAction(target, this->observation);
 
+    if(updated_action.type == no_Command){
+        return;
+    }
+
     if(!similarity(updated_action, this->current_action_)) {
     	this->state_ = idle;
     	return;
@@ -102,6 +110,50 @@ void AIController::waitingState(){
     this->current_action_ = updated_action;
     this->state_ = fly_to;
     return;
+}
+
+
+action_t AIController::positioningState() { // combo av waitingState og flyToState
+    printf("Positioning state\n");
+
+    //waiting
+    int target_id = this->current_action_.target;
+    Robot target = this->observation.getRobot(target_id);
+
+    if(!target.isMoving()){
+        return this->current_action_;
+    }
+
+    if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
+        this->state_ = perform_action;
+        return this->current_action_;
+    }
+
+    action_t updated_action = this->ai_.getBestAction(target, this->observation);
+
+    if(updated_action.type == no_Command){
+        return this->current_action_;
+    }
+
+    if(!similarity(updated_action, this->current_action_)) {
+        this->state_ = idle;
+        return this->current_action_;
+    }
+
+    this->current_action_ = updated_action;
+
+    //this->state_ = fly_to;
+    printf("fly to state\n");   
+    if(this->current_action_.type==search){
+        this->state_ = idle;
+        return this->current_action_;
+    }
+
+    action_t fly_action = this->current_action_;
+    fly_action.type = search;
+
+    //this->state_ = waiting;
+    return fly_action;
 }
 
 action_t AIController::performActionState(){
