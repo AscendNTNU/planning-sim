@@ -44,7 +44,8 @@ float Plank::getNumPlankPoints() {
 }
 
 bool Plank::willExitGreen(){
-    if(this->end_point.point.y > 20 || this->start_point.point.y > 20 ){
+    float out_limit = 0.5;
+    if(this->end_point.point.y > 20 + out_limit || this->start_point.point.y > 20 + out_limit){
         return true;
     }
 	return false; //Fix this
