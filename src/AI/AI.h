@@ -25,7 +25,6 @@ public:
     */
     Robot chooseTarget(std::array<Robot,10> robots, Drone drone);
 
-
     /**
     @brief Returns best action along the plank of a target robot
     @param target Target robot.
