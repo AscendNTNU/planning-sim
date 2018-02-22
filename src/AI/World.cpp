@@ -2,9 +2,13 @@
 
 
 //Constructors
+/*
+    Contructor for the grid world.
+
+    @param orientation - float value describing the orientation of the field.
+*/
 World::World(float orientation){
 	this->origin = point_Zero;
-	this->start_Time = 0;
 	this->orientation = orientation;
 	this->bounds = (bounds_t){.x_Max = 20, .y_Max = 20}; 
 }
@@ -13,10 +17,6 @@ World::World(float orientation){
 point_t World::getOrigin(){
 	return this->origin;
 }
-float World::getCurrentTime(){
-	float seconds_since_start = difftime(time(0), this->start_Time);
-	return seconds_since_start;
-}
 float World::getOrientation(){
 	return this->orientation;
 }
@@ -24,6 +24,13 @@ bounds_t World::getBounds(){
 	return this->bounds;
 }
 
+/*
+    2D function of grid value. Determined using value iteration.
+
+    @param x - The x position on the field
+    @param y - The y position on the field
+    @return the points value at the (x, y) position given
+*/
 float World::getGridValue(float X, float Y){
     float value = (-9.995004e+02)+(9.976812e+01)*X+(-1.004701e+02)*Y
         +(-5.785388e+01)*pow(X,2)+(1.161562e+01)*X*Y+(5.477725e+01)*pow(Y,2)
@@ -44,10 +51,4 @@ float World::getGridValue(float X, float Y){
         +(3.539047e-11)*X*pow(Y,7)+(1.058675e-06)*pow(Y,8);
 
     return value;
-}
-
-//Set
-bool World::startTimer(){
-	this->start_Time = time(0);
-	return true;
 }

@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+  nodes:
+    image: ascendntnu/ros-kinetic:1.0
+    tty: true
+    environment:
+      - ASCEND_ENV
+    command: bash -c "cd /catkin_ws && catkin_make && source devel/setup.bash && roslaunch planning_ros_sim run_nodes.launch"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
+  build-only:
+    image: ascendntnu/ros-kinetic:1.0
+    tty: true
+    environment:
+      - ASCEND_ENV
+    command: bash -c "cd /catkin_ws && catkin_make"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    network_mode: "host"
+  tests:
+    image: ascendntnu/ros-kinetic:1.0
+    tty: true
+    environment:
+      - ASCEND_ENV
+    command: bash -c "cd /catkin_ws && catkin_make run_tests"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+  syntax:
+    image: stefanhudelmaier/cppcheck:latest
+    tty: true
+    command: cppcheck src/* -isrc/ai-sim --error-exitcode=1 --enable=warning
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws/src/planning-sim/
+  docs:
+    image: nnadeau/docker-doxygen:latest
+    tty: true
+    command: doxygen config.conf
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws/src/planning-sim/src/AI
+  watch-docs:
+    image: nginx:stable-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./src/AI/Documentation/html:/usr/share/nginx/html:ro
+  gui:
+    image: ascendntnu/ai-sim:1.0
+    tty: true
+    working_dir: /srv/ai-sim/src/ai-sim/
+    environment:
+      DISPLAY:
+    devices:
+      - /dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/srv/ai-sim/:rw
+    network_mode: "host"
