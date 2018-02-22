@@ -57,6 +57,10 @@ bool Observation::updateDrone(observation_t observation, float elapsed_time){
 	return true;
 }
 
+void Observation::updateInteraction(int index) {
+	this->robots[index].setInteractedWithTrue();
+}
+
 bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	point_t position = point_Zero;
 	this->time_Stamp = elapsed_time;

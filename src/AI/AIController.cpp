@@ -158,6 +158,10 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
 
 action_t AIController::performActionState(){
     printf("action state\n");
+    if(this->current_action_.type == land_On_Top_Of || this->current_action_.type == land_In_Front_Of) {
+        // printf("ROBOT INTERACTED WITH!!!!\n");
+        this->observation.updateInteraction(this->current_action_.target);
+    }
 	this->state_ = idle;
 	return this->current_action_; 
 }
