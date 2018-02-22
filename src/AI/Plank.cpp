@@ -1,5 +1,7 @@
 #include "Plank.h"
 
+#include <cmath>
+
 Plank::Plank(){
 	this->end_point.point = point_Zero;
 	this->start_point.point = point_Zero;
@@ -148,6 +150,22 @@ bool Plank::pointIsOutsideOfPlank(point_t point){
 	} else {
 	    return false;
 	}
+}
+
+point_t Plank::getRobotPositionAtTime(float elapsed_time){
+    float no_of_turns = elapsed_time/20;
+    float driving_time = elapsed_time - 20*floor(no_of_turns);
+    point_t point;
+    if(driving_time > 0){
+        this->start_point.point.x;
+        this->start_point.point.y;
+        point.x = driving_time*ROBOT_SPEED*cosf(this->angle)+this->start_point.point.x;
+        point.y = driving_time*ROBOT_SPEED*sinf(this->angle)+this->start_point.point.y;
+    }
+    else{
+        point.x = this->start_point.point.x;
+        point.y = this->start_point.point.y;
+    }
 }
 
 std::ostream& operator<<(std::ostream &strm, const Plank &plank) {

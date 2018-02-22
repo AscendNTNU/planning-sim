@@ -6,7 +6,7 @@ Robot::Robot() {
     this->old_Position = point_Zero;
     this->orientation = 0;
     this->speed = 0.33;
-    this->current_Plank = Plank();
+    this->plank = Plank();
     this->time_After_Turn_Start = 0;
     this->visible = true;
 }
@@ -17,7 +17,7 @@ Robot::Robot(int index) {
     this->old_Position = point_Zero;
     this->orientation = 0;
     this->speed = 0.33;
-    this->current_Plank = Plank();
+    this->plank = Plank();
     this->time_After_Turn_Start = 0;
     this->visible = true;
 }
@@ -48,7 +48,7 @@ float Robot::getSpeed() {
     return this->speed;
 }
 Plank Robot::getCurrentPlank() {
-    return this->current_Plank;
+    return this->plank;
 }
 bool Robot::getVisibility() {
     return this->visible;
@@ -75,11 +75,18 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     
     if (this->time_After_Turn_Start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
-        this->current_Plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
+        this->plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
     } else {
         this->orientation = fmod(new_Orientation, 2*MATH_PI);
-        this->current_Plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME);
+        this->plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME);
     }
+}
+
+Robot Robot::getRobotPositionAtTime(float elapsed_time){
+    point_t point = this->plank.getRobotPositionAtTime(elapsed_time);
+    Robot robot;
+    robot.update(this->index, point, this->orientation, elapsed_time, true);
+    return robot;
 }
 
 void Robot::setPositionOrientation(point_t position, float q) {
@@ -103,7 +110,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Old orient.: "      << robot.old_Orientation       << std::endl
     << "Time after: "       << robot.time_After_Turn_Start << std::endl
     << "Speed: "            << robot.speed                 << std::endl
-    << "Current plank: "    << robot.current_Plank
+    << "Current plank: "    << robot.plank
     << "-------------"                                      << std::endl;
     return strm;
 };

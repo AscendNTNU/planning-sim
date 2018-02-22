@@ -17,25 +17,22 @@ World world = World(0);
 std::array<Plank, 10> planks;
 std::vector<Robot> robots;
 float start_time = 0;
+
 //Can only handle 10 robots in one message.
 void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+    for(int i = 0; i < (int)msg->count; i++) {
+        Robot robot;
 
-    for(int i = 0; i < 10; i++) {
-        if(i < (int)msg->count){
+        point_t position;
+        position.x = msg->global_robot_position[i].x;
+        position.y = msg->global_robot_position[i].y;
 
-            Robot robot;
-            point_t position;
-            position.x = msg->global_robot_position[i].x;
-            position.y = msg->global_robot_position[i].y;
-            float q = msg->direction[i];
-            float time = msg->header.stamp.sec-start_time;
-            bool visible = true;
-            robot.update(i, position, q , time, visible);
-            robots.push_back(robot);
-        }
-        else{
-            break;
-        }
+        float q = msg->direction[i];
+        float time = msg->header.stamp.sec-start_time;
+        bool visible = true;
+
+        robot.update(i, position, q , time, visible);
+        robots.push_back(robot);
     }
 }
 

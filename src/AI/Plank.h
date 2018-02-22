@@ -13,6 +13,8 @@ movement. It is responisble for setting value on a ground robots position.
 
 extern World world;
 
+class Robot;
+
 class Plank{
 	private:
 	    plank_point_t end_point; //First endpoint robot meets
@@ -97,6 +99,8 @@ class Plank{
 		@return Boolean
 		*/
 		bool pointIsOutsideOfPlank(point_t point);
+
+		point_t getRobotPositionAtTime(float elapsed_time);
 
 	    friend std::ostream& operator<<(std::ostream &strm, const Plank &plank);
 };

@@ -28,7 +28,7 @@ public:
     ///Robot constructors
     Robot();
     Robot(int index);
-    Plank current_Plank;
+    Plank plank;
 
     static bool robotsAtTurnTime(float elapsed_time);
 
@@ -91,5 +91,14 @@ public:
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */
     bool isMoving();
+
+    /**
+     * @brief      Gets the robot position at a time_stamp given no random movement, drone interactions or collisions.
+     * @param[in]  elapsed_time  The elapsed time
+
+     * @return     The robot position at time.
+     */
+    Robot getRobotPositionAtTime(float elapsed_time);
+
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

@@ -31,8 +31,8 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 
         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
-            if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
-                best_reward = robot.current_Plank.getReward();
+            if (robot.plank.getReward() > best_reward && !robot.plank.willExitGreen()) {
+                best_reward = robot.plank.getReward();
                 target = robot;
             }
         }
@@ -56,7 +56,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 //         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
 //             // std::cout << "index" << robot.getIndex();
-//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.plank.willExitGreen()){
 //                 best_pos = drone.getInterceptPoint(robot);
 //                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
 //                 target = robot;
@@ -120,10 +120,10 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     if (target.getIndex() != -1) {
         action_t step_Action;
 
-        for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
-            // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
+        for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
+            // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
-            step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
+            step_Action = getBestActionAtPosition(target.getOrientation(), target.plank.getPoint(i));
 
             if (step_Action.reward > best_Action.reward) {
                 best_Action = step_Action;
