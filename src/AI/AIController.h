@@ -77,4 +77,14 @@ public:
     @return A robot interaction action.This state waits for the target to reach the action point and updates the action
     */
     action_t performActionState();
+
+    /**
+    @brief Waits for the target to reach the action point then sends out the action.
+    @return
+    A robot interaction action. This state waits for the target to reach the action point and updates the action
+    based on changes in our observation of the target. Also includes an abort action
+    if the observation changes over a certain threshold.
+    */
+
+    action_t positioningState();
 };

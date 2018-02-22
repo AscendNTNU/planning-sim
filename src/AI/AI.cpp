@@ -2,33 +2,29 @@
 #include "Robot.h"
 #include <array>
 
-bool robotsAtTurnTime(float elapsed_time) {
-    float rest = fmod(elapsed_time, 20); 
-    if (rest < 3) {
-        return true;
-    }
-    return false;
-}
-
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(),observation.getDrone());
+    Robot target = chooseTarget(observation.getRobots(), observation.getDrone(), observation.getTimeStamp());
+    if (target.getIndex() == -1) {
+        return empty_action;
+    }
     return getBestAction(target, observation);
 }
 
 action_t AI::getBestAction(Robot target, Observation observation) {
-    if (robotsAtTurnTime(observation.getTimeStamp())){
-        return empty_action;
-    }
     action_t best_Action = chooseAction(target, observation.getDrone());
     return best_Action;
 }
 
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_time) {
     Robot robot;
     float best_reward = -1000000;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
+
+    if (Robot::robotsAtTurnTime(elapsed_time)){
+            return target;
+    }
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
@@ -114,14 +110,17 @@ action_t AI::triangleSearch(Drone drone) {
 action_t AI::chooseAction(Robot target, Drone drone) {
     // // Temporary max rewarded action
     action_t best_Action = empty_action;
+    best_Action.reward = target.getCurrentPlank().getReward();
 
     // best_Action.where_To_Act.travel_Time = interception.travel_Time;
+
+    // Check if current plank is good enough?
 
     // Check if we have a visible target
     if (target.getIndex() != -1) {
         action_t step_Action;
 
-        for (int i = 1; i < target.current_Plank.getNumPlankPoints() - 1; i++) {
+        for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
 
             step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
@@ -147,9 +146,9 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     action.where_To_Act = position.point;
 
     Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
-                                    position.time_since_start_turn);
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
-                                    position.time_since_start_turn);
+                                    position.time_since_start_turn, ROBOT_TURN_TIME);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }
