@@ -3,7 +3,7 @@
 #include <array>
 
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(), observation.getDrone());
+    Robot target = chooseTarget(observation.getRobots(), observation.getDrone(), observation.getTimeStamp());
     if (target.getIndex() == -1) {
         return empty_action;
     }
@@ -24,7 +24,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 
     if (Robot::robotsAtTurnTime(elapsed_time)){
             return target;
-        }
+    }
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
