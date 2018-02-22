@@ -1,7 +1,5 @@
 #include "Robot.h"
 
-//ROBOT_TURN_TIME = 2.5;
-
 Robot::Robot() {
     this->index = -1;
     this->position = point_Zero;
