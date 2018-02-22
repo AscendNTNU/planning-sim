@@ -1,6 +1,6 @@
 #include "Robot.h"
 
-extern const float ROBOT_TURN_TIME = 2.5;
+extern const float ROBOT_TURN_TIME = 2.7;
 
 Robot::Robot() {
     this->index = -1;

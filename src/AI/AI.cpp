@@ -15,12 +15,16 @@ action_t AI::getBestAction(Robot target, Observation observation) {
     return best_Action;
 }
 
-Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_time) {
     Robot robot;
     float best_reward = -1000000;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
+
+    if (Robot::robotsAtTurnTime(elapsed_time)){
+            return target;
+        }
 
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
@@ -108,6 +112,8 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     action_t best_Action = empty_action;
 
     // best_Action.where_To_Act.travel_Time = interception.travel_Time;
+
+    // Check if current plank is good enough?
 
     // Check if we have a visible target
     if (target.getIndex() != -1) {
