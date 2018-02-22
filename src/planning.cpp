@@ -106,6 +106,11 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::spinOnce();
 
+        // printf("%f\n", elapsed_time);
+        if(elapsed_time > 600) {
+          break;
+        }
+
         if(ready_for_new_action) {
             action = ai_controller.stateHandler();
 
@@ -157,10 +162,7 @@ int main(int argc, char **argv) {
                 break;
         }
 
-        // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600) {
-          break;
-        }
+        
 
         rate.sleep();
     }
