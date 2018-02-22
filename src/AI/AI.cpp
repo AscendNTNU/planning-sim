@@ -29,6 +29,10 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
+        if (robot.current_Plank.willExitRed()) {
+            continue;
+        }
+
         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
 
             if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
