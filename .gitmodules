@@ -1,3 +1,0 @@
-[submodule "src/ai-sim"]
-	path = src/ai-sim
-	url = git@github.com:ascendntnu/ai-sim.git

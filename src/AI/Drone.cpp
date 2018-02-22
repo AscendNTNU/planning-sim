@@ -1,14 +1,20 @@
 #include "Drone.h"
 
 Drone::Drone(){
+
 	this->position = point_Zero;
 	this->orientation = 0;
 	this->angle_Of_Motion = 0;
 	this->speed = DRONE_SPEED;
+	this->state = starting;
 }
 
 point_t Drone::getPosition(){
 	return this->position;
+}
+
+drone_State_t Drone::getState(){
+	return this->state;
 }
 
 bool Drone::update(observation_t observation){
@@ -35,15 +41,15 @@ float Drone::getDistanceToPoint(point_t point){
 }
 
 
-point_t Drone::getInterceptPoint(Robot robot) {
+point_t Drone::getInterceptPoint(Robot* robot) {
 	
 	//Drone* drone = new Drone(); 
-	float time_Until_Turn = 20 - robot.getTimeAfterTurn();
-	float robot_Ori = robot.getOrientation();
-	point_t robot_Pos = robot.getPosition();
+	float time_Until_Turn = 20 - robot->getTimeAfterTurn();
+	float robot_Ori = robot->getOrientation();
+	point_t robot_Pos = robot->getPosition();
 	float x_d = this->position.x;
 	float y_d = this->position.y;
-	float time_Since_Turn = robot.getTimeAfterTurn();
+	float time_Since_Turn = robot->getTimeAfterTurn();
 
 	if(time_Since_Turn < 2) {
 		robot_Ori = robot_Ori - (MATH_PI/2)*(time_Since_Turn) + MATH_PI;
@@ -54,7 +60,7 @@ point_t Drone::getInterceptPoint(Robot robot) {
 	}
 	
 	//Math to calculate if direct
-	float a = robot_Pos.x; float b = robot.getSpeed(); float c = robot_Ori; float d = robot_Pos.y; float e = x_d; float f = y_d; float g = this->speed;
+	float a = robot_Pos.x; float b = robot->getSpeed(); float c = robot_Ori; float d = robot_Pos.y; float e = x_d; float f = y_d; float g = this->speed;
 	float ta =(-sqrt(pow(b,2)*pow(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c),2) - 4*(-pow(a,2) + 2*a*e - pow(d,2) + 2*d*f - pow(e,2) - pow(f,2))*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2))) - b*(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c)))/(2*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2)));
 	float tb = (sqrt(pow(b,2)*pow(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c),2) - 4*(-pow(a,2) + 2*a*e - pow(d,2) + 2*d*f - pow(e,2) - pow(f,2))*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2))) - b*(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c)))/(2*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2)));
 
@@ -67,11 +73,11 @@ point_t Drone::getInterceptPoint(Robot robot) {
 	if(t1 > (time_Until_Turn+2))
 	{
 		t1 = time_Until_Turn;
-		float x_b1 = robot_Pos.x +time_Until_Turn*robot.getSpeed()*cos(robot_Ori);
-		float y_b1 = robot_Pos.y +time_Until_Turn*robot.getSpeed()*sin(robot_Ori);
+		float x_b1 = robot_Pos.x +time_Until_Turn*robot->getSpeed()*cos(robot_Ori);
+		float y_b1 = robot_Pos.y +time_Until_Turn*robot->getSpeed()*sin(robot_Ori);
 		float angleDrone1 = atan2(y_b1-y_d, x_b1-x_d);
 
-		float a = x_b1; float b = robot.getSpeed(); float c = robot_Ori+MATH_PI; float d = y_b1; float e = x_d + (time_Until_Turn+2)*this->speed*cos(angleDrone1); float f = x_d + (time_Until_Turn+2)*this->speed*sin(angleDrone1); float g = this->speed;
+		float a = x_b1; float b = robot->getSpeed(); float c = robot_Ori+MATH_PI; float d = y_b1; float e = x_d + (time_Until_Turn+2)*this->speed*cos(angleDrone1); float f = x_d + (time_Until_Turn+2)*this->speed*sin(angleDrone1); float g = this->speed;
 		ta =(-sqrt(pow(b,2)*pow(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c),2) - 4*(-pow(a,2) + 2*a*e - pow(d,2) + 2*d*f - pow(e,2) - pow(f,2))*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2))) - b*(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c)))/(2*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2)));
 		tb = (sqrt(pow(b,2)*pow(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c),2) - 4*(-pow(a,2) + 2*a*e - pow(d,2) + 2*d*f - pow(e,2) - pow(f,2))*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2))) - b*(-2*a*cos(c) - 2*d*sin(c) + 2*e*cos(c) + 2*f*sin(c)))/(2*(-pow(b,2)*pow(sin(c),2) - pow(b,2)*pow(cos(c),2) + pow(g,2)));
 		t2 = (std::max)(ta, tb);
@@ -79,15 +85,15 @@ point_t Drone::getInterceptPoint(Robot robot) {
 		float x_d1 = e;
 		float y_d1 = f;
 		
-		x_bf = x_b1+t2*robot.getSpeed()*cos(robot_Ori+MATH_PI);
-		y_bf = y_b1+t2*robot.getSpeed()*sin(robot_Ori+MATH_PI);
+		x_bf = x_b1+t2*robot->getSpeed()*cos(robot_Ori+MATH_PI);
+		y_bf = y_b1+t2*robot->getSpeed()*sin(robot_Ori+MATH_PI);
 
 		float angleDrone2 = atan2(y_bf-y_d1, x_bf-x_d1);
 	}
 	else
 	{
-		x_bf = robot_Pos.x+t1*robot.getSpeed()*cos(robot_Ori);
-		y_bf = robot_Pos.y+t1*robot.getSpeed()*sin(robot_Ori);
+		x_bf = robot_Pos.x+t1*robot->getSpeed()*cos(robot_Ori);
+		y_bf = robot_Pos.y+t1*robot->getSpeed()*sin(robot_Ori);
 		float angleDrone1 = atan2(y_bf-y_d, x_bf-x_d);
 	}
 	point_t intersection;
