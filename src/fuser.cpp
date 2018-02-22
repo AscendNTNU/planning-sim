@@ -9,10 +9,13 @@
 
 #include "ascend_msgs/DetectedRobotsGlobalPositions.h"
 
-#include "AI/Plank.h"
+#include "AI/Robot.h"
 #include "AI/World.h"
 
 World world = World(0);
+
+std::array<Plank, 10> planks;
+std::vector<Robot> robots;
 
 //Can only handle 10 robots in one message.
 void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
@@ -28,10 +31,7 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPt
             robotObs.robot_visible[i] = false;
         }
     }
-
 }
-
-std::array<Plank, 10> planks;
 
 int main(int argc, char **argv){
 
@@ -45,12 +45,12 @@ int main(int argc, char **argv){
     std_msgs::Float32 time_msg; 
 
     ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
-    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1000, tracker_chatterCallback);
-
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1, tracker_chatterCallback);
     ros::Rate rate(30.0);
+
     while (ros::ok()) {
         ros::spinOnce();
-
+        
         ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
         groundrobot_msg.count = 10;
         for (int n = 0; n<10; n++){
