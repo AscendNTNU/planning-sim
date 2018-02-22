@@ -3,7 +3,7 @@
 #include <array>
 
 action_t AI::getBestGeneralAction(Observation observation) {
-    Robot target = chooseTarget(observation.getRobots(), observation.getDrone(), observation.getTimeStamp());
+    Robot target = chooseTarget(observation.getRobots(), observation.getDrone());
     if (target.getIndex() == -1) {
         return empty_action;
     }

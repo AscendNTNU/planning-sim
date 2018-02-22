@@ -24,7 +24,7 @@ AIController::AIController(){
 }
 
 action_t AIController::stateHandler(){
-    action_t action = empty_action; // remove 'action' and rather return the this->currentaction
+    action_t action = empty_action;
     switch(this->state_){
         case no_input_data:
             this->noInputDataState();
@@ -112,11 +112,11 @@ void AIController::waitingState(){
     return;
 }
 
-/*
-// will not work if changes to stateHandler is done
-action_t AIController::PositioningState() { // combo av waitingState og flyToState
+
+action_t AIController::positioningState() { // combo av waitingState og flyToState
     printf("Positioning state\n");
 
+    //waiting
     int target_id = this->current_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
@@ -155,7 +155,6 @@ action_t AIController::PositioningState() { // combo av waitingState og flyToSta
     //this->state_ = waiting;
     return fly_action;
 }
-*/
 
 action_t AIController::performActionState(){
     printf("action state\n");

@@ -1,6 +1,6 @@
 #include "Robot.h"
 
-extern const float ROBOT_TURN_TIME = 2.5;
+//ROBOT_TURN_TIME = 2.5;
 
 Robot::Robot() {
     this->index = -1;
@@ -74,7 +74,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->time_After_Turn_Start = fmod(elapsed_time, 20);
     this->visible = visible;
     
-    if (this->time_After_Turn_Start < 2) {
+    if (this->time_After_Turn_Start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
         this->current_Plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
     } else {

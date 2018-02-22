@@ -86,5 +86,5 @@ public:
     if the observation changes over a certain threshold.
     */
 
-    action_t PositioningState();
+    action_t positioningState();
 };

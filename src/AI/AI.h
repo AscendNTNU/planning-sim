@@ -23,8 +23,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_time);
-
+    Robot chooseTarget(std::array<Robot,10> robots, Drone drone);
 
     /**
     @brief Returns best action along the plank of a target robot
