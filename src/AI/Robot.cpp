@@ -61,7 +61,6 @@ bool Robot::getWasInteractedWith() {
 }
 
 void Robot::setInteractedWithTrue() {
-    printf("SETTING INTERACTED WITH TO TRUE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n");
     this->wasInteractedWith = true;
 }
 
