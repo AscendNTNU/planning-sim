@@ -92,10 +92,10 @@ int main(int argc, char **argv)
   std_msgs::Float32 time_msg; 
 
   // Define publishers
-  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
-  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",100);
-  ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 100);
+  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 1);
+  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>("drone_chatter", 1);
+  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",1);
+  ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 1);
 
   // Define action server
   ActionServerType server(nh, "control_action_server", false);

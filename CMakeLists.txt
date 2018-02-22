@@ -37,6 +37,11 @@ target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
 
+add_executable(fuser src/fuser.cpp)
+target_link_libraries(fuser libAI ${catkin_LIBRARIES})
+add_dependencies(fuser planning_ros_sim_generate_messages_cpp
+	ascend_msgs_generate_messages_cpp)
+
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)
