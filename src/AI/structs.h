@@ -29,7 +29,7 @@ struct point_t{
 */
 struct plank_point_t{
     point_t point;
-    bool is_ahead;
+    bool is_ahead;  
     float time_till_first_arrival;
     float time_since_start_turn;
 };
