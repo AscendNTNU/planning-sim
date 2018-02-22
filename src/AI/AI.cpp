@@ -110,6 +110,7 @@ action_t AI::triangleSearch(Drone drone) {
 action_t AI::chooseAction(Robot target, Drone drone) {
     // // Temporary max rewarded action
     action_t best_Action = empty_action;
+    best_Action.reward = target.getCurrentPlank().getReward();
 
     // best_Action.where_To_Act.travel_Time = interception.travel_Time;
 
@@ -119,7 +120,7 @@ action_t AI::chooseAction(Robot target, Drone drone) {
     if (target.getIndex() != -1) {
         action_t step_Action;
 
-        for (int i = 1; i < target.current_Plank.getNumPlankPoints() - 1; i++) {
+        for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
 
             step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
