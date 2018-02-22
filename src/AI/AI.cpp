@@ -29,7 +29,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
-        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+        if (robot.getIndex() != -1 && robot.getVisible() && robot.isMoving()) {
 
             if (robot.plank.getReward() > best_reward && !robot.plank.willExitGreen()) {
                 best_reward = robot.plank.getReward();
@@ -53,7 +53,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 
 //     for (int i = 0; i < robots.size(); i++) {
 //         robot = robots[i];
-//         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+//         if (robot.getIndex() != -1 && robot.getVisible() && robot.isMoving()) {
 
 //             // std::cout << "index" << robot.getIndex();
 //             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.plank.willExitGreen()){

@@ -20,7 +20,7 @@ private:
     float orientation;
     point_t old_Position;
     float old_Orientation;
-    float time_After_Turn_Start; ///< Is the elapsed time passed since the start of the last rotation/turn.
+    float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
     float speed;
     bool visible;
@@ -28,6 +28,7 @@ public:
     ///Robot constructors
     Robot();
     Robot(int index);
+    
     Plank plank;
 
     static bool robotsAtTurnTime(float elapsed_time);
@@ -71,7 +72,7 @@ public:
     @brief Get the visibility of the Robot
     @return If it is visible
     */
-    bool getVisibility();
+    bool getVisible();
 
     /**
     @brief Set the position and orientation of the Robot
@@ -86,7 +87,7 @@ public:
     */
     void addToTimer(float time);
     void update(int index, point_t position,float q, float elapsed_time, bool visible);
-    
+    void update(Robot robot);
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */

@@ -7,7 +7,7 @@ Robot::Robot() {
     this->orientation = 0;
     this->speed = 0.33;
     this->plank = Plank();
-    this->time_After_Turn_Start = 0;
+    this->time_after_turn_start = 0;
     this->visible = true;
 }
 
@@ -18,7 +18,7 @@ Robot::Robot(int index) {
     this->orientation = 0;
     this->speed = 0.33;
     this->plank = Plank();
-    this->time_After_Turn_Start = 0;
+    this->time_after_turn_start = 0;
     this->visible = true;
 }
 
@@ -42,7 +42,7 @@ float Robot::getOrientation() {
     return this->orientation;
 }
 float Robot::getTimeAfterTurn() {
-    return this->time_After_Turn_Start;
+    return this->time_after_turn_start;
 }
 float Robot::getSpeed() {
     return this->speed;
@@ -50,7 +50,7 @@ float Robot::getSpeed() {
 Plank Robot::getCurrentPlank() {
     return this->plank;
 }
-bool Robot::getVisibility() {
+bool Robot::getVisible() {
     return this->visible;
 }
 
@@ -70,16 +70,25 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->old_Orientation = this->orientation;
     this->index = index;
     this->position = new_Position;
-    this->time_After_Turn_Start = fmod(elapsed_time, 20);
+    this->time_after_turn_start = fmod(elapsed_time, 20);
     this->visible = visible;
     
-    if (this->time_After_Turn_Start < ROBOT_TURN_TIME) {
+    if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
-        this->plank.updatePlank(this->position, estimated_orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
+        this->plank.updatePlank(this->position, estimated_orientation, this->time_after_turn_start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
     } else {
         this->orientation = fmod(new_Orientation, 2*MATH_PI);
-        this->plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start, ROBOT_TURN_TIME);
+        this->plank.updatePlank(this->position, this->orientation, this->time_after_turn_start, ROBOT_TURN_TIME);
     }
+}
+
+void Robot::update(Robot robot){
+    this->old_Position = this->position;
+    this->old_Orientation = this->orientation;
+    this->position = robot.getPosition();
+    this->orientation = robot.getOrientation();
+    this->time_after_turn_start = robot.getTimeAfterTurn();
+    this->visible =  robot.getVisible();
 }
 
 Robot Robot::getRobotPositionAtTime(float elapsed_time){
@@ -95,10 +104,10 @@ void Robot::setPositionOrientation(point_t position, float q) {
 }
 
 // When is this used? Double check that it is used the way we want.
-// Adding time to time_After_Turn_Start makes the variable name be
+// Adding time to time_after_turn_start makes the variable name be
 // misleading, except when correcting for drift.
 void Robot::addToTimer(float time) {
-    this->time_After_Turn_Start += time;
+    this->time_after_turn_start += time;
 }
 
 std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
@@ -108,7 +117,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Old pos.: "         << robot.old_Position          << std::endl
     << "Orientation: "      << robot.orientation           << std::endl
     << "Old orient.: "      << robot.old_Orientation       << std::endl
-    << "Time after: "       << robot.time_After_Turn_Start << std::endl
+    << "Time after: "       << robot.time_after_turn_start << std::endl
     << "Speed: "            << robot.speed                 << std::endl
     << "Current plank: "    << robot.plank
     << "-------------"                                      << std::endl;

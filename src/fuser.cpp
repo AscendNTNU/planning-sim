@@ -14,8 +14,8 @@
 
 World world = World(0);
 
-std::array<Plank, 10> planks;
-std::vector<Robot> robots;
+std::array<Robot, 10> robots;
+std::vector<Robot> new_robots;
 float start_time = 0;
 
 //Can only handle 10 robots in one message.
@@ -32,7 +32,7 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPt
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
-        robots.push_back(robot);
+        new_robots.push_back(robot);
     }
 }
 
@@ -41,21 +41,30 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
 }
 
 int nearestNeighbor(Robot robot) {
-    double minDistance = 1000000;
+    double min_distance = 1000000;
     int index = -1;
-    for(int i = 0; i < robots.size(); i++) {
-        if(distanceBetweenRobots(robot, robots[i]) < minDistance) {
-            minDistance = distanceBetweenRobots(robot, robots[i]);
-            index = i;
+    for(auto it = robots.begin(); it != robots.end(); it++){
+        Robot robot = *it;
+        int counter = 0;
+        if(distanceBetweenRobots(robot, robots[counter]) < min_distance) {
+            min_distance = distanceBetweenRobots(robot, robots[counter]);
+            index = counter;
+            counter++;
         }
     }
     return index;
 }
 
-int main(int argc, char **argv){
+void updateRobot(Robot new_robot){
+    int nearest_robot_index = nearestNeighbor(new_robot);
+    robots[nearest_robot_index].update(new_robot);
+}
 
-    for(auto it = planks.begin(); it != planks.end(); it++){
-        *it = Plank();
+int main(int argc, char **argv){
+    int counter = 0;
+    for(auto it = robots.begin(); it != robots.end(); it++){
+        *it = Robot(counter);
+        counter++;
     }
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
@@ -69,24 +78,13 @@ int main(int argc, char **argv){
 
     while (ros::ok()) {
         ros::spinOnce();
+
+        for(auto it = new_robots.begin(); it != new_robots.end(); it++){
+            updateRobot(*it);
+        }
         
         ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
-        // groundrobot_msg.count = 10;
-        // for (int n = 0; n<10; n++){
-        //     geometry_msgs::Point32 robot_position;
-        //     std_msgs::Float32 direction;
-        //     robot_position.x = obs_state.target_x[n];
-        //     robot_position.y = obs_state.target_y[n];
-        //     direction.data = obs_state.target_q[n];
-        //     groundrobot_msg.global_robot_position.push_back(robot_position);
-        //     groundrobot_msg.direction.push_back(obs_state.target_q[n]);
-        // }
 
-        // ground_robots_pub.publish(groundrobot_msg);
-        // drone_pub.publish(drone_msg);
-
-        // time_msg.data = state.elapsed_time;
-        // elapsed_time_pub.publish(time_msg);
 
         rate.sleep();
     }

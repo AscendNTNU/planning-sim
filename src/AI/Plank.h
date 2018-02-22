@@ -28,7 +28,7 @@ class Plank{
 		Plank();
 
 		///Plank constructor for a robot at a given position/time
-		Plank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME);
+		Plank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
 
 		///Get reward of current plank
 		float getReward();
@@ -88,9 +88,9 @@ class Plank{
 		@brief Updates the plank given the ground robots state.
 		@param position Robot position
 		@param angle Robot angle in radians
-		@param time_After_Turn_Start Seconds passed since the robot started turning
+		@param time_after_turn_start Seconds passed since the robot started turning
 		*/
-		void updatePlank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME);
+		void updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
 		
 		///Check if a point is outside of the plank
 		/**

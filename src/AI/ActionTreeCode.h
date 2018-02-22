@@ -38,7 +38,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 
 
 		//Try action land on top.
-        Plank temp_Plank = new Plank(temp_Position, orientation, time_After_Turn_Start, n);
+        Plank temp_Plank = new Plank(temp_Position, orientation, time_after_turn_start, n);
         temp.reward = findRobotValue(robot);
 		temp = currentLevel;
 		robot.setPositionOrientation(robot.getPosition(), robot.getOrientation()+0.785);
