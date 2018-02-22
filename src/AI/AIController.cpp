@@ -34,17 +34,18 @@ action_t AIController::stateHandler(){
             this->idleState();
             break;
 
-        case fly_to:
-            action = this->flyToState();
+        case positioning:
+            action = this->positioningState();
             break;
-        
-        case waiting:
-            this->waitingState();
+
+        case land_in_front:
+            action = this->landInFrontState();
             break;
-        
-        case perform_action:
-            action = this->performActionState();
+
+        case land_on_top:
+            action = this->landOnTopState();
             break;
+
     }
     return action;
 }
@@ -65,85 +66,45 @@ void AIController::idleState(){
         return;
     }
 	
-    this->state_ = fly_to;
+    this->state_ = positioning;
 	return;
 }
-
-action_t AIController::flyToState(){
-    printf("fly to state\n");	
-	if(this->current_action_.type==search){
-		this->state_ = idle;
-		return this->current_action_;
-	}
-
-	action_t fly_action = this->current_action_;
-	fly_action.type = search;
-	this->state_ = waiting;
-	return fly_action;
-}
-
-void AIController::waitingState(){
-    printf("waiting state\n");
-    int target_id = this->current_action_.target;
-    Robot target = this->observation.getRobot(target_id);
-
-    if(!target.isMoving()){
-        return;
-    }
-
-	if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
-		this->state_ = perform_action;
-		return;
-	}
-
-	action_t updated_action = this->ai_.getBestAction(target, this->observation);
-
-    if(updated_action.type == no_Command){
-        return;
-    }
-
-    if(!similarity(updated_action, this->current_action_)) {
-    	this->state_ = idle;
-    	return;
-    }
-
-    this->current_action_ = updated_action;
-    this->state_ = fly_to;
-    return;
-}
-
 
 action_t AIController::positioningState() { // combo av waitingState og flyToState
     printf("Positioning state\n");
 
-    //waiting
     int target_id = this->current_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
     if(!target.isMoving()){
-        return this->current_action_;
+        return empty_action;
     }
 
     if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
-        this->state_ = perform_action;
-        return this->current_action_;
+
+        if (this->current_action_.type == land_On_Top_Of) {
+            this->state_ = land_on_top;
+        }
+        else if (this->current_action_.type == land_In_Front_Of) {
+            this->state_ = land_in_front;
+        }
+
+        return empty_action;
     }
 
     action_t updated_action = this->ai_.getBestAction(target, this->observation);
 
     if(updated_action.type == no_Command){
-        return this->current_action_;
+        return empty_action;
     }
 
     if(!similarity(updated_action, this->current_action_)) {
         this->state_ = idle;
-        return this->current_action_;
+        return empty_action;
     }
 
     this->current_action_ = updated_action;
 
-    //this->state_ = fly_to;
-    printf("fly to state\n");   
     if(this->current_action_.type==search){
         this->state_ = idle;
         return this->current_action_;
@@ -152,12 +113,25 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
     action_t fly_action = this->current_action_;
     fly_action.type = search;
 
-    //this->state_ = waiting;
     return fly_action;
 }
 
-action_t AIController::performActionState(){
-    printf("action state\n");
-	this->state_ = idle;
-	return this->current_action_; 
+action_t AIController::landOnTopState(){
+    printf("Land on top state\n");
+    this->state_ = idle;
+    return this->current_action_; 
 }
+
+action_t AIController::landInFrontState(){
+    printf("Land in front state\n");
+
+    // sjekk hvor lenge drone står på bakken
+    // lytt til bumbers (for å se når vi treffer target)
+    // sammenlikn predicted target intersect tidspunkt med faktisk intersect
+    // sende lette kommando
+
+    this->state_ = idle;
+    return this->current_action_; 
+}
+
+
