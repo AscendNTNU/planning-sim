@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(100.0);
+    ros::Rate rate(99.0);
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
                 break;
         }
 
-        printf("%f\n", elapsed_time);
+        // printf("%f\n", elapsed_time);
         if(elapsed_time > 600) {
           break;
         }
@@ -170,7 +170,6 @@ int main(int argc, char **argv) {
         printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
         printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
         // printf(ai_controller.observation.getRobot(i));
-        // std::cout << ai_controller.observation.getRobot(i) << std::endl;
         if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
             numOut += 1;
         }
