@@ -39,6 +39,22 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPt
     }
 }
 
+double distanceBetweenRobots(Robot r1, Robot r2) {
+    return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
+}
+
+int nearestNeighbor(Robot robot) {
+    double minDistance = 1000000;
+    int index = -1;
+    for(int i = 0; i < robots.size(); i++) {
+        if(distanceBetweenRobots(robot, robots[i]) < minDistance) {
+            minDistance = distanceBetweenRobots(robot, robots[i]);
+            index = i;
+        }
+    }
+    return index;
+}
+
 int main(int argc, char **argv){
 
     for(auto it = planks.begin(); it != planks.end(); it++){
