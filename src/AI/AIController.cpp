@@ -46,14 +46,27 @@ action_t AIController::stateHandler(){
             action = this->landOnTopState();
             break;
 
+        case mission_complete:
+            action = this->missionCompleteState();
+            break;
     }
+
     return action;
 }
+
+void AIController::transitionTo(ai_state_t state) {
+    std::cout << "transitioning to: ";
+    this->state_ = state;
+    this->prev_transition_timestamp = this->observation.getTimeStamp();
+    //std::cout << "timestamp of this transition: " << this->prev_transition_timestamp << std::endl;
+
+}
+
 
 void AIController::noInputDataState(){
     printf("No Input data state\n");
 	if(this->observation.getRobot(0).getPosition().x != 0){
-    	this->state_ = idle;
+        this->transitionTo(idle);
     }
     return;
 }
@@ -65,8 +78,13 @@ void AIController::idleState(){
     if(this->current_action_.type == no_Command){
         return;
     }
+
+    if (this->observation.getTimeStamp() >= 11*60) {
+        this->transitionTo(mission_complete);
+        return;
+    }
 	
-    this->state_ = positioning;
+    this->transitionTo(positioning);
 	return;
 }
 
@@ -83,10 +101,10 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
     if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
 
         if (this->current_action_.type == land_On_Top_Of) {
-            this->state_ = land_on_top;
+            this->transitionTo(land_on_top);
         }
         else if (this->current_action_.type == land_In_Front_Of) {
-            this->state_ = land_in_front;
+            this->transitionTo(land_in_front);
         }
 
         return empty_action;
@@ -99,14 +117,14 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
     }
 
     if(!similarity(updated_action, this->current_action_)) {
-        this->state_ = idle;
+        this->transitionTo(idle);
         return empty_action;
     }
 
     this->current_action_ = updated_action;
 
     if(this->current_action_.type==search){
-        this->state_ = idle;
+        this->transitionTo(idle);
         return this->current_action_;
     }
 
@@ -118,20 +136,37 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
 
 action_t AIController::landOnTopState(){
     printf("Land on top state\n");
-    this->state_ = idle;
-    return this->current_action_; 
+    this->transitionTo(idle);
+    return this->current_action_;
 }
 
 action_t AIController::landInFrontState(){
     printf("Land in front state\n");
 
+    /*
+    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
+        // slutt å stå på bakken
+    }
+    */
+
+    // hvis tids-estimat på når vi blir bumpa er lengre enn 
     // sjekk hvor lenge drone står på bakken
     // lytt til bumbers (for å se når vi treffer target)
     // sammenlikn predicted target intersect tidspunkt med faktisk intersect
     // sende lette kommando
 
-    this->state_ = idle;
+    this->transitionTo(idle);
     return this->current_action_; 
+}
+
+action_t AIController::missionCompleteState(){
+    point_t drone_pos = this->observation.getDrone().getPosition();
+    action_t land_action;
+
+    land_action.type = land_At_Point;
+    land_action.where_To_Act = drone_pos;
+
+    return land_action;
 }
 
 

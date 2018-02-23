@@ -7,13 +7,15 @@ This class handles the AI state machine.
 
 #include "AI.h"
 
+
 ///The different AI states.
 enum ai_state_t{
     no_input_data, ///Starting state with no input data.
     idle, ///Nothing happening, AI waiting to find the next best action.
     positioning, /// Combo of fly_to and waiting
     land_in_front,
-    land_on_top
+    land_on_top,
+    mission_complete
 };
 
 class AIController{
@@ -21,6 +23,7 @@ private:
     AI ai_;
     ai_state_t state_;
     action_t current_action_;
+    float prev_transition_timestamp;
 
 public:
 
@@ -43,6 +46,8 @@ public:
     Checks if there is input data and if so changes state to idle. This is the starting
     state of the AI upon running the planning node.
     */
+    void transitionTo(ai_state_t state);
+
     void noInputDataState();
     
     /**
@@ -74,4 +79,6 @@ public:
     @return A robot interaction action.This state waits for the target to reach the action point and updates the action
     */
     action_t landInFrontState();
+
+    action_t missionCompleteState();
 };
