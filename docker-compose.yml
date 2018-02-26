@@ -18,13 +18,33 @@ services:
     command: bash -c "cd /catkin_ws && catkin_make"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
-    network_mode: "host"
   tests:
     image: ascendntnu/ros-kinetic:1.0
     tty: true
     environment:
       - ASCEND_ENV
     command: bash -c "cd /catkin_ws && catkin_make run_tests"
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+  build-cache:
+    image: ascend-kinetic-build-cache
+    build: src/docker-build-cache
+    tty: true
+    environment:
+      - ASCEND_ENV
+    volumes:
+      - .:/catkin_ws/src/planning-sim/:rw
+  benchmark:
+    image: ascend-kinetic-build-cache
+    depends_on:
+      - build-cache
+    tty: true
+    environment:
+      - IS_DOCKER=1
+      - RUNS_PER_SEED
+      - SEEDS
+    entrypoint: /ros_entrypoint.sh /catkin_ws/src/planning-sim/src/BenchmarkLaunch/BENCHMARK_TESTS.sh
+    command: "multiple"
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   syntax:
