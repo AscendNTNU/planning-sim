@@ -105,3 +105,34 @@ $ catkin_make run_tests
 # Or, if you have Docker, run this from the repo:
 $ docker-compose run tests
 ```
+
+## Benchmark testing (aka how well performs our AI)
+
+Run on Ubuntu:
+```bash
+# Go into the benchmark directory
+$ cd src/BenchmarkLaunch/
+
+# Run benchmark
+$ ./BENCHMARK_TESTS.sh
+```
+
+Run in Docker:
+```bash
+$ docker-compose run benchmark {runs per seed} {seeds}
+```
+
+Run multiple threads through Docker (should be faster, but as of async processes the ROS nodes behaves differently when using a lot of CPU resources):
+```bash
+# Preferred to run in background and then log last line from each node
+$ RUNS_PER_SEED=6 SEEDS=10 docker-compose up -d --scale benchmark=10 benchmark
+
+# Log last line from each node (use the -f option if you want to se continous updates)
+$ docker-compose logs --tail=1
+
+# Pretty print output (optionally set refresh rate as first argument)
+$ ./benchmark-print.sh
+
+# Some services can get stuck. Do not remove them, just stop them using
+$ docker-compose stop
+```
