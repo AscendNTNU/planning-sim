@@ -49,8 +49,8 @@ pipeline:
     script:
       - cd /home/ascend/ascendntnu-web/public/images/assets/ai-status
       - AI_STATUS=5.23
-      - echo ${DRONE_COMMIT} ${AI_STATUS} >> commit.log
-      - curl -o ai-status.svg https://img.shields.io/badge/avg.%20ground%20robots-${AI_STATUS}-f80.svg
+      - echo ${DRONE_COMMIT} AI_STATUS >> commit.log
+      - curl -o ai-status.svg https://img.shields.io/badge/avg.%20ground%20robots-$AI_STATUS-f80.svg
 
 clone:
   clone:
