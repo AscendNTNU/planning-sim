@@ -49,12 +49,12 @@ public:
 
     /**
     @brief Returns best action given rewards
-    @param reward_On_Top Reward of resultant plank from landing on top of the robot
-    @param reward_In_Front Reward of resultant plank from landing in front of the robot
+    @param reward_on_top Reward of resultant plank from landing on top of the robot
+    @param reward_in_front Reward of resultant plank from landing in front of the robot
     @return The best action.
     Compares landing ontop to landing in front and returns an action_t with the action of highest reward
     */
-    action_t actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action);
+    action_t actionWithMaxReward(float reward_on_top, float reward_in_front, action_t action);
 
     /**
     @brief Returns action stack for the best action over all robots.

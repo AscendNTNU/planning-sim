@@ -32,11 +32,14 @@ sim_Command action_ROS2Sim(GoalType goal){
       command.type = sim_CommandType_LandOnTopOf;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
-      command.type = sim_CommandType_LandInFrontOf; 
+      command.type = sim_CommandType_Land; 
       break;
     case ascend_msgs::ControlFSMGoal::SEARCH:
       command.type = sim_CommandType_Search;
       break;
+    // case ascend_msgs::ControlFSMGoal::TAKEOFF:
+    //   command.type = sim_CommandType_Search;
+    //   break;
     default:
       command.type = sim_CommandType_NoCommand;
       break;

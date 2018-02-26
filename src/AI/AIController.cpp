@@ -109,10 +109,10 @@ action_t AIController::positioningState() { // combo av waitingState og flyToSta
 
     if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
 
-        if (this->current_action_.type == land_On_Top_Of) {
+        if (this->current_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
         }
-        else if (this->current_action_.type == land_In_Front_Of) {
+        else if (this->current_action_.type == land_in_front_of) {
             this->transitionTo(land_in_front);
         }
 
@@ -159,21 +159,24 @@ action_t AIController::landOnTopState(){
 
 action_t AIController::landInFrontState(){
     printf("Land in front state\n");
-
-    /*
-    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
-        // slutt å stå på bakken
+    if(this->observation.getDrone().getPosition().z !=0){
+        this->current_action_;
     }
-    */
-
+    
+    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
+        this->transitionTo(idle);
+        action_t action = this->current_action_;
+        action.type = takeoff;
+        return action;// slutt å stå på bakken
+    }
+    
     // hvis tids-estimat på når vi blir bumpa er lengre enn 
     // sjekk hvor lenge drone står på bakken
     // lytt til bumbers (for å se når vi treffer target)
     // sammenlikn predicted target intersect tidspunkt med faktisk intersect
     // sende lette kommando
 
-    this->transitionTo(idle);
-    return this->current_action_; 
+    return empty_action; 
 }
 
 action_t AIController::missionCompleteState(){

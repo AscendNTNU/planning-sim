@@ -75,6 +75,7 @@ struct observation_t
     float elapsed_time;
     float drone_x;
     float drone_y;
+    float drone_z;
     bool  drone_cmd_done;
     int num_Targets;
 
@@ -92,6 +93,7 @@ static observation_t observation_Empty = {
     .elapsed_time = 0,
     .drone_x = 0,
     .drone_y = 0,
+    .drone_z = 0,
     .drone_cmd_done = false,
     .num_Targets = 0,
 };
@@ -99,11 +101,12 @@ static observation_t observation_Empty = {
 enum action_Type_t
 {
     no_Command = 0,   // continue doing whatever you are doing
-    land_On_Top_Of,   // trigger one 45 deg turn of robot (i)
-    land_In_Front_Of, // trigger one 180 deg turn of robot (i),
+    land_on_top_of,   // trigger one 45 deg turn of robot (i)
+    land_in_front_of, // trigger one 180 deg turn of robot (i),
     land_At_Point,    // land at a given point
     track,            // follow robot (i) at a constant height
-    search            // ascend to 3 meters and go to (x, y)
+    search,           // ascend to 3 meters and go to (x, y)
+    takeoff          // ascend to 3 meters
 };
 
 /*
@@ -112,10 +115,10 @@ std::string actionTypeToString(action_Type_t type) {
         case no_Command:
             return "no command";
             break;
-        case land_On_Top_Of:
+        case land_on_top_of:
             return "land on top of";
             break;
-        case land_In_Front_Of:
+        case land_in_front_of:
             return "land in front of";
             break;
         case land_At_Point:

@@ -55,13 +55,16 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     drone_action.caller_id = ascend_msgs::ControlFSMGoal::CALLER_AI;
     // Set action type
     switch (action.type) {
-        case land_On_Top_Of:
+        case land_on_top_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
-        case land_In_Front_Of:
+        case land_in_front_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case search:
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
+            break;
+        case takeoff:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
             break;
         default:
