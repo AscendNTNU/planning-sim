@@ -1,5 +1,5 @@
-#include "control/tools/config.hpp"
-#include <ascend_msgs/ReloadConfig.h>
+#include "config.h"
+// #include <ascend_msgs/ReloadConfig.h>
 
 using planning::Config;
 
@@ -7,7 +7,11 @@ std::set<std::string> Config::missing_param_set_;
 std::unique_ptr<Config> Config::shared_instance_p_ = nullptr;
 
 //Global config params
-// std::string Config::mavros_local_vel_topic = "mavros/local_position/velocity";
+
+std::string Config::time_chatter;
+std::string Config::groundrobot_chatter;
+std::string Config::drone_chatter;
+std::string Config::control_action_server;
 
 void Config::loadParams() {
     if(!ros::isInitialized()) {
@@ -24,11 +28,9 @@ void Config::loadParams() {
             warn_msg += name;
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
-            control::handleWarnMsg(warn_msg);
             missing_param_set_.insert(name);
         } else {
             var = temp;
-            control::handleInfoMsg("Param " + name + " loaded: " + std::to_string(var));
         }
     };
 
@@ -38,11 +40,7 @@ void Config::loadParams() {
             warn_msg += name;
             warn_msg += ", using ";
             warn_msg += var;
-            control::handleWarnMsg(warn_msg);
             missing_param_set_.insert(name);
-        } else {
-            control::handleInfoMsg("Param " + name + " loaded: " + var);
-        }
     };
 
     auto getIntParam = [&](const std::string& name, int& var, int min, int max) {
@@ -52,11 +50,9 @@ void Config::loadParams() {
             warn_msg += name;
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
-            control::handleWarnMsg(warn_msg);
             missing_param_set_.insert(name);
         } else {
             var = temp;
-            control::handleInfoMsg("Param " + name + " loaded: " + std::to_string(var));
         }
     };
 
@@ -66,11 +62,7 @@ void Config::loadParams() {
             warn_msg += name;
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
-            control::handleWarnMsg(warn_msg);
             missing_param_set_.insert(name);
-        } else {
-            control::handleInfoMsg("Param " + name + " loaded: " + std::to_string(var));
-        }
     };
 
     getStringParam("time_chatter", time_chatter);
@@ -79,22 +71,20 @@ void Config::loadParams() {
     getStringParam("control_action_server",  control_action_server);
 }
 
-using Request = ascend_msgs::ReloadConfig::Request;
-using Response = ascend_msgs::ReloadConfig::Response;
-bool reloadConfigCB(Request&, Response& resp) {
-    control::Config::loadParams();
-    control::handleInfoMsg("Config reloaded by service!");
+// using Request = ascend_msgs::ReloadConfig::Request;
+// using Response = ascend_msgs::ReloadConfig::Response;
+// bool reloadConfigCB(Request&, Response& resp) {
+//     planning::Config::loadParams();
+//     //Missing param set should be empty!
+//     for(auto& s : planning::Config::getMissingParamSet()) {
+//         resp.missing_params.emplace_back(s);
+//     }
+//     return true;
+// }
 
-    //Missing param set should be empty!
-    for(auto& s : control::Config::getMissingParamSet()) {
-        resp.missing_params.emplace_back(s);
-    }
-    return true;
-}
-
-control::Config::Config() {
+planning::Config::Config() {
     if(!ros::isInitialized()) {
-        throw control::ROSNotInitializedException();
+        std::cout << "ROS NOT INITIALIZED" << std::endl;
     }
-    reload_config_service = nh_.advertiseService("/control_fsm_reload_config", reloadConfigCB);
+    // reload_config_service = nh_.advertiseService("/planning_fsm_reload_config", reloadConfigCB);
 }

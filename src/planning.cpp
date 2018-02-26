@@ -86,11 +86,11 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    ros::Subscriber time_sub = nh.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
+    ros::Subscriber time_sub = nh.subscribe(planning::Config::time_chatter, 1, time_chatterCallback);
+    ros::Subscriber ground_robot_sub = nh.subscribe(planning::Config::groundrobot_chatter, 1, groundRobot_chatterCallback);
+    ros::Subscriber drone_sub = nh.subscribe(planning::Config::drone_chatter, 1, drone_chatterCallback);
 
-    ClientType client("control_action_server", true);
+    ClientType client(planning::Config::control_action_server, true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;

@@ -32,6 +32,12 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 	add_dependencies(perception_control planning_ros_sim_generate_messages_cpp)
 endif()
 
+
+file(GLOB planning_tools_SRC "src/tools/*.cpp")
+add_library(planning_tools_lib
+        ${planning_tools_SRC}
+)
+
 add_executable(planning src/planning.cpp)
 target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
