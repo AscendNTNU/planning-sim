@@ -6,7 +6,7 @@ Jenkins:
 Drone CI:  
 [![Build Status](https://drone.ascendntnu.no/api/badges/AscendNTNU/planning-sim/status.svg)](https://drone.ascendntnu.no/AscendNTNU/planning-sim)
 
-Dev branch status:  
+AI status (from branch `dev`):  
 ![AI status](https://ascendntnu.no/images/assets/ai-status.svg)
 
 ## Overview
