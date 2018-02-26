@@ -136,7 +136,7 @@ struct action_t{
 };
 
 static action_t empty_action = {
-    .target = 0,
+    .target = -1,
 	.type = no_Command,
 	.reward = -200000,
 	.when_To_Act = 0,

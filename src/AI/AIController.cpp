@@ -49,6 +49,10 @@ action_t AIController::stateHandler(){
         case mission_complete:
             action = this->missionCompleteState();
             break;
+
+        case no_visible_robots:
+            action = this->noVisibleRobotsState();
+            break;
     }
 
     return action;
@@ -74,6 +78,11 @@ void AIController::idleState(){
     this->current_action_ = ai_.getBestGeneralAction(this->observation);
     
     if(this->current_action_.type == no_Command){
+        // This is triggered when we do not have any targets
+        if (this->current_action_.reward == empty_action.reward) {
+            this->transitionTo(no_visible_robots);
+        }
+        // else targets plank is at its best
         return;
     }
 
@@ -108,10 +117,18 @@ action_t AIController::positioningState() {
         return empty_action;
     }
 
-    action_t updated_action = this->ai_.getBestAction(target, this->observation);
+    action_t updated_action = this->ai_.getBestAction(target);
+
 
     if(updated_action.type == no_Command){
-        return empty_action;
+        // This is triggered when we do not have any targets
+        if (updated_action.reward == empty_action.reward) {
+            this->transitionTo(no_visible_robots);
+            return empty_action;
+        } // This means the current robot plank is at its best
+        else {
+            return updated_action;
+        }
     }
 
     if(!similarity(updated_action, this->current_action_)) {
@@ -164,4 +181,44 @@ action_t AIController::missionCompleteState(){
     return land_action;
 }
 
+action_t AIController::noVisibleRobotsState(){
+    action_t search_Action = empty_action;
 
+    point_t next_search_point = point_Zero;
+
+    point_t pos = this->observation.getDrone().getPosition();
+    float x = pos.x;
+    float y = pos.y;
+
+    // These should be global values
+    bounds_t bounds = world.getBounds();
+
+    point_t track_center = point_Zero;
+    track_center.x = bounds.x_Max / 2.0;
+    track_center.y = bounds.y_Max / 2.0;
+    float padding = 5.0;
+
+    // The drone flies in a triangle path in a clockwise order
+    if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
+        next_search_point.x = padding;
+        next_search_point.y = bounds.y_Max - padding;
+    } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x > track_center.x && y < track_center.y) { // 2. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x <= track_center.x && y <= track_center.y) { // 3. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
+        next_search_point.x = bounds.x_Max - padding;
+        next_search_point.y = bounds.y_Max - padding;
+    }
+
+    search_Action.type = search;
+    search_Action.where_To_Act = next_search_point;
+    search_Action.reward = 0.0;
+    this->transitionTo(positioning);
+    return search_Action;
+}
