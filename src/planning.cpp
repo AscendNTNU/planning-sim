@@ -21,6 +21,7 @@ geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
 
+// Is this world used?
 World world = World(0);
 AIController ai_controller = AIController();
 

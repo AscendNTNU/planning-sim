@@ -6,6 +6,9 @@ This class handles the AI state machine.
 */
 
 #include "AI.h"
+#include "World.h"
+
+extern World world;
 
 
 ///The different AI states.
@@ -15,7 +18,8 @@ enum ai_state_t{
     positioning, /// Combo of fly_to and waiting
     land_in_front,
     land_on_top,
-    mission_complete
+    mission_complete,
+    no_visible_robots /// No targets available, find them!
 };
 
 class AIController{
@@ -81,4 +85,6 @@ public:
     action_t landInFrontState();
 
     action_t missionCompleteState();
+
+    action_t noVisibleRobotsState();
 };
