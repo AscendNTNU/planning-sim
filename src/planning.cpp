@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
+#include "tools/config.h"
 
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
@@ -102,7 +103,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(99.0);
+    ros::Rate rate(10.0);
     while (ros::ok()) {
         ros::spinOnce();
 

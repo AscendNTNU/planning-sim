@@ -15,6 +15,8 @@
 #include <actionlib/server/simple_action_server.h>
 #include <ascend_msgs/ControlFSMAction.h>
 
+#include "tools/config.h"
+
 //Typedefs
 using ActionServerType = actionlib::SimpleActionServer<ascend_msgs::ControlFSMAction>;
 using GoalType = ascend_msgs::ControlFSMGoal;
@@ -95,7 +97,6 @@ int main(int argc, char **argv)
   ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
   ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
   ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",100);
-  ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 100);
 
   // Define action server
   ActionServerType server(nh, "control_action_server", false);
