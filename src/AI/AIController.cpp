@@ -58,8 +58,6 @@ void AIController::transitionTo(ai_state_t state) {
     std::cout << "transitioning to: ";
     this->state_ = state;
     this->prev_transition_timestamp = this->observation.getTimeStamp();
-    //std::cout << "timestamp of this transition: " << this->prev_transition_timestamp << std::endl;
-
 }
 
 
@@ -88,7 +86,7 @@ void AIController::idleState(){
 	return;
 }
 
-action_t AIController::positioningState() { // combo av waitingState og flyToState
+action_t AIController::positioningState() {
     printf("Positioning state\n");
 
     int target_id = this->current_action_.target;
@@ -143,17 +141,14 @@ action_t AIController::landOnTopState(){
 action_t AIController::landInFrontState(){
     printf("Land in front state\n");
 
-    /*
-    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
-        // slutt å stå på bakken
-    }
-    */
-
-    // hvis tids-estimat på når vi blir bumpa er lengre enn 
     // sjekk hvor lenge drone står på bakken
-    // lytt til bumbers (for å se når vi treffer target)
-    // sammenlikn predicted target intersect tidspunkt med faktisk intersect
-    // sende lette kommando
+    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
+        // slutt å stå på bakken (send lette kommando)
+        // gå til idle
+    }
+    
+    //bumper: lytt til bumpers (for å se når vi treffer target), hvis vi venter lengre enn konst slutt å stå på bakken
+    //sammenlikn predicted target intersect tidspunkt med faktisk intersect
 
     this->transitionTo(idle);
     return this->current_action_; 
