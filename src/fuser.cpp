@@ -49,8 +49,8 @@ int nearestNeighbor(Robot robot) {
         if(distanceBetweenRobots(robot, robots[counter]) < min_distance) {
             min_distance = distanceBetweenRobots(robot, robots[counter]);
             index = counter;
-            counter++;
         }
+        counter++;
     }
     return index;
 }
