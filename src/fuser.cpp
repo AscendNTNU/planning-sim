@@ -18,6 +18,8 @@ std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
 float start_time = 0;
 
+float TIMEOUT_OBSERVATION = 5;
+
 //Can only handle 10 robots in one message.
 void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     for(int i = 0; i < (int)msg->count; i++) {
@@ -73,7 +75,7 @@ int main(int argc, char **argv){
     std_msgs::Float32 time_msg; 
 
     // ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
-    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 1, tracker_chatterCallback);
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, tracker_chatterCallback);
     ros::Rate rate(30.0);
 
     while (ros::ok()) {
@@ -83,6 +85,13 @@ int main(int argc, char **argv){
             updateRobot(*it);
         }
         
+        for(auto it = robots.begin(); it != robots.end(); it++){
+            if(current_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+                it->setVisible(FALSE);
+            }
+        }
+
+
         ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
 
 
