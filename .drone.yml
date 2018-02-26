@@ -41,7 +41,7 @@ pipeline:
   update-ai-status:
     image: appleboy/drone-ssh
     host: ascendntnu.no
-    secrets: [ rsync_key ]
+    secrets: [ ssh_key ]
     when:
       status: success
       event: push
