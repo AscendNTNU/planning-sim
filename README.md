@@ -7,7 +7,7 @@ Drone CI:
 [![Build Status](https://drone.ascendntnu.no/api/badges/AscendNTNU/planning-sim/status.svg)](https://drone.ascendntnu.no/AscendNTNU/planning-sim)
 
 AI status (from branch `dev`):  
-![AI status](https://ascendntnu.no/images/assets/ai-status.svg)
+![AI status](https://ascendntnu.no/images/assets/ai-status/ai-status.svg)
 
 ## Overview
 
