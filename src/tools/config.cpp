@@ -14,9 +14,9 @@ std::string Config::drone_chatter;
 std::string Config::control_action_server;
 
 void Config::loadParams() {
-    if(!ros::isInitialized()) {
-        throw ROSNotInitializedException();
-    }
+    // if(!ros::isInitialized()) {
+    //     throw ROSNotInitializedException();
+    // }
     if(shared_instance_p_ == nullptr) {
         shared_instance_p_ = std::unique_ptr<Config>(new Config);
     } 
@@ -41,6 +41,7 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += var;
             missing_param_set_.insert(name);
+        }   
     };
 
     auto getIntParam = [&](const std::string& name, int& var, int min, int max) {
@@ -63,6 +64,7 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
             missing_param_set_.insert(name);
+        }
     };
 
     getStringParam("time_chatter", time_chatter);
@@ -83,8 +85,8 @@ void Config::loadParams() {
 // }
 
 planning::Config::Config() {
-    if(!ros::isInitialized()) {
-        std::cout << "ROS NOT INITIALIZED" << std::endl;
-    }
+    // if(!ros::isInitialized()) {
+    //     std::cout << "ROS NOT INITIALIZED" << std::endl;
+    // }
     // reload_config_service = nh_.advertiseService("/planning_fsm_reload_config", reloadConfigCB);
 }
