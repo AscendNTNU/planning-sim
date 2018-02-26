@@ -1,9 +1,13 @@
 # Planning sim
 
-Jenkins: [![Build Status](http://build.ascendntnu.no/buildStatus/icon?job=planning-sim)](http://build.ascendntnu.no/job/planning-sim)
+Jenkins:  
+[![Build Status](http://build.ascendntnu.no/buildStatus/icon?job=planning-sim)](http://build.ascendntnu.no/job/planning-sim)
 
-Drone CI: 
+Drone CI:  
 [![Build Status](https://drone.ascendntnu.no/api/badges/AscendNTNU/planning-sim/status.svg)](https://drone.ascendntnu.no/AscendNTNU/planning-sim)
+
+Dev branch status:  
+![AI status](https://ascendntnu.no/images/assets/ai-status.svg)
 
 ## Overview
 
