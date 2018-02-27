@@ -32,6 +32,10 @@ bool Robot::robotsAtTurnTime(float elapsed_time) {
     return false;
 }
 
+float getTimeLastSeen(){
+    return this->time_last_seen;
+}
+
 int Robot::getIndex() {
     return this->index;
 }
@@ -52,6 +56,10 @@ Plank Robot::getCurrentPlank() {
 }
 bool Robot::getVisible() {
     return this->visible;
+}
+
+void setVisible(bool set_value){
+    this->visible = set_value;
 }
 
 bool Robot::isMoving() {

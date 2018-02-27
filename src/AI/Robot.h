@@ -22,6 +22,7 @@ private:
     float old_Orientation;
     float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
+    float time_last_seen;
     float speed;
     bool visible;
 public:
@@ -38,6 +39,8 @@ public:
     @return The robot index
     */
     int getIndex();
+
+    float getTimeLastSeen();
 
     /**
     @brief Get the current position for the robot.
@@ -74,6 +77,8 @@ public:
     */
     bool getVisible();
 
+    void setVisible(bool set_value);
+
     /**
     @brief Set the position and orientation of the Robot
     @param position Point struct of the new position
@@ -86,6 +91,7 @@ public:
     @param time Time to add to robots elapsed time since the last turn started
     */
     void addToTimer(float time);
+
     void update(int index, point_t position,float q, float elapsed_time, bool visible);
     void update(Robot robot);
     /**
