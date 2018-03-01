@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   planning_ros_sim::groundRobotList groundrobot_msg;
   geometry_msgs::Pose2D drone_msg;
-  std_msgs::Float32 time_msg; 
+  std_msgs::Float32 time_msg;
 
   // Define publishers
   ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 1);

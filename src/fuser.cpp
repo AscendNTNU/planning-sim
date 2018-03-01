@@ -2,12 +2,12 @@
 #include <vector>
 
 #include "ros/ros.h"
-
-#include "std_msgs/String.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "std_msgs/Float32.h"
-#include "std_msgs/Bool.h"
+#include "std_msgs/Time.h"
 
 #include "ascend_msgs/DetectedRobotsGlobalPositions.h"
+#include "ascend_msgs/AIWorldObservation.h"
 
 #include "AI/Robot.h"
 #include "AI/World.h"
@@ -18,14 +18,14 @@ std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
-float start_time = 0;
+ros::Time start_time = ros::Time::now();
 
 float TIMEOUT_OBSERVATION = 5;
 
 point_t drone_position = point_zero;
 
 //Can only handle 10 robots in one message.
-void groundRobotchatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     for(int i = 0; i < (int)msg->count; i++) {
         Robot robot;
 
@@ -34,7 +34,7 @@ void groundRobotchatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::Cons
         position.y = msg->global_robot_position[i].y;
 
         float q = msg->direction[i];
-        float time = msg->header.stamp.sec-start_time;
+        float time = msg->header.stamp.sec-start_time.sec;
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
@@ -43,7 +43,7 @@ void groundRobotchatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::Cons
 }
 
 void startTimeCallback(std_msgs::Time::ConstPtr msg){
-    start_time = msg.data;
+    start_time = msg->data;
 }
 
 void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
@@ -103,6 +103,8 @@ int main(int argc, char **argv){
     while (ros::ok()) {
         ros::spinOnce();
 
+
+
         for(auto it = new_robots.begin(); it != new_robots.end(); it++){
             updateRobot(*it);
         }
@@ -112,8 +114,8 @@ int main(int argc, char **argv){
         }
 
         ascend_msgs::AIWorldObservation observation;
-        observation.header.time = ros::Time::now();
-
+        observation.header.stamp = ros::Time::now();
+        float current_time = observation.header.stamp.sec - start_time.sec;
 
         for(auto it = robots.begin(); it != robots.end(); it++){
 
@@ -130,7 +132,7 @@ int main(int argc, char **argv){
             robot.y = position.y;
             robot.theta = it->getOrientation();
             robot.visible = it->getVisible();
-            observation.ground_robots.push_back(it);
+            observation.ground_robots[it->getIndex()] = robot;
         }
 
         for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
@@ -155,6 +157,7 @@ int main(int argc, char **argv){
         drone.x = drone_position.x;
         drone.y = drone_position.y;
         drone.z = drone_position.z;
+        observation.drone_position = drone;
 
         ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
         rate.sleep();
