@@ -23,10 +23,6 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
 
-    if (Robot::robotsAtTurnTime(elapsed_time)){
-            return target;
-    }
-
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
@@ -34,7 +30,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
             continue;
         }
 
-        if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+        if (robot.getVisibility() && robot.isMoving()) {
 
             if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
                 best_reward = robot.current_Plank.getReward();
@@ -45,6 +41,30 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 
     return target;
 }
+
+//Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
+// Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+//     Robot robot;
+//     point_t best_pos = point_Zero;
+//     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+
+//     // Return an invalid robot if none was assigned
+//     Robot target = Robot(-1);
+
+//     for (int i = 0; i < robots.size(); i++) {
+//         robot = robots[i];
+//         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+
+//             // std::cout << "index" << robot.getIndex();
+//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+//                 best_pos = drone.getInterceptPoint(robot);
+//                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
+//                 target = robot;
+//             }
+//         }
+//     }
+//     return target;
+// }
 
 action_t AI::chooseAction(Robot target) {
     // // Temporary max rewarded action
@@ -91,10 +111,10 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
 action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action) {
 
     if (reward_On_Top > reward_In_Front) {
-        action.type = land_On_Top_Of;
+        action.type = land_on_top_of;
         action.reward = reward_On_Top;
     } else {
-        action.type = land_In_Front_Of;
+        action.type = land_in_front_of;
         action.reward = reward_In_Front;
     }
 

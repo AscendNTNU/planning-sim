@@ -26,7 +26,7 @@ class AIController{
 private:
     AI ai_;
     ai_state_t state_;
-    action_t current_action_;
+    action_t planned_action_;
     float prev_transition_timestamp;
 
 public:

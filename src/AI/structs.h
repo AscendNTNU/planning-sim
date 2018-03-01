@@ -62,7 +62,7 @@ struct bounds_t{
 @param drone_x X coordinate of drone
 @param drone_y Y coordinate of drone
 @param drone_cmd_done If drone is doing an action or not
-@param num_Targets Number of targets in the game
+@param num_targets Number of targets in the game
 @param robot_x X coordinate of a robot
 @param robot_y Y coordinate of a robot
 @param robot_q Angle of a robot in radians
@@ -76,7 +76,7 @@ struct observation_t
     float drone_x;
     float drone_y;
     bool  drone_cmd_done;
-    int num_Targets;
+    int num_targets;
 
     float robot_x[10];
     float robot_y[10];
@@ -93,39 +93,34 @@ static observation_t observation_Empty = {
     .drone_x = 0,
     .drone_y = 0,
     .drone_cmd_done = false,
-    .num_Targets = 0,
+    .num_targets = 0,
 };
 
 enum action_Type_t
 {
-    no_Command = 0,   // continue doing whatever you are doing
-    land_On_Top_Of,   // trigger one 45 deg turn of robot (i)
-    land_In_Front_Of, // trigger one 180 deg turn of robot (i),
-    land_At_Point,    // land at a given point
+    no_command = 0,   // continue doing whatever you are doing
+    land_on_top_of,   // trigger one 45 deg turn of robot (i)
+    land_in_front_of, // trigger one 180 deg turn of robot (i),
+    land_at_point,    // land at a given point
     track,            // follow robot (i) at a constant height
     search            // ascend to 3 meters and go to (x, y)
 };
 
-/*
-std::string actionTypeToString(action_Type_t type) {
+inline std::string actionTypeToString(action_Type_t type) {
     switch(type) {
-        case no_Command:
+        case no_command:
             return "no command";
-            break;
-        case land_On_Top_Of:
+        case land_on_top_of:
             return "land on top of";
-            break;
-        case land_In_Front_Of:
+        case land_in_front_of:
             return "land in front of";
-            break;
-        case land_At_Point:
+        case land_at_point:
             return "land at point";
-            break;
         case search:
             return "search";
     }
 }
-*/
+
 
 struct action_t{
     int target;
@@ -137,7 +132,7 @@ struct action_t{
 
 static action_t empty_action = {
     .target = -1,
-	.type = no_Command,
+	.type = no_command,
 	.reward = -200000,
 	.when_To_Act = 0,
 	.where_To_Act = point_Zero
@@ -146,7 +141,7 @@ static action_t empty_action = {
 inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
     strm << "--- Action ---" << std::endl
     << "Target: " << action.target << std::endl
-    << "Type: " << action.type << std::endl
+    << "Type: " << actionTypeToString(action.type) << std::endl
     << "Reward: " << action.reward << std::endl
     << "Where to act: " << action.where_To_Act << std::endl;
     return strm;

@@ -51,7 +51,7 @@ struct observation_t observer_Zero
 	.drone_x = 0.0f,
 	.drone_y = 0.0f,
 	.drone_cmd_done = true,
-	.num_Targets = 1,
+	.num_targets = 1,
 };
 
 TEST (DroneTest, UpdateDroneTest) {

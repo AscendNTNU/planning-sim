@@ -63,7 +63,6 @@ void AIController::transitionTo(ai_state_t state) {
     this->state_ = state;
     this->prev_transition_timestamp = this->observation.getTimeStamp();
     //std::cout << "timestamp of this transition: " << this->prev_transition_timestamp << std::endl;
-
 }
 
 
@@ -77,14 +76,16 @@ void AIController::noInputDataState(){
 
 void AIController::idleState(){
     printf("Idle state\n");
-    this->current_action_ = ai_.getBestGeneralAction(this->observation);
+    this->planned_action_ = ai_.getBestGeneralAction(this->observation);
     
-    if(this->current_action_.type == no_Command){
+    if(this->planned_action_.type == no_command){
         // This is triggered when we do not have any targets
-        if (this->current_action_.reward == empty_action.reward) {
+        int target_id = this->planned_action_.target;
+        bool target_visibility = this->observation.getRobot(target_id).getVisibility();
+        if (this->observation.anyRobotsVisible() == false) {
             this->transitionTo(no_visible_robots);
         }
-        // else targets plank is at its best
+        // else targets current plank is better than acting
         return;
     }
 
@@ -100,61 +101,57 @@ void AIController::idleState(){
 action_t AIController::positioningState() { // combo av waitingState og flyToState
     printf("Positioning state\n");
 
-    int target_id = this->current_action_.target;
+    int target_id = this->planned_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
     if(!target.isMoving()){
         return empty_action;
     }
 
-    if(is_nearby(this->current_action_.where_To_Act, target.getPosition())){
+    // Is the drone and the robot at the rendezvous point
+    if( is_nearby(this->observation.getDrone().getPosition(), this->planned_action_.where_To_Act) &&
+        is_nearby(this->planned_action_.where_To_Act, target.getPosition()))
+    {
 
-        if (this->current_action_.type == land_On_Top_Of) {
+        if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        }
-        else if (this->current_action_.type == land_In_Front_Of) {
+        } else if (this->planned_action_.type == land_in_front_of) {
             this->transitionTo(land_in_front);
+        } else {
+            printf("Action is not defined in positionState.");
+        }
+        return empty_action;
+    } else { // The drone or robot is too far from rendezvous point
+        action_t updated_action = this->ai_.getBestAction(target);
+
+        if(updated_action.type == no_command){
+            // This is triggered when we do not have any targets
+            if (this->observation.anyRobotsVisible() == false) {
+                this->transitionTo(no_visible_robots);
+                return empty_action;
+            } else { // The current robot plank is at its best
+                return updated_action;
+            }
         }
 
-        return empty_action;
-    }
-
-    action_t updated_action = this->ai_.getBestAction(target);
-
-
-    if(updated_action.type == no_Command){
-        // This is triggered when we do not have any targets
-        if (updated_action.reward == empty_action.reward) {
-            this->transitionTo(no_visible_robots);
+        if(!similarity(updated_action, this->planned_action_)) {
+            this->transitionTo(idle);
             return empty_action;
-        } // This means the current robot plank is at its best
-        else {
-            return updated_action;
         }
+
+        this->planned_action_ = updated_action;
+
+        action_t fly_action = this->planned_action_;
+        fly_action.type = search;
+
+        return fly_action;
     }
-
-    if(!similarity(updated_action, this->current_action_)) {
-        this->transitionTo(idle);
-        return empty_action;
-    }
-
-    this->current_action_ = updated_action;
-
-    if(this->current_action_.type==search){
-        this->transitionTo(idle);
-        return this->current_action_;
-    }
-
-    action_t fly_action = this->current_action_;
-    fly_action.type = search;
-
-    return fly_action;
 }
 
 action_t AIController::landOnTopState(){
     printf("Land on top state\n");
     this->transitionTo(idle);
-    return this->current_action_;
+    return this->planned_action_;
 }
 
 action_t AIController::landInFrontState(){
@@ -173,20 +170,24 @@ action_t AIController::landInFrontState(){
     // sende lette kommando
 
     this->transitionTo(idle);
-    return this->current_action_; 
+    return this->planned_action_; 
 }
 
 action_t AIController::missionCompleteState(){
+    printf("Mission complete state\n");
+
     point_t drone_pos = this->observation.getDrone().getPosition();
     action_t land_action;
 
-    land_action.type = land_At_Point;
+    land_action.type = land_at_point;
     land_action.where_To_Act = drone_pos;
 
     return land_action;
 }
 
 action_t AIController::noVisibleRobotsState(){
+    printf("No visible robots state\n");
+
     action_t search_Action = empty_action;
 
     point_t next_search_point = point_Zero;
@@ -224,6 +225,6 @@ action_t AIController::noVisibleRobotsState(){
     search_Action.type = search;
     search_Action.where_To_Act = next_search_point;
     search_Action.reward = 0.0;
-    this->transitionTo(positioning);
+    this->transitionTo(idle);
     return search_Action;
 }
