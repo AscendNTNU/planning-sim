@@ -52,6 +52,28 @@ void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
     drone_position.z = msg->pose.position.z;
 }
 
+void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
+    drone_position.x = obs->drone_position.x;
+    drone_position.y = obs->drone_position.y;
+    drone_position.z = obs->drone_position.z;
+
+    int i = 0;
+    for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
+        Robot robot;
+
+        point_t position;
+        position.x = it->x;
+        position.y = it->y;
+
+        float q = it->theta;
+        float time = obs->header.stamp.sec - start_time.sec;
+        bool visible = it->visible;
+
+        robot.update(i, position, q , time, visible);
+        new_robots.push_back(robot);
+    }
+}
+
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
@@ -95,6 +117,7 @@ int main(int argc, char **argv){
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position_pose", 1, dronePositionCallback);
+    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
@@ -150,7 +173,7 @@ int main(int argc, char **argv){
             robot.y = position.y;
             robot.theta = it->getOrientation();
             robot.visible = it->getVisible();
-            observation.obstacle_robots.push_back(it);
+            observation.obstacle_robots[it->getIndex()] = robot;
         }
 
         geometry_msgs::Point32 drone;
