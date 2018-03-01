@@ -126,8 +126,6 @@ int main(int argc, char **argv){
     while (ros::ok()) {
         ros::spinOnce();
 
-
-
         for(auto it = new_robots.begin(); it != new_robots.end(); it++){
             updateRobot(*it);
         }
@@ -182,7 +180,7 @@ int main(int argc, char **argv){
         drone.z = drone_position.z;
         observation.drone_position = drone;
 
-        ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
+        observation_pub.publish(observation);
         rate.sleep();
     }
 
