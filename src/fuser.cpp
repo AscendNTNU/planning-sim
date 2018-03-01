@@ -16,6 +16,8 @@ World world = World(0);
 
 std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
+std::array<Robot, 4> obstacle_robots;
+std::vector<Robot> new_obstacle_robots;
 float start_time = 0;
 
 float TIMEOUT_OBSERVATION = 5;
@@ -104,7 +106,10 @@ int main(int argc, char **argv){
         for(auto it = new_robots.begin(); it != new_robots.end(); it++){
             updateRobot(*it);
         }
-        
+
+        for(auto it = new_obstacle_robots.begin(); it != new_obstacle_robots.end(); it++){
+            // updateRobot(*it);
+        }
 
         ascend_msgs::AIWorldObservation observation;
         observation.header.time = ros::Time::now();
@@ -126,6 +131,24 @@ int main(int argc, char **argv){
             robot.theta = it->getOrientation();
             robot.visible = it->getVisible();
             observation.ground_robots.push_back(it);
+        }
+
+        for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
+
+            if(current_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+                it->setVisible(false);
+            }
+
+            ascend_msgs::GRState robot;
+
+            robot.header = observation.header;
+
+            point_t position = it->getPosition();
+            robot.x = position.x;
+            robot.y = position.y;
+            robot.theta = it->getOrientation();
+            robot.visible = it->getVisible();
+            observation.obstacle_robots.push_back(it);
         }
 
         geometry_msgs::Point32 drone;
