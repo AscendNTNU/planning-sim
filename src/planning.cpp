@@ -74,6 +74,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     drone_action.x = action.where_To_Act.x;
     drone_action.y = action.where_To_Act.y;
     drone_action.z = action.where_To_Act.z;
+
     // Is used by the sim to show reward in gui
     drone_action.reward = action.reward;
 

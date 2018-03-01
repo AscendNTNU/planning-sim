@@ -3,10 +3,10 @@
 #include <cmath>
 
 Plank::Plank(){
-	this->end_point.point = point_Zero;
-	this->start_point.point = point_Zero;
+	this->end_point.point = point_zero;
+	this->start_point.point = point_zero;
     for(int i = 0; i < sizeof(this->plank_points)/sizeof(this->plank_points[0]); i++) {
-        this->plank_points[i].point = point_Zero;
+        this->plank_points[i].point = point_zero;
         this->plank_points[i].time_till_first_arrival = 0;
         this->plank_points[i].is_ahead = true;
         this->plank_points[i].time_since_start_turn = 0;

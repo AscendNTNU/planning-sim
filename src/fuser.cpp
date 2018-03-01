@@ -20,8 +20,10 @@ float start_time = 0;
 
 float TIMEOUT_OBSERVATION = 5;
 
+point_t drone_position = point_zero;
+
 //Can only handle 10 robots in one message.
-void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+void groundRobotchatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     for(int i = 0; i < (int)msg->count; i++) {
         Robot robot;
 
@@ -36,6 +38,16 @@ void tracker_chatterCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPt
         robot.update(i, position, q , time, visible);
         new_robots.push_back(robot);
     }
+}
+
+void startTimeCallback(std_msgs::Time::ConstPtr msg){
+    start_time = msg.data;
+}
+
+void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
+    drone_position.x = msg->pose.position.x;
+    drone_position.y = msg->pose.position.y;
+    drone_position.z = msg->pose.position.z;
 }
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
@@ -63,11 +75,14 @@ void updateRobot(Robot new_robot){
 }
 
 int main(int argc, char **argv){
+
     int counter = 0;
+
     for(auto it = robots.begin(); it != robots.end(); it++){
         *it = Robot(counter);
         counter++;
     }
+
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
     ros::NodeHandle node;
@@ -75,7 +90,12 @@ int main(int argc, char **argv){
     std_msgs::Float32 time_msg; 
 
     // ros::Publisher ground_robots_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
-    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, tracker_chatterCallback);
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
+    ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
+    ros::Subscriber drone_sub = node.subscribe("/mavros/local_position_pose", 1, dronePositionCallback);
+
+    ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
+
     ros::Rate rate(30.0);
 
     while (ros::ok()) {
@@ -85,17 +105,38 @@ int main(int argc, char **argv){
             updateRobot(*it);
         }
         
+
+        ascend_msgs::AIWorldObservation observation;
+        observation.header.time = ros::Time::now();
+
+
         for(auto it = robots.begin(); it != robots.end(); it++){
+
             if(current_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-                it->setVisible(FALSE);
+                it->setVisible(false);
             }
+
+            ascend_msgs::GRState robot;
+
+            robot.header = observation.header;
+
+            point_t position = it->getPosition();
+            robot.x = position.x;
+            robot.y = position.y;
+            robot.theta = it->getOrientation();
+            robot.visible = it->getVisible();
+            observation.ground_robots.push_back(it);
         }
 
+        geometry_msgs::Point32 drone;
+        drone.x = drone_position.x;
+        drone.y = drone_position.y;
+        drone.z = drone_position.z;
 
         ascend_msgs::DetectedRobotsGlobalPositions groundrobot_msg;
-
-
         rate.sleep();
     }
+
     return 0;
+
 }

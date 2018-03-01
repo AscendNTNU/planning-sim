@@ -22,7 +22,7 @@ TEST (DroneTest, EmptyConstructorTest) {
 
 TEST (DroneTest, DistanceToPointTest) {
 	Drone drone = Drone();
-	point_t point = point_Zero;
+	point_t point = point_zero;
 	point.x = 3;
 	point.y = 4;
 	EXPECT_EQ(drone.getDistanceToPoint(point), 5);

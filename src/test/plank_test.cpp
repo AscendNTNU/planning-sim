@@ -13,12 +13,12 @@ public:
 
 TEST (PlankTest, EmptyConstructorTest) {
 	Plank plank = Plank();
-	EXPECT_EQ(plank.getPoint(1).point.x, point_Zero.x);
-	EXPECT_EQ(plank.getPoint(1).point.y, point_Zero.y);
+	EXPECT_EQ(plank.getPoint(1).point.x, point_zero.x);
+	EXPECT_EQ(plank.getPoint(1).point.y, point_zero.y);
 }
 
 TEST (PlankTest, UpdatePlankTest) {
-	point_t point = point_Zero;
+	point_t point = point_zero;
 	point.x = 10;
 	point.y = 10;
 
@@ -43,7 +43,7 @@ TEST (PlankTest, UpdatePlankTest) {
 }
 
 TEST(PlankTest, PointOutsideOfPlank){
-	point_t point = point_Zero;
+	point_t point = point_zero;
 	point.x = 10;
 	point.y = 10;
 

@@ -34,7 +34,7 @@ struct plank_point_t{
     float time_since_start_turn;
 };
 
-static point_t point_Zero = {
+static point_t point_zero = {
 	.x = 0.0,
 	.y = 0.0,
 	.z = 0.0,
@@ -140,7 +140,7 @@ static action_t empty_action = {
 	.type = no_Command,
 	.reward = -200000,
 	.when_To_Act = 0,
-	.where_To_Act = point_Zero
+	.where_To_Act = point_zero
 };
 
 inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {

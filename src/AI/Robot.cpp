@@ -2,8 +2,8 @@
 
 Robot::Robot() {
     this->index = -1;
-    this->position = point_Zero;
-    this->old_Position = point_Zero;
+    this->position = point_zero;
+    this->old_Position = point_zero;
     this->orientation = 0;
     this->speed = 0.33;
     this->plank = Plank();
@@ -13,8 +13,8 @@ Robot::Robot() {
 
 Robot::Robot(int index) {
     this->index = index;
-    this->position = point_Zero;
-    this->old_Position = point_Zero;
+    this->position = point_zero;
+    this->old_Position = point_zero;
     this->orientation = 0;
     this->speed = 0.33;
     this->plank = Plank();
@@ -32,7 +32,7 @@ bool Robot::robotsAtTurnTime(float elapsed_time) {
     return false;
 }
 
-float getTimeLastSeen(){
+float Robot::getTimeLastSeen(){
     return this->time_last_seen;
 }
 
@@ -58,7 +58,7 @@ bool Robot::getVisible() {
     return this->visible;
 }
 
-void setVisible(bool set_value){
+void Robot::setVisible(bool set_value){
     this->visible = set_value;
 }
 

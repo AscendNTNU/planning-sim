@@ -45,7 +45,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
 // Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 //     Robot robot;
-//     point_t best_pos = point_Zero;
+//     point_t best_pos = point_zero;
 //     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
 //     // Return an invalid robot if none was assigned
@@ -69,7 +69,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone, float elapsed_t
 action_t AI::triangleSearch(Drone drone) {
     action_t search_Action = empty_action;
 
-    point_t next_search_point = point_Zero;
+    point_t next_search_point = point_zero;
 
     point_t pos = drone.getPosition();
     float x = pos.x;
@@ -77,7 +77,7 @@ action_t AI::triangleSearch(Drone drone) {
     float track_width = 20;
     float track_height = 20;
 
-    point_t track_center = point_Zero;
+    point_t track_center = point_zero;
     track_center.x = track_width / 2;
     track_center.y = track_height / 2;
     float padding = 5;

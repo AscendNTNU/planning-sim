@@ -58,7 +58,7 @@ bool Observation::updateDrone(observation_t observation, float elapsed_time){
 }
 
 bool Observation::updateRobot(observation_t observation, float elapsed_time){
-	point_t position = point_Zero;
+	point_t position = point_zero;
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < 10; i++){ // should loop through lenght of observed robots not 10.
 		position = (point_t){.x = observation.robot_x[i], .y = observation.robot_y[i]};
