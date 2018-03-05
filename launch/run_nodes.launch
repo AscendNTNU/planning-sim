@@ -1,4 +1,9 @@
 <launch>
-    <node name="planning" pkg="planning_ros_sim" type="planning" output="screen"/>
-    <node name="perception_control" pkg="planning_ros_sim" type="perception_control" output="screen" unless="$(eval optenv('ASCEND_ENV') == 'production')"/>
+	<arg name="param_file" default="default_config.yaml"/>
+    <node name="planning_node" pkg="planning_ros_sim" type="planning" output="screen">
+    	<rosparam file="$(find planning_ros_sim)/$(arg param_file)" command="load"/>
+	</node>
+    <node name="perception_control_node" pkg="planning_ros_sim" type="perception_control" output="screen" unless="$(eval optenv('ASCEND_ENV') == 'production')">
+    	<rosparam file="$(find planning_ros_sim)/$(arg param_file)" command="load"/>
+	</node>
 </launch>

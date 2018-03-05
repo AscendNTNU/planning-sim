@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
+#include "tools/config.h"
 
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
@@ -85,14 +86,18 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
 
 
 int main(int argc, char **argv) {
+    using planning::Config;
+
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    ros::Subscriber time_sub = nh.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
+    Config::loadParams();
 
-    ClientType client("control_action_server", true);
+    ros::Subscriber time_sub = nh.subscribe(Config::time_chatter, 1, time_chatterCallback);
+    ros::Subscriber ground_robot_sub = nh.subscribe(Config::groundrobot_chatter, 1, groundRobot_chatterCallback);
+    ros::Subscriber drone_sub = nh.subscribe(Config::drone_chatter, 1, drone_chatterCallback);
+
+    ClientType client(Config::control_action_server, true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
@@ -105,7 +110,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(99.0);
+    ros::Rate rate(10.0);
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -147,12 +152,21 @@ int main(int argc, char **argv) {
             printf("/");
         }
 
-        // When no break is present, it falls through to next case
+        // When no break is present, it falls through to next case until break.
         switch(action_state.state_){
             case GoalState::PENDING:
                 // Control node is processing the action
             case GoalState::ACTIVE:
                 ready_for_new_action = false;
+                break;
+            case GoalState::SUCCEEDED:
+                // The goal was successfull!
+                if (action.type == land_in_front_of) {
+                    ros::Duration(2.6).sleep();
+                } else if (action.type == land_on_top_of) {
+                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                }
+                ready_for_new_action = true;
                 break;
             case GoalState::RECALLED:
                 // We, the planning node emediately canceled
@@ -164,14 +178,6 @@ int main(int argc, char **argv) {
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
-            case GoalState::SUCCEEDED:
-                if (action.type == land_in_front_of) {
-                    ros::Duration(2.6).sleep();
-                } else if (action.type == land_on_top_of) {
-                    printf("Sleeeeeeeep");
-                    ros::Duration(2.5/4.0 + 0.1).sleep();
-                }
-                // The goal was successfull!
             case GoalState::LOST:
                 // Control node has no goal
             default:
