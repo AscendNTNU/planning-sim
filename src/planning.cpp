@@ -152,12 +152,21 @@ int main(int argc, char **argv) {
             printf("/");
         }
 
-        // When no break is present, it falls through to next case
+        // When no break is present, it falls through to next case until break.
         switch(action_state.state_){
             case GoalState::PENDING:
                 // Control node is processing the action
             case GoalState::ACTIVE:
                 ready_for_new_action = false;
+                break;
+            case GoalState::SUCCEEDED:
+                // The goal was successfull!
+                if (action.type == land_in_front_of) {
+                    ros::Duration(2.6).sleep();
+                } else if (action.type == land_on_top_of) {
+                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                }
+                ready_for_new_action = true;
                 break;
             case GoalState::RECALLED:
                 // We, the planning node emediately canceled
@@ -169,13 +178,6 @@ int main(int argc, char **argv) {
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
-            case GoalState::SUCCEEDED:
-                if (action.type == land_in_front_of) {
-                    ros::Duration(2.6).sleep();
-                } else if (action.type == land_on_top_of) {
-                    ros::Duration(2.5/4.0 + 0.1).sleep();
-                }
-                // The goal was successfull!
             case GoalState::LOST:
                 // Control node has no goal
             default:
