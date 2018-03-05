@@ -73,20 +73,20 @@ void Config::loadParams() {
     getStringParam("control_action_server",  control_action_server);
 }
 
-// using Request = ascend_msgs::ReloadConfig::Request;
-// using Response = ascend_msgs::ReloadConfig::Response;
-// bool reloadConfigCB(Request&, Response& resp) {
-//     planning::Config::loadParams();
+using Request = ascend_msgs::ReloadConfig::Request;
+using Response = ascend_msgs::ReloadConfig::Response;
+bool reloadConfigCB(Request&, Response& resp) {
+    planning::Config::loadParams();
 //     //Missing param set should be empty!
 //     for(auto& s : planning::Config::getMissingParamSet()) {
 //         resp.missing_params.emplace_back(s);
 //     }
-//     return true;
-// }
+    return true;
+}
 
-planning::Config::Config() {
+// planning::Config::Config() {
     // if(!ros::isInitialized()) {
     //     std::cout << "ROS NOT INITIALIZED" << std::endl;
     // }
     // reload_config_service = nh_.advertiseService("/planning_fsm_reload_config", reloadConfigCB);
-}
+// }
