@@ -75,6 +75,13 @@ public:
     bool getVisibility();
 
     /**
+    @brief Set the visibility of the Robot
+    bool setVisibility();
+    @param visibility Boolean value representing if the robot is visible or not
+    */
+    void setVisibility(bool visible);
+
+    /**
     @brief Set the position and orientation of the Robot
     @param position Point struct of the new position
     @param q The new orientational angle in radians

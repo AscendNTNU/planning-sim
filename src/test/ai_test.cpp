@@ -21,7 +21,7 @@ struct observation_t initializeObservation(int num_of_robots, int num_of_obstacl
 		.drone_x = 10.0f,
 		.drone_y = 10.0f,
 		.drone_cmd_done = true,
-		.num_Targets = num_of_robots
+		.num_targets = num_of_robots
 	};
 
 	for(int i=0;i<num_of_robots;i++){
@@ -94,7 +94,7 @@ struct observation_t initializeObservation(int num_of_robots, int num_of_obstacl
 //     action_t action = ai.getBestActionAtPosition(robot.getOrientation(), position);
 
 //     EXPECT_EQ(robot.current_Plank.getPoint(0).point.y,14);
-//     // EXPECT_EQ(land_In_Front_Of, action.type); 
+//     // EXPECT_EQ(land_in_front_of, action.type); 
 // }
 
 int main(int argc, char **argv){
