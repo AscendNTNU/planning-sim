@@ -4,7 +4,6 @@
 using planning::Config;
 
 std::set<std::string> Config::missing_param_set_;
-std::unique_ptr<Config> Config::shared_instance_p_ = nullptr;
 
 //Global config params
 
@@ -17,9 +16,7 @@ void Config::loadParams() {
     // if(!ros::isInitialized()) {
     //     throw ROSNotInitializedException();
     // }
-    if(shared_instance_p_ == nullptr) {
-        shared_instance_p_ = std::unique_ptr<Config>(new Config);
-    } 
+
     ros::NodeHandle n("~");
     auto getDoubleParam = [&](const std::string& name, double& var, double min, double max) {
         double temp;
@@ -29,6 +26,7 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
             missing_param_set_.insert(name);
+            ROS_WARN("%s", warn_msg.c_str());
         } else {
             var = temp;
         }
@@ -41,6 +39,7 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += var;
             missing_param_set_.insert(name);
+            ROS_WARN("%s", warn_msg.c_str());
         }   
     };
 
@@ -52,6 +51,7 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
             missing_param_set_.insert(name);
+            ROS_WARN("%s", warn_msg.c_str());
         } else {
             var = temp;
         }
@@ -64,29 +64,12 @@ void Config::loadParams() {
             warn_msg += ", using ";
             warn_msg += std::to_string(var);
             missing_param_set_.insert(name);
+            ROS_WARN("%s", warn_msg.c_str());
         }
     };
 
-    getStringParam("time_chatter", time_chatter);
-    getStringParam("groundrobot_chatter",  groundrobot_chatter);
-    getStringParam("drone_chatter",  drone_chatter);
+    getStringParam("time_chatter_topic", time_chatter);
+    getStringParam("ground_robot_topic",  groundrobot_chatter);
+    getStringParam("drone_topic",  drone_chatter);
     getStringParam("control_action_server",  control_action_server);
 }
-
-using Request = ascend_msgs::ReloadConfig::Request;
-using Response = ascend_msgs::ReloadConfig::Response;
-bool reloadConfigCB(Request&, Response& resp) {
-    planning::Config::loadParams();
-//     //Missing param set should be empty!
-//     for(auto& s : planning::Config::getMissingParamSet()) {
-//         resp.missing_params.emplace_back(s);
-//     }
-    return true;
-}
-
-// planning::Config::Config() {
-    // if(!ros::isInitialized()) {
-    //     std::cout << "ROS NOT INITIALIZED" << std::endl;
-    // }
-    // reload_config_service = nh_.advertiseService("/planning_fsm_reload_config", reloadConfigCB);
-// }

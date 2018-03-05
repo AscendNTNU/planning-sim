@@ -86,7 +86,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
 
 
 int main(int argc, char **argv) {
-    using control::Config;
+    using planning::Config;
 
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
@@ -173,7 +173,6 @@ int main(int argc, char **argv) {
                 if (action.type == land_in_front_of) {
                     ros::Duration(2.6).sleep();
                 } else if (action.type == land_on_top_of) {
-                    printf("Sleeeeeeeep");
                     ros::Duration(2.5/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!

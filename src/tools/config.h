@@ -15,16 +15,9 @@ namespace planning {
 class Config;
 class Config {
 private:
-    ///Node handler
-    ros::NodeHandle nh_;
-    ///Reload service
-    ros::ServiceServer reload_config_service;
     static std::set<std::string> missing_param_set_;
-    ///Shared instance ptr
-    static std::unique_ptr<Config> shared_instance_p_;
     ///Constructor
-    Config();
-
+    Config() = default;
 
 public:
 

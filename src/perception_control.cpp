@@ -77,6 +77,10 @@ void preemptCB(ActionServerType* server) {
 
 int main(int argc, char **argv)
 {
+  using planning::Config;
+  ros::init(argc, argv, "perception_control");
+  ros::NodeHandle nh;
+  
   // Initialize sim-messages
   sim_init_msgs(true);
   sim_Observed_State state;
@@ -86,20 +90,20 @@ int main(int argc, char **argv)
   cmd.y = 0;
   cmd.i = 0;
 
+  Config::loadParams();
+
   // Initialize ros-messages
-  ros::init(argc, argv, "perception_control");
-  ros::NodeHandle nh;
   planning_ros_sim::groundRobotList groundrobot_msg;
   geometry_msgs::Pose2D drone_msg;
   std_msgs::Float32 time_msg; 
 
   // Define publishers
-  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>(planning::Config::groundrobot_chatter, 1);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>(planning::Config::drone_chatter, 1);
-  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>(planning::Config::time_chatter,1);
+  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>(Config::groundrobot_chatter, 1);
+  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>(Config::drone_chatter, 1);
+  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>(Config::time_chatter,1);
 
   // Define action server
-  ActionServerType server(nh, planning::Config::control_action_server, false);
+  ActionServerType server(nh, Config::control_action_server, false);
   server.registerGoalCallback(boost::bind(newGoalCB, &server));
   server.registerPreemptCallback(boost::bind(preemptCB, &server));
   server.start();
