@@ -113,18 +113,22 @@ int main(int argc, char **argv) {
             if (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME){
                 // Right after start, robots are not turning while at turn time.
                 action = ai_controller.stateHandler();
+
+                if (action.type == no_command) {
+                    rate.sleep();
+                    continue;
+                    
+                } else {
+                    ready_for_new_action = false;
+                    drone_action = action_plank2ROS(action);
+                    client.sendGoal(drone_action);
+                }
+
             } else {
                 rate.sleep();
                 continue;
             }
-            if (action.type == no_command) {
-                rate.sleep();
-                continue;
-            } else {
-                ready_for_new_action = false;
-                drone_action = action_plank2ROS(action);
-                client.sendGoal(drone_action);
-            }
+
         }
 
         GoalState action_state = client.getState();
