@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nodes:
-    image: ascendntnu/ros-kinetic:1.1
+    image: ascendntnu/ros-kinetic:1.2
     tty: true
     environment:
       - ASCEND_ENV
@@ -11,7 +11,7 @@ services:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
   clean-build:
-    image: ascendntnu/ros-kinetic:1.1
+    image: ascendntnu/ros-kinetic:1.2
     tty: true
     environment:
       - ASCEND_ENV
@@ -19,7 +19,7 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build:
-    image: ascend-kinetic-build-cache:1.1
+    image: ascend-kinetic-build-cache:1.2
     depends_on:
       - build-cache
     tty: true
@@ -29,7 +29,7 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   tests:
-    image: ascendntnu/ros-kinetic:1.1
+    image: ascendntnu/ros-kinetic:1.2
     tty: true
     environment:
       - ASCEND_ENV
@@ -37,7 +37,7 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build-cache:
-    image: ascend-kinetic-build-cache:1.1
+    image: ascend-kinetic-build-cache:1.2
     build: src/docker-build-cache
     tty: true
     environment:
@@ -65,7 +65,7 @@ services:
     volumes:
       - ./src/AI/Documentation/html:/usr/share/nginx/html:ro
   gui:
-    image: ascendntnu/ai-sim:1.1
+    image: ascendntnu/ai-sim:1.2
     tty: true
     working_dir: /srv/ai-sim/src/ai-sim/
     environment:
