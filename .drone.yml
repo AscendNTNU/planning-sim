@@ -6,7 +6,7 @@ pipeline:
     commands:
       - cppcheck src/* #--error-exitcode=1
   tests:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.2
     when:
       event: push
     environment:
@@ -15,7 +15,7 @@ pipeline:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
   build-only:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.2
     when:
       event: push
     environment:
