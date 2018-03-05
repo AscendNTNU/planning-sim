@@ -18,7 +18,7 @@ std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
-ros::Time start_time = ros::Time::now();
+ros::Time start_time;
 float elapsed_time = -1; // This is set by a callback if we are using ai-sim
 bool using_sim = false;
 
@@ -169,23 +169,23 @@ int main(int argc, char **argv){
             observation.ground_robots[it->getIndex()] = robot;
         }
 
-        for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
+        // for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
 
-            if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-                it->setVisible(false);
-            }
+        //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+        //         it->setVisible(false);
+        //     }
 
-            ascend_msgs::GRState robot;
+        //     ascend_msgs::GRState robot;
 
-            robot.header = observation.header;
+        //     robot.header = observation.header;
 
-            point_t position = it->getPosition();
-            robot.x = position.x;
-            robot.y = position.y;
-            robot.theta = it->getOrientation();
-            robot.visible = it->getVisible();
-            observation.obstacle_robots[it->getIndex()] = robot;
-        }
+        //     point_t position = it->getPosition();
+        //     robot.x = position.x;
+        //     robot.y = position.y;
+        //     robot.theta = it->getOrientation();
+        //     robot.visible = it->getVisible();
+        //     observation.obstacle_robots[it->getIndex()] = robot;
+        // }
 
         geometry_msgs::Point32 drone;
         drone.x = drone_position.x;

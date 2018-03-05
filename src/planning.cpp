@@ -21,52 +21,25 @@ using GoalState = actionlib::SimpleClientGoalState;
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
-float elapsed_time = 0;
-
 World world = World(0);
 AIController ai_controller = AIController();
-
-void time_chatterCallback(std_msgs::Float32 msg) {
-    elapsed_time = (float)msg.data;
-}
-
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
-    observation_t robotObs = observation_Empty;
-    for(int i = 0; i < 10; i++) {
-        robotObs.robot_x[i] = msg.groundRobot[i].x;
-        robotObs.robot_y[i] = msg.groundRobot[i].y;
-        robotObs.robot_q[i] = msg.groundRobot[i].theta;
-        // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
-        robotObs.robot_visible[i] = true;
-    }
-    ai_controller.observation.updateRobot(robotObs, elapsed_time);
-}
-
-void drone_chatterCallback(geometry_msgs::Pose2D msg) {
-    observation_t droneObs = observation_Empty;
-    droneObs.drone_x = msg.x;
-    droneObs.drone_y = msg.y;
-    ai_controller.observation.updateDrone(droneObs, elapsed_time);
-}
 
 void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
     observation_t new_observation = observation_Empty;
     new_observation.elapsed_time = observation.elapsed_time;
     
-    point_t drone_pos = observation.getDrone().getPosition();
-    new_observation.drone_x = drone_pos.x;
-    new_observation.drone_y = drone_pos.y;
+    new_observation.drone_x = observation.drone_position.x;
+    new_observation.drone_y = observation.drone_position.y;
+    new_observation.drone_z = observation.drone_position.z;
 
-    new_observation.num_Targets = Num_Targets;
-
-    for(int i = 0; i < Num_Targets; i++) {
+    for(int i = 0; i < 10; i++) {
         new_observation.robot_x[i] = observation.ground_robots[i].x;
         new_observation.robot_y[i] = observation.ground_robots[i].y;
         new_observation.robot_q[i] = observation.ground_robots[i].theta;
-        new_observation.robot_visible[i] = observation.ground_robots[i].visible;
+        new_observation.robot_visible[i] = true;//observation.ground_robots[i].visible;
     }
 
-    for(int i = 0; i < Num_Obstacles; i++) {
+    for(int i = 0; i < 4; i++) {
         new_observation.obstacle_x[i] = observation.obstacle_robots[i].x;
         new_observation.obstacle_y[i] = observation.obstacle_robots[i].y;
         new_observation.obstacle_q[i] = observation.obstacle_robots[i].theta;
@@ -114,10 +87,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    //ros::Subscriber time_sub = nh.subscribe("time_chatter", 1, time_chatterCallback);
-    //ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1, groundRobot_chatterCallback);
-    //ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1, drone_chatterCallback);
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
+    // ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
