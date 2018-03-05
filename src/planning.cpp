@@ -2,7 +2,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
-#include "geometry_msgs/Pose2D.h"
+#include "geometry_msgs/Point32.h"
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
@@ -17,7 +17,7 @@ using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
 planning_ros_sim::groundRobotList GroundRobots;
-geometry_msgs::Pose2D Drone;
+//geometry_msgs::Pose2D Drone;
 
 float elapsed_time = 0;
 
@@ -41,10 +41,12 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }
 
-void drone_chatterCallback(geometry_msgs::Pose2D msg) {
+void drone_chatterCallback(geometry_msgs::Point32 msg) {
     observation_t droneObs = observation_Empty;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
+    droneObs.drone_z = msg.z;
+
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
@@ -66,6 +68,10 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             break;
         case land_at_point: // For landing when mission completed
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
+            break;
+        case take_off:
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::TAKEOFF;
+            break;
         default:
             ROS_INFO("Action type: %i was not recognized.", (int)action.type);
             // This should never happen.
@@ -105,7 +111,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(99.0);
+    ros::Rate rate(25.0);
     while (ros::ok()) {
         ros::spinOnce();
 

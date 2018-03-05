@@ -75,6 +75,7 @@ struct observation_t
     float elapsed_time;
     float drone_x;
     float drone_y;
+    float drone_z;
     bool  drone_cmd_done;
     int num_targets;
 
@@ -92,6 +93,7 @@ static observation_t observation_Empty = {
     .elapsed_time = 0,
     .drone_x = 0,
     .drone_y = 0,
+    .drone_z = 0,
     .drone_cmd_done = false,
     .num_targets = 0,
 };
@@ -102,6 +104,7 @@ enum action_Type_t
     land_on_top_of,   // trigger one 45 deg turn of robot (i)
     land_in_front_of, // trigger one 180 deg turn of robot (i),
     land_at_point,    // land at a given point
+    take_off,         // take off
     track,            // follow robot (i) at a constant height
     search            // ascend to 3 meters and go to (x, y)
 };
