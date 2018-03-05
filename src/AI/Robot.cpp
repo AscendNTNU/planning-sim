@@ -1,5 +1,6 @@
 #include "Robot.h"
 
+// Redundant as you can call Robot(-1)
 Robot::Robot() {
     this->index = -1;
     this->position = point_zero;
@@ -8,7 +9,8 @@ Robot::Robot() {
     this->speed = 0.33;
     this->plank = Plank();
     this->time_after_turn_start = 0;
-    this->visible = true;
+    this->wasInteractedWith = false;
+    this->visible = false;
 }
 
 Robot::Robot(int index) {
@@ -19,12 +21,13 @@ Robot::Robot(int index) {
     this->speed = 0.33;
     this->plank = Plank();
     this->time_after_turn_start = 0;
-    this->visible = true;
+    this->wasInteractedWith = false;
+    this->visible = false;
 }
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 1.0;
+    float time_drift = 3.0;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
@@ -56,6 +59,14 @@ Plank Robot::getCurrentPlank() {
 }
 bool Robot::getVisible() {
     return this->visible;
+}
+
+bool Robot::getWasInteractedWith() {
+    return this->wasInteractedWith;
+}
+
+void Robot::setInteractedWithTrue() {
+    this->wasInteractedWith = true;
 }
 
 void Robot::setVisible(bool set_value){
@@ -127,6 +138,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Old orient.: "      << robot.old_Orientation       << std::endl
     << "Time after: "       << robot.time_after_turn_start << std::endl
     << "Speed: "            << robot.speed                 << std::endl
+    << "Interacted With: "  << robot.wasInteractedWith     << std::endl
     << "Current plank: "    << robot.plank
     << "-------------"                                      << std::endl;
     return strm;

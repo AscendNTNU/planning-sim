@@ -21,49 +21,25 @@ using GoalState = actionlib::SimpleClientGoalState;
 planning_ros_sim::groundRobotList GroundRobots;
 geometry_msgs::Pose2D Drone;
 
-float elapsed_time = 0;
-
 World world = World(0);
 AIController ai_controller = AIController();
 
-void time_chatterCallback(std_msgs::Float32 msg) {
-    elapsed_time = (float)msg.data;
-}
-
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
-    observation_t robotObs = observation_Empty;
-    for(int i = 0; i < 10; i++) {
-        robotObs.robot_x[i] = msg.groundRobot[i].x;
-        robotObs.robot_y[i] = msg.groundRobot[i].y;
-        robotObs.robot_q[i] = msg.groundRobot[i].theta;
-        // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
-        robotObs.robot_visible[i] = true;
-    }
-    ai_controller.observation.updateRobot(robotObs, elapsed_time);
-}
-
-void drone_chatterCallback(geometry_msgs::Pose2D msg) {
-    observation_t droneObs = observation_Empty;
-    droneObs.drone_x = msg.x;
-    droneObs.drone_y = msg.y;
-    ai_controller.observation.updateDrone(droneObs, elapsed_time);
-}
-
-void fuser_chatterCallback(ascend_msgs::AIWorldObservation::ConstPtr observation) {
+void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
     observation_t new_observation = observation_Empty;
     new_observation.elapsed_time = observation.elapsed_time;
-    new_observation.drone_x = observation->drone_position.x;
-    new_observation.drone_y = observation->drone_position.y;
-    new_observation.num_Targets = Num_Targets;
+    
+    new_observation.drone_x = observation.drone_position.x;
+    new_observation.drone_y = observation.drone_position.y;
+    new_observation.drone_z = observation.drone_position.z;
 
-    for(int i = 0; i < Num_Targets; i++) {
+    for(int i = 0; i < 10; i++) {
         new_observation.robot_x[i] = observation.ground_robots[i].x;
         new_observation.robot_y[i] = observation.ground_robots[i].y;
         new_observation.robot_q[i] = observation.ground_robots[i].theta;
-        new_observation.robot_visible[i] = observation.ground_robots[i].visible;
+        new_observation.robot_visible[i] = true;//observation.ground_robots[i].visible;
     }
 
-    for(int i = 0; i < Num_Obstacles; i++) {
+    for(int i = 0; i < 4; i++) {
         new_observation.obstacle_x[i] = observation.obstacle_robots[i].x;
         new_observation.obstacle_y[i] = observation.obstacle_robots[i].y;
         new_observation.obstacle_q[i] = observation.obstacle_robots[i].theta;
@@ -79,15 +55,17 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     drone_action.caller_id = ascend_msgs::ControlFSMGoal::CALLER_AI;
     // Set action type
     switch (action.type) {
-        case land_On_Top_Of:
+        case land_on_top_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
-        case land_In_Front_Of:
+        case land_in_front_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case search:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
             break;
+        case land_at_point: // For landing when mission completed
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
         default:
             ROS_INFO("Action type: %i was not recognized.", (int)action.type);
             // This should never happen.
@@ -111,10 +89,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    //ros::Subscriber time_sub = nh.subscribe("time_chatter", 1, time_chatterCallback);
-    //ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1, groundRobot_chatterCallback);
-    //ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1, drone_chatterCallback);
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
+    // ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
@@ -129,28 +105,42 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(5.0);
+    ros::Rate rate(99.0);
     while (ros::ok()) {
         ros::spinOnce();
 
-        if(ready_for_new_action) {
-            action = ai_controller.stateHandler();
+        float elapsed_time=ai_controller.observation.getTimeStamp();
+        // printf("%f\n", elapsed_time);
+        if(elapsed_time > 600 && elapsed_time != -1) {
+          break;
+        }
 
-            if (action.type == no_Command) {
-                rate.sleep();
-                printf("Action type is no command\n");
-                continue;
+        if(ready_for_new_action) {
+            if (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME){
+                // Right after start, robots are not turning while at turn time.
+                action = ai_controller.stateHandler();
+
+                if (action.type == no_command) {
+                    rate.sleep();
+                    continue;
+                    
+                } else {
+                    ready_for_new_action = false;
+                    drone_action = action_plank2ROS(action);
+                    client.sendGoal(drone_action);
+                }
+
             } else {
-                ready_for_new_action = false;
-                drone_action = action_plank2ROS(action);
-                client.sendGoal(drone_action);
+                rate.sleep();
+                continue;
             }
+
         }
 
         GoalState action_state = client.getState();
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
-            std::cout << std::endl << "Action type: " << action.type << std::endl;
+            std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
             std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
@@ -176,6 +166,12 @@ int main(int argc, char **argv) {
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
             case GoalState::SUCCEEDED:
+                if (action.type == land_in_front_of) {
+                    ros::Duration(2.6).sleep();
+                } else if (action.type == land_on_top_of) {
+                    printf("Sleeeeeeeep");
+                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                }
                 // The goal was successfull!
             case GoalState::LOST:
                 // Control node has no goal
@@ -184,6 +180,21 @@ int main(int argc, char **argv) {
                 break;
         }
 
+        
+
         rate.sleep();
     }
+    printf("Sim finished \n");
+    int numOut = 0;
+    for(int i = 0; i < 10; i++) {
+        printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
+        printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
+        // printf(ai_controller.observation.getRobot(i));
+        if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
+            numOut += 1;
+        }
+    }
+    printf("# Robots out green: %d \n", numOut);
+    printf("%d", numOut);
+    exit(numOut);
 }
