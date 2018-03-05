@@ -11,6 +11,8 @@
 #include "AI/AIController.h"
 #include "AI/structs.h"
 
+#include "ascend_msgs/AIWorldObservation.h"
+
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
@@ -31,11 +33,11 @@ void time_chatterCallback(std_msgs::Float32 msg) {
 void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
     observation_t robotObs = observation_Empty;
     for(int i = 0; i < 10; i++) {
-            robotObs.robot_x[i] = msg.groundRobot[i].x;
-            robotObs.robot_y[i] = msg.groundRobot[i].y;
-            robotObs.robot_q[i] = msg.groundRobot[i].theta;
-            // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
-            robotObs.robot_visible[i] = true;
+        robotObs.robot_x[i] = msg.groundRobot[i].x;
+        robotObs.robot_y[i] = msg.groundRobot[i].y;
+        robotObs.robot_q[i] = msg.groundRobot[i].theta;
+        // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
+        robotObs.robot_visible[i] = true;
     }
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }
@@ -45,6 +47,32 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
+}
+
+void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
+    observation_t new_observation = observation_Empty;
+    new_observation.elapsed_time = observation.elapsed_time;
+    
+    point_t drone_pos = observation.getDrone().getPosition();
+    new_observation.drone_x = drone_pos.x;
+    new_observation.drone_y = drone_pos.y;
+
+    new_observation.num_Targets = Num_Targets;
+
+    for(int i = 0; i < Num_Targets; i++) {
+        new_observation.robot_x[i] = observation.ground_robots[i].x;
+        new_observation.robot_y[i] = observation.ground_robots[i].y;
+        new_observation.robot_q[i] = observation.ground_robots[i].theta;
+        new_observation.robot_visible[i] = observation.ground_robots[i].visible;
+    }
+
+    for(int i = 0; i < Num_Obstacles; i++) {
+        new_observation.obstacle_x[i] = observation.obstacle_robots[i].x;
+        new_observation.obstacle_y[i] = observation.obstacle_robots[i].y;
+        new_observation.obstacle_q[i] = observation.obstacle_robots[i].theta;
+    }
+
+    ai_controller.observation.update(new_observation, new_observation.elapsed_time);
 }
 
 ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
@@ -86,9 +114,10 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    ros::Subscriber time_sub = nh.subscribe("time_chatter", 1, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1, drone_chatterCallback);
+    //ros::Subscriber time_sub = nh.subscribe("time_chatter", 1, time_chatterCallback);
+    //ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1, groundRobot_chatterCallback);
+    //ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1, drone_chatterCallback);
+    ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
 
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
