@@ -63,6 +63,10 @@ bool Observation::updateDrone(observation_t observation, float elapsed_time){
 	return true;
 }
 
+void Observation::updateInteraction(int index) {
+	this->robots[index].setInteractedWithTrue();
+}
+
 bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	bool any_robots_visible = false;
 	point_t position = point_Zero;

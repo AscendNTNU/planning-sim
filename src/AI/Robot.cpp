@@ -9,6 +9,7 @@ Robot::Robot() {
     this->speed = 0.33;
     this->current_Plank = Plank();
     this->time_After_Turn_Start = 0;
+    this->wasInteractedWith = false;
     this->visible = false;
 }
 
@@ -20,6 +21,7 @@ Robot::Robot(int index) {
     this->speed = 0.33;
     this->current_Plank = Plank();
     this->time_After_Turn_Start = 0;
+    this->wasInteractedWith = false;
     this->visible = false;
 }
 
@@ -52,12 +54,19 @@ Plank Robot::getCurrentPlank() {
     return this->current_Plank;
 }
 bool Robot::getVisibility() {
-    return this->visible;
+    return this->visible; //true
 }
 void Robot::setVisibility(bool visible) {
     this->visible = visible;
 }
 
+bool Robot::getWasInteractedWith() {
+    return this->wasInteractedWith;
+}
+
+void Robot::setInteractedWithTrue() {
+    this->wasInteractedWith = true;
+}
 
 bool Robot::isMoving() {
     if (this->old_Position.x == this->position.x &&
@@ -108,6 +117,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Old orient.: "      << robot.old_Orientation       << std::endl
     << "Time after: "       << robot.time_After_Turn_Start << std::endl
     << "Speed: "            << robot.speed                 << std::endl
+    << "Interacted With: "  << robot.wasInteractedWith     << std::endl
     << "Current plank: "    << robot.current_Plank
     << "-------------"                                      << std::endl;
     return strm;
