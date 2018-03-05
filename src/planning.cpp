@@ -49,14 +49,11 @@ void drone_chatterCallback(geometry_msgs::Pose2D msg) {
     ai_controller.observation.updateDrone(droneObs, elapsed_time);
 }
 
-void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
+void fuser_chatterCallback(ascend_msgs::AIWorldObservation::ConstPtr observation) {
     observation_t new_observation = observation_Empty;
     new_observation.elapsed_time = observation.elapsed_time;
-    
-    point_t drone_pos = observation.getDrone().getPosition();
-    new_observation.drone_x = drone_pos.x;
-    new_observation.drone_y = drone_pos.y;
-
+    new_observation.drone_x = observation->drone_position.x;
+    new_observation.drone_y = observation->drone_position.y;
     new_observation.num_Targets = Num_Targets;
 
     for(int i = 0; i < Num_Targets; i++) {
