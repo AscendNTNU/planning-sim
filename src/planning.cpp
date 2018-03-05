@@ -55,15 +55,17 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     drone_action.caller_id = ascend_msgs::ControlFSMGoal::CALLER_AI;
     // Set action type
     switch (action.type) {
-        case land_On_Top_Of:
+        case land_on_top_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF;
             break;
-        case land_In_Front_Of:
+        case land_in_front_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case search:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
             break;
+        case land_at_point: // For landing when mission completed
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
         default:
             ROS_INFO("Action type: %i was not recognized.", (int)action.type);
             // This should never happen.
@@ -103,28 +105,41 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(5.0);
+    ros::Rate rate(99.0);
     while (ros::ok()) {
         ros::spinOnce();
 
-        if(ready_for_new_action) {
-            action = ai_controller.stateHandler();
+        // printf("%f\n", elapsed_time);
+        if(elapsed_time > 600) {
+          break;
+        }
 
-            if (action.type == no_Command) {
-                rate.sleep();
-                printf("Action type is no command\n");
-                continue;
+        if(ready_for_new_action) {
+            if (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME){
+                // Right after start, robots are not turning while at turn time.
+                action = ai_controller.stateHandler();
+
+                if (action.type == no_command) {
+                    rate.sleep();
+                    continue;
+                    
+                } else {
+                    ready_for_new_action = false;
+                    drone_action = action_plank2ROS(action);
+                    client.sendGoal(drone_action);
+                }
+
             } else {
-                ready_for_new_action = false;
-                drone_action = action_plank2ROS(action);
-                client.sendGoal(drone_action);
+                rate.sleep();
+                continue;
             }
+
         }
 
         GoalState action_state = client.getState();
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
-            std::cout << std::endl << "Action type: " << action.type << std::endl;
+            std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
             std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
@@ -150,6 +165,12 @@ int main(int argc, char **argv) {
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
             case GoalState::SUCCEEDED:
+                if (action.type == land_in_front_of) {
+                    ros::Duration(2.6).sleep();
+                } else if (action.type == land_on_top_of) {
+                    printf("Sleeeeeeeep");
+                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                }
                 // The goal was successfull!
             case GoalState::LOST:
                 // Control node has no goal
@@ -158,6 +179,21 @@ int main(int argc, char **argv) {
                 break;
         }
 
+        
+
         rate.sleep();
     }
+    printf("Sim finished \n");
+    int numOut = 0;
+    for(int i = 0; i < 10; i++) {
+        printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
+        printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
+        // printf(ai_controller.observation.getRobot(i));
+        if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
+            numOut += 1;
+        }
+    }
+    printf("# Robots out green: %d \n", numOut);
+    printf("%d", numOut);
+    exit(numOut);
 }

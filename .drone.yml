@@ -38,6 +38,19 @@ pipeline:
       - docker-compose run docs
       - mkdir -p /home/ascend/docs/planning-sim
       - cp -R src/AI/Documentation/html/* /home/ascend/docs/planning-sim
+  update-ai-status:
+    image: appleboy/drone-ssh
+    host: ascendntnu.no
+    secrets: [ ssh_key ]
+    when:
+      status: success
+      event: push
+      #branch: dev
+    script:
+      - cd /home/ascend/ascendntnu-web/public/assets/ai-status
+      - AI_STATUS=5.23
+      - echo $DRONE_COMMIT $AI_STATUS >> commit.log
+      - curl -o ai-status.svg https://img.shields.io/badge/avg.%20ground%20robots-$AI_STATUS-f80.svg
 
 clone:
   clone:
