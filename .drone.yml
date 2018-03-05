@@ -38,7 +38,7 @@ pipeline:
       - docker-compose run docs
       - mkdir -p /home/ascend/docs/planning-sim
       - cp -R src/AI/Documentation/html/* /home/ascend/docs/planning-sim
-  update-ai-status:-status:
+  update-ai-status:
     image: appleboy/drone-ssh
     host: ascendntnu.no
     secrets: [ ssh_key ]
