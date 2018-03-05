@@ -1,5 +1,6 @@
 #include "Robot.h"
 
+// Redundant as you can call Robot(-1)
 Robot::Robot() {
     this->index = -1;
     this->position = point_Zero;
@@ -8,8 +9,8 @@ Robot::Robot() {
     this->speed = 0.33;
     this->current_Plank = Plank();
     this->time_After_Turn_Start = 0;
-    this->visible = true;
     this->wasInteractedWith = false;
+    this->visible = false;
 }
 
 Robot::Robot(int index) {
@@ -20,13 +21,13 @@ Robot::Robot(int index) {
     this->speed = 0.33;
     this->current_Plank = Plank();
     this->time_After_Turn_Start = 0;
-    this->visible = true;
     this->wasInteractedWith = false;
+    this->visible = false;
 }
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 1.0;
+    float time_drift = 3.0;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
@@ -54,6 +55,9 @@ Plank Robot::getCurrentPlank() {
 }
 bool Robot::getVisibility() {
     return this->visible; //true
+}
+void Robot::setVisibility(bool visible) {
+    this->visible = visible;
 }
 
 bool Robot::getWasInteractedWith() {

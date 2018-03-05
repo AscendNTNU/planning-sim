@@ -10,10 +10,10 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 	tree_action_t max
 
 	action_Top = empty_action;
-    action_Top.type = land_On_Top_Of;
+    action_Top.type = land_on_top_of;
 
 	action_Front empty_action;
-    action_Front.type = land_In_Front_Of;
+    action_Front.type = land_in_front_of;
 	
 	point_t temp_Position = robot.position;
 
