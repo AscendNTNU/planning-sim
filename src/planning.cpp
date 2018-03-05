@@ -109,8 +109,9 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::spinOnce();
 
+        float elapsed_time=ai_controller.observation.getTimeStamp();
         // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600) {
+        if(elapsed_time > 600 && elapsed_time != -1) {
           break;
         }
 

@@ -81,19 +81,19 @@ struct observation_t initializeObservation(int num_of_robots, int num_of_obstacl
 
 //     struct point_t pos = {
 //         .x = initial.robot_x[0],
-//         .y = robot.current_Plank.getPoint(11).point.y
+//         .y = robot.plank.getPoint(11).point.y
 //     };
 
 //     struct plank_point_t position = {
 //         .point = pos,
 //         .is_ahead = true,
 //         .time_till_first_arrival = 4,
-//         .time_since_start_turn = robot.current_Plank.getPoint(11).time_since_start_turn
+//         .time_since_start_turn = robot.plank.getPoint(11).time_since_start_turn
 //     };
 
 //     action_t action = ai.getBestActionAtPosition(robot.getOrientation(), position);
 
-//     EXPECT_EQ(robot.current_Plank.getPoint(0).point.y,14);
+//     EXPECT_EQ(robot.plank.getPoint(0).point.y,14);
 //     // EXPECT_EQ(land_in_front_of, action.type); 
 // }
 

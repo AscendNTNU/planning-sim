@@ -26,14 +26,14 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
-        if (robot.current_Plank.willExitRed()) {
+        if (robot.plank.willExitRed()) {
             continue;
         }
 
-        if (robot.getVisibility() && robot.isMoving()) {
+        if (robot.getVisible() && robot.isMoving()) {
 
-            if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
-                best_reward = robot.current_Plank.getReward();
+            if (robot.plank.getReward() > best_reward && !robot.plank.willExitGreen()) {
+                best_reward = robot.plank.getReward();
                 target = robot;
             }
         }

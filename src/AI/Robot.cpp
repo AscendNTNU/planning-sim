@@ -7,8 +7,8 @@ Robot::Robot() {
     this->old_Position = point_zero;
     this->orientation = 0;
     this->speed = 0.33;
-    this->current_Plank = Plank();
-    this->time_After_Turn_Start = 0;
+    this->plank = Plank();
+    this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
 }
@@ -19,8 +19,8 @@ Robot::Robot(int index) {
     this->old_Position = point_zero;
     this->orientation = 0;
     this->speed = 0.33;
-    this->current_Plank = Plank();
-    this->time_After_Turn_Start = 0;
+    this->plank = Plank();
+    this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
 }
@@ -139,7 +139,7 @@ std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     << "Time after: "       << robot.time_after_turn_start << std::endl
     << "Speed: "            << robot.speed                 << std::endl
     << "Interacted With: "  << robot.wasInteractedWith     << std::endl
-    << "Current plank: "    << robot.current_Plank
+    << "Current plank: "    << robot.plank
     << "-------------"                                      << std::endl;
     return strm;
 };
