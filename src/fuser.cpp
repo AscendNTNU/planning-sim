@@ -19,6 +19,9 @@ std::vector<Robot> new_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
 ros::Time start_time = ros::Time::now();
+float elapsed_time = -1; // This is set by a callback if we are using ai-sim
+bool using_sim = false;
+
 
 float TIMEOUT_OBSERVATION = 5;
 
@@ -53,6 +56,9 @@ void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
 }
 
 void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
+
+    elapsed_time = obs->elapsed_time;
+
     drone_position.x = obs->drone_position.x;
     drone_position.y = obs->drone_position.y;
     drone_position.z = obs->drone_position.z;
@@ -98,6 +104,13 @@ void updateRobot(Robot new_robot){
     robots[nearest_robot_index].update(new_robot);
 }
 
+float calcCurrentTime(float seconds){
+    if(elapsed_time == -1){
+        return seconds-start_time.sec; 
+    }
+    return elapsed_time;
+}
+
 int main(int argc, char **argv){
 
     int counter = 0;
@@ -135,12 +148,12 @@ int main(int argc, char **argv){
         }
 
         ascend_msgs::AIWorldObservation observation;
-        observation.header.stamp = ros::Time::now();
-        float current_time = observation.header.stamp.sec - start_time.sec;
+        float current_time = calcCurrentTime(ros::Time::now().sec);
+        observation.elapsed_time = current_time;
 
         for(auto it = robots.begin(); it != robots.end(); it++){
 
-            if(current_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+            if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 it->setVisible(false);
             }
 
@@ -158,7 +171,7 @@ int main(int argc, char **argv){
 
         for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
 
-            if(current_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+            if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 it->setVisible(false);
             }
 

@@ -105,8 +105,7 @@ int main(int argc, char **argv){
         sim_recv_state(&state);
 
         ascend_msgs::AIWorldObservation observation;
-        observation.header.stamp = ros::Time::now();
-        observation.time_elapsed = state.elapsed_time;
+        observation.elapsed_time = state.elapsed_time;
 
         observation.drone_position.x = state.drone_x;
         observation.drone_position.y = state.drone_y;
