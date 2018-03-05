@@ -16,13 +16,13 @@ protected:
 };
 
 struct observation_t initializeObservation(int num_of_robots, int num_of_obstacles){
-	struct observation_t initial = {
-		.elapsed_time = 23.0f,
-		.drone_x = 10.0f,
-		.drone_y = 10.0f,
-		.drone_cmd_done = true,
-		.num_targets = num_of_robots
-	};
+	observation_t initial;
+	initial.elapsed_time = 23.0f;
+	initial.drone_x = 10.0f;
+	initial.drone_y = 10.0f;
+	initial.drone_z = 0.0f;
+	initial.drone_cmd_done = true;
+	initial.num_targets = num_of_robots;
 
 	for(int i=0;i<num_of_robots;i++){
         float t = PI*2.0 * i / (float)num_of_robots;

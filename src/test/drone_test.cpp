@@ -45,13 +45,13 @@ TEST (DroneTest, DistanceToPointTest) {
 }
 
 
-struct observation_t observer_Zero
-{
+struct observation_t observer_Zero = {
 	.elapsed_time = 0.0f,
 	.drone_x = 0.0f,
 	.drone_y = 0.0f,
+	.drone_z = 0.0f,
 	.drone_cmd_done = true,
-	.num_targets = 1,
+	.num_targets = 1
 };
 
 TEST (DroneTest, UpdateDroneTest) {
