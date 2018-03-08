@@ -164,7 +164,7 @@ action_t AIController::landInFrontState(){ // lande tidligere, mindre drone hitb
 
     // antar dronen har landet, sjekker hvor lenge drone står på bakken
 
-    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.5) {
+    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) {
             this->planned_action_.type = take_off;
             this->transitionTo(idle);
             return this->planned_action_;
