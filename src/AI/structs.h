@@ -5,7 +5,7 @@
 static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
-static const float SIMILARITY_THRESHOLD = 1;
+static const float SIMILARITY_THRESHOLD = 1.5;
 
 /**
 @brief Struct describing a point on the course.

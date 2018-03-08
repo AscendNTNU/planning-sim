@@ -153,6 +153,7 @@ int main(int argc, char **argv) {
             printf("/");
         }
 
+        std::cout << "ACTION TYPE: " << actionTypeToString(action.type) << std::endl;
         // When no break is present, it falls through to next case
         switch(action_state.state_){
             case GoalState::PENDING:
@@ -170,12 +171,13 @@ int main(int argc, char **argv) {
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
+                break;
             case GoalState::SUCCEEDED:
-                if (action.type == land_in_front_of) {
-                    ros::Duration(2.6).sleep();
+                if (action.type == land_at_point) { // land in front of
+                    //ros::Duration(ROBOT_TURN_TIME + 0.1).sleep();
                 } else if (action.type == land_on_top_of) {
                     printf("Sleeeeeeeep");
-                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                    ros::Duration(ROBOT_TURN_TIME/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!
             case GoalState::LOST:
@@ -184,8 +186,6 @@ int main(int argc, char **argv) {
                 ready_for_new_action = true;
                 break;
         }
-
-        
 
         rate.sleep();
     }
