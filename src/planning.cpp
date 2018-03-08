@@ -25,6 +25,7 @@ World world = World(0);
 AIController ai_controller = AIController();
 
 void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
+
     observation_t new_observation = observation_Empty;
     new_observation.elapsed_time = observation.elapsed_time;
     
@@ -36,7 +37,7 @@ void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
         new_observation.robot_x[i] = observation.ground_robots[i].x;
         new_observation.robot_y[i] = observation.ground_robots[i].y;
         new_observation.robot_q[i] = observation.ground_robots[i].theta;
-        new_observation.robot_visible[i] = true;//observation.ground_robots[i].visible;
+        new_observation.robot_visible[i] = observation.ground_robots[i].visible;
     }
 
     for(int i = 0; i < 4; i++) {
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
-    // ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
+    //ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
@@ -109,7 +110,7 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::spinOnce();
 
-        float elapsed_time=ai_controller.observation.getTimeStamp();
+        float elapsed_time = ai_controller.observation.getTimeStamp();
         printf("%f\n", elapsed_time);
         if(elapsed_time > 600 && elapsed_time != 0) {
           break;

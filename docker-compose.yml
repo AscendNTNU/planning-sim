@@ -65,7 +65,7 @@ services:
     volumes:
       - ./src/AI/Documentation/html:/usr/share/nginx/html:ro
   gui:
-    image: ascendntnu/ai-sim:1.2
+    image: ascendntnu/ai-sim:1.0
     tty: true
     working_dir: /srv/ai-sim/src/ai-sim/
     environment:
