@@ -65,6 +65,10 @@ bool Robot::getWasInteractedWith() {
     return this->wasInteractedWith;
 }
 
+void Robot::setIndex(int index){
+    this->index = index;
+}
+
 void Robot::setInteractedWithTrue() {
     this->wasInteractedWith = true;
 }
@@ -91,7 +95,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->position = new_Position;
     this->time_after_turn_start = fmod(elapsed_time, 20);
     this->visible = visible;
-    
+
     if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
         this->plank.updatePlank(this->position, estimated_orientation, this->time_after_turn_start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?

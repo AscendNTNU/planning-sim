@@ -80,6 +80,8 @@ public:
 
     void setVisible(bool set_value);
 
+    void setIndex(int index);
+
     /**
     @brief Set the visibility of the Robot
     bool setVisibility();

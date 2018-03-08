@@ -30,6 +30,21 @@ float TIMEOUT_OBSERVATION = 5;
 
 point_t drone_position = point_zero;
 
+void initializeRobots(){
+
+    for(int i=0;i<10;i++){
+        float t = 3.14*2.0 * i / 10.0;
+        point_t point;
+        point.x = 10.0 + cosf(t);
+        point.y = 10.0 + sinf(t);
+        float orientation = t;
+        robots[i].update(i,point,orientation, 0, true);
+
+    }
+
+}
+
+
 //Can only handle 10 robots in one message.
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     for(int i = 0; i < (int)msg->count; i++) {
@@ -66,16 +81,15 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     drone_position.y = obs->drone_position.y;
     drone_position.z = obs->drone_position.z;
 
-    int i = 0;
+    int i = -1;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
         Robot robot;
 
         point_t position;
         position.x = it->x;
         position.y = it->y;
-
         float q = it->theta;
-        float time = obs->header.stamp.sec - start_time.sec;
+        float time = elapsed_time;
         bool visible = it->visible;
 
         robot.update(i, position, q , time, visible);
@@ -103,8 +117,16 @@ int nearestNeighbor(Robot robot) {
 }
 
 void updateRobot(Robot new_robot){
+
     int nearest_robot_index = nearestNeighbor(new_robot);
+    if(nearest_robot_index < 0){
+        std::cout<<"THIS SHOULD NEVER HAPPEN!!!!" << std::endl;
+    }
+    // std::cout << "old robot" << std::endl;
+    // std::cout<< robots[nearest_robot_index] << std::endl;
     robots[nearest_robot_index].update(new_robot);
+    // std::cout << "new robot" << std::endl;
+    // std::cout<< robots[nearest_robot_index] << std::endl;
 }
 
 float calcCurrentTime(float seconds){
@@ -124,7 +146,7 @@ int main(int argc, char **argv){
     }
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
-    
+    initializeRobots();
     ros::NodeHandle node;
     // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg; 
@@ -144,7 +166,6 @@ int main(int argc, char **argv){
         for(auto it = new_robots.begin(); it != new_robots.end(); it++){
             updateRobot(*it);
         }
-
         for(auto it = new_obstacle_robots.begin(); it != new_obstacle_robots.end(); it++){
             // updateRobot(*it);
         }
@@ -152,24 +173,38 @@ int main(int argc, char **argv){
         ascend_msgs::AIWorldObservation observation;
         float current_time = calcCurrentTime(ros::Time::now().sec);
         observation.elapsed_time = current_time;
-
-        for(auto it = robots.begin(); it != robots.end(); it++){
-
-            if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-                it->setVisible(false);
-            }
-
+        
+        for(int i=0; i<10; i++){
             ascend_msgs::GRState robot;
 
-            robot.header = observation.header;
-
-            point_t position = it->getPosition();
+            point_t position = robots[i].getPosition();
             robot.x = position.x;
             robot.y = position.y;
-            robot.theta = it->getOrientation();
-            robot.visible = it->getVisible();
-            observation.ground_robots[it->getIndex()] = robot;
+            robot.theta = robots[i].getOrientation();
+            robot.visible = robots[i].getVisible();
+            observation.ground_robots[i] = robot;
+            std::cout << robot << std::endl;
         }
+        // for(auto it = robots.begin(); it != robots.end(); it++){
+
+        //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
+        //         it->setVisible(false);
+        //     }
+
+        //     ascend_msgs::GRState robot;
+
+        //     robot.header = observation.header;
+
+        //     point_t position = it->getPosition();
+        //     robot.x = position.x;
+        //     robot.y = position.y;
+        //     robot.theta = it->getOrientation();
+        //     robot.visible = it->getVisible();
+        //     observation.ground_robots[it->getIndex()] = robot;
+        //     std::cout << robot << std::endl;
+
+        //     // std::cout<<robot<<std::endl;
+        // }
 
         // for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
 
