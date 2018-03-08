@@ -27,7 +27,8 @@ Robot::Robot(int index) {
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 3.0;
+    float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
+    //std::cout << "timedrift: " << time_drift << std::endl;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
