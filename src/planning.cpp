@@ -105,13 +105,13 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(99.0);
+    ros::Rate rate(25.0);
     while (ros::ok()) {
         ros::spinOnce();
 
         float elapsed_time=ai_controller.observation.getTimeStamp();
-        // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600 && elapsed_time != -1) {
+        printf("%f\n", elapsed_time);
+        if(elapsed_time > 600 && elapsed_time != 0) {
           break;
         }
 
@@ -140,8 +140,8 @@ int main(int argc, char **argv) {
         GoalState action_state = client.getState();
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
-            std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
-            std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
+            // std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
+            // std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
         } else {
@@ -169,7 +169,6 @@ int main(int argc, char **argv) {
                 if (action.type == land_in_front_of) {
                     ros::Duration(2.6).sleep();
                 } else if (action.type == land_on_top_of) {
-                    printf("Sleeeeeeeep");
                     ros::Duration(2.5/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!

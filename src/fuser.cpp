@@ -1,5 +1,6 @@
 #include <array>
 #include <vector>
+#include <stdio.h>
 
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -18,7 +19,9 @@ std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
-ros::Time start_time;
+ros::Time start_time(0);
+
+    
 float elapsed_time = -1; // This is set by a callback if we are using ai-sim
 bool using_sim = false;
 
@@ -119,9 +122,9 @@ int main(int argc, char **argv){
         *it = Robot(counter);
         counter++;
     }
-
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
+    
     ros::NodeHandle node;
     // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg; 
