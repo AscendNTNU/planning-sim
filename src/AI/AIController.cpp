@@ -164,9 +164,8 @@ action_t AIController::landInFrontState(){ // lande tidligere, mindre drone hitb
 
     // antar dronen har landet, sjekker hvor lenge drone står på bakken
 
-    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 1) {
+    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.5) {
             this->planned_action_.type = take_off;
-
             this->transitionTo(idle);
             return this->planned_action_;
 
@@ -175,12 +174,10 @@ action_t AIController::landInFrontState(){ // lande tidligere, mindre drone hitb
     std::cout << "I have landed" << std::endl;
     std::cout << "timediff: " << (this->observation.getTimeStamp() - prev_transition_timestamp) << std::endl;
 
-    
     //bumper: lytt til bumpers (for å se når vi treffer target), hvis vi venter lengre enn konst slutt å stå på bakken
     //sammenlikn predicted target intersect tidspunkt med faktisk intersect
 
-    //this->transitionTo(idle);
-    return this->planned_action_; 
+    return empty_action;
 }
 
 action_t AIController::missionCompleteState(){
