@@ -19,11 +19,9 @@ std::array<Robot, 10> robots;
 std::vector<Robot> new_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
-ros::Time start_time(0);
 
-    
-float elapsed_time = -1; // This is set by a callback if we are using ai-sim
-bool using_sim = false;
+ros::Time start_time(0.0);
+float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
 
 float TIMEOUT_OBSERVATION = 5;
@@ -130,7 +128,7 @@ void updateRobot(Robot new_robot){
 }
 
 float calcCurrentTime(float seconds){
-    if(elapsed_time == -1){
+    if(elapsed_time == 0.0){
         return seconds-start_time.sec; 
     }
     return elapsed_time;
@@ -158,11 +156,13 @@ int main(int argc, char **argv){
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
-    ros::Rate rate(30.0);
+    ros::Rate rate(1.0);
 
     while (ros::ok()) {
         ros::spinOnce();
-
+        std::cout << start_time.sec << std::endl;
+        std::cout << elapsed_time << std::endl;
+        std::cout << std::endl;
         for(auto it = new_robots.begin(); it != new_robots.end(); it++){
             updateRobot(*it);
         }
@@ -183,7 +183,6 @@ int main(int argc, char **argv){
             robot.theta = robots[i].getOrientation();
             robot.visible = robots[i].getVisible();
             observation.ground_robots[i] = robot;
-            std::cout << robot << std::endl;
         }
         // for(auto it = robots.begin(); it != robots.end(); it++){
 
