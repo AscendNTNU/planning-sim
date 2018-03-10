@@ -106,12 +106,12 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(0.5);
+    ros::Rate rate(20);
     while (ros::ok()) {
         ros::spinOnce();
 
         float elapsed_time = ai_controller.observation.getTimeStamp();
-        printf("%f\n", elapsed_time);
+        // printf("%f\n", elapsed_time);
         if(elapsed_time > 600 && elapsed_time != 0.0) {
           break;
         }

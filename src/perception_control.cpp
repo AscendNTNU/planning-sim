@@ -97,7 +97,7 @@ int main(int argc, char **argv){
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();
 
-    ros::Rate rate(2.0);
+    ros::Rate rate(30.0);
     while (ros::ok()){
         ros::spinOnce();
 

@@ -15,8 +15,8 @@
 
 World world = World(0);
 
-std::array<Robot, 10> robots;
-std::vector<Robot> new_robots;
+std::array<Robot, 10> robots_in_memory;
+std::vector<Robot> observed_robots;
 std::array<Robot, 4> obstacle_robots;
 std::vector<Robot> new_obstacle_robots;
 
@@ -28,7 +28,7 @@ float TIMEOUT_OBSERVATION = 5;
 
 point_t drone_position = point_zero;
 
-void initializeRobots(){
+void initializeRobotsInMemory(){
 
     for(int i=0;i<10;i++){
         float t = 3.14*2.0 * i / 10.0;
@@ -36,14 +36,13 @@ void initializeRobots(){
         point.x = 10.0 + cosf(t);
         point.y = 10.0 + sinf(t);
         float orientation = t;
-        robots[i].update(i,point,orientation, 0, true);
-
+        robots_in_memory[i].update(i,point,orientation, 0, false);
     }
 
 }
 
 
-//Can only handle 10 robots in one message.
+//Can only handle 10 robots_in_memory in one message.
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     for(int i = 0; i < (int)msg->count; i++) {
         Robot robot;
@@ -57,7 +56,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
-        new_robots.push_back(robot);
+        observed_robots.push_back(robot);
     }
 }
 
@@ -91,7 +90,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
         bool visible = it->visible;
 
         robot.update(i, position, q , time, visible);
-        new_robots.push_back(robot);
+        observed_robots.push_back(robot);
     }
 }
 
@@ -99,32 +98,52 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
 
+
 int nearestNeighbor(Robot robot) {
-    double min_distance = 1000000;
+    double min_distance = 2;
     int index = -1;
-    for(auto it = robots.begin(); it != robots.end(); it++){
-        Robot robot = *it;
-        int counter = 0;
-        if(distanceBetweenRobots(robot, robots[counter]) < min_distance) {
-            min_distance = distanceBetweenRobots(robot, robots[counter]);
-            index = counter;
+    int not_visible_index = -1;
+    int counter = 0;
+
+    for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
+
+        if(it->getVisible()){
+
+            Robot robot_in_memory = it->getRobotPositionAtTime(it->getTimeLastSeen());
+
+            if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
+                min_distance = distanceBetweenRobots(robot, robot_in_memory);
+                index = counter;
+                std::cout << index << std::endl;
+            }
         }
+
+        else{
+            not_visible_index = counter;
+        }
+
         counter++;
     }
+
+    if(index == -1){
+        return not_visible_index;
+    }
+
     return index;
 }
 
 void updateRobot(Robot new_robot){
 
     int nearest_robot_index = nearestNeighbor(new_robot);
-    if(nearest_robot_index < 0){
-        std::cout<<"THIS SHOULD NEVER HAPPEN!!!!" << std::endl;
+    if(nearest_robot_index >= 0){
+        robots_in_memory[nearest_robot_index].update(new_robot);
+        std::cout << "Updated robot " << nearest_robot_index << std::endl;
     }
     // std::cout << "old robot" << std::endl;
-    // std::cout<< robots[nearest_robot_index] << std::endl;
-    robots[nearest_robot_index].update(new_robot);
+    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
+    
     // std::cout << "new robot" << std::endl;
-    // std::cout<< robots[nearest_robot_index] << std::endl;
+    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
 }
 
 float calcCurrentTime(float seconds){
@@ -137,14 +156,11 @@ float calcCurrentTime(float seconds){
 int main(int argc, char **argv){
 
     int counter = 0;
-
-    for(auto it = robots.begin(); it != robots.end(); it++){
-        *it = Robot(counter);
-        counter++;
-    }
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
-    initializeRobots();
+
+    initializeRobotsInMemory();
+
     ros::NodeHandle node;
     // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg; 
@@ -156,14 +172,15 @@ int main(int argc, char **argv){
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
-    ros::Rate rate(1.0);
+    ros::Rate rate(30.0);
 
     while (ros::ok()) {
         ros::spinOnce();
-        std::cout << start_time.sec << std::endl;
-        std::cout << elapsed_time << std::endl;
-        std::cout << std::endl;
-        for(auto it = new_robots.begin(); it != new_robots.end(); it++){
+        if(elapsed_time == 0.0 && start_time.sec == 0.0){
+            continue;
+        }
+
+        for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             updateRobot(*it);
         }
         for(auto it = new_obstacle_robots.begin(); it != new_obstacle_robots.end(); it++){
@@ -176,15 +193,14 @@ int main(int argc, char **argv){
         
         for(int i=0; i<10; i++){
             ascend_msgs::GRState robot;
-
-            point_t position = robots[i].getPosition();
+            point_t position = robots_in_memory[i].getPosition();
             robot.x = position.x;
             robot.y = position.y;
-            robot.theta = robots[i].getOrientation();
-            robot.visible = robots[i].getVisible();
+            robot.theta = robots_in_memory[i].getOrientation();
+            robot.visible = robots_in_memory[i].getVisible();
             observation.ground_robots[i] = robot;
         }
-        // for(auto it = robots.begin(); it != robots.end(); it++){
+        // for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
 
         //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
         //         it->setVisible(false);

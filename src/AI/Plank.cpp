@@ -157,8 +157,6 @@ point_t Plank::getRobotPositionAtTime(float elapsed_time){
     float driving_time = elapsed_time - 20*floor(no_of_turns);
     point_t point;
     if(driving_time > 0){
-        this->start_point.point.x;
-        this->start_point.point.y;
         point.x = driving_time*ROBOT_SPEED*cosf(this->angle)+this->start_point.point.x;
         point.y = driving_time*ROBOT_SPEED*sinf(this->angle)+this->start_point.point.y;
     }
@@ -166,6 +164,7 @@ point_t Plank::getRobotPositionAtTime(float elapsed_time){
         point.x = this->start_point.point.x;
         point.y = this->start_point.point.y;
     }
+    return point;
 }
 
 std::ostream& operator<<(std::ostream &strm, const Plank &plank) {
