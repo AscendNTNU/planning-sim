@@ -154,18 +154,18 @@ action_t AIController::landOnTopState(){
     return this->planned_action_;
 }
 
-action_t AIController::landInFrontState(){ // lande tidligere, mindre drone hitbox i sim, stå kortere på bakken (går ikke inn i)
+action_t AIController::landInFrontState(){
     printf("Land in front state\n");
+    int target_id = this->planned_action_.target;
+    point_t drone_pos = this->observation.getDrone().getPosition();
 
-    if(this->observation.getDrone().getPosition().z >= 0.1){ // hvis du flyr
-        this->planned_action_.type = land_at_point;
+    if(drone_pos.z >= 0.1 && this->observation.getRobot(target_id).approaching(drone_pos)) { // hvis drone flyr og robot går mot drone
+        this->planned_action_.type = land_at_point; // land
         return this->planned_action_;
     }
 
-    // antar dronen har landet, sjekker hvor lenge drone står på bakken
-
-    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) {
-            this->planned_action_.type = take_off;
+    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) { // hvis drone har stått på bakken i 2sek
+            this->planned_action_.type = take_off; // fly
             this->transitionTo(idle);
             return this->planned_action_;
 

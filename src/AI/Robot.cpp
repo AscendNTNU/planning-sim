@@ -61,6 +61,13 @@ void Robot::setVisibility(bool visible) {
     this->visible = visible;
 }
 
+bool Robot::approaching(point_t point) {
+    float old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
+    float new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
+
+    return (new_dist < old_dist);
+}
+
 bool Robot::getWasInteractedWith() {
     return this->wasInteractedWith;
 }
