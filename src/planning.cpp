@@ -26,11 +26,11 @@ float elapsed_time = 0;
 World world = World(0);
 AIController ai_controller = AIController();
 
-void time_chatterCallback(std_msgs::Float32 msg) {
+void timeChatterCallback(std_msgs::Float32 msg) {
     elapsed_time = (float)msg.data;
 }
 
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
+void groundRobotChatterCallback(const planning_ros_sim::groundRobotList &msg) {
     observation_t robotObs = observation_Empty;
     for(int i = 0; i < 10; i++) {
             robotObs.robot_x[i] = msg.groundRobot[i].x;
@@ -42,7 +42,7 @@ void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
     ai_controller.observation.updateRobot(robotObs, elapsed_time);
 }
 
-void drone_chatterCallback(geometry_msgs::Pose2D msg) {
+void droneChatterCallback(geometry_msgs::Pose2D msg) {
     observation_t droneObs = observation_Empty;
     droneObs.drone_x = msg.x;
     droneObs.drone_y = msg.y;
@@ -93,11 +93,11 @@ int main(int argc, char **argv) {
 
     Config::loadParams();
 
-    ros::Subscriber time_sub = nh.subscribe(Config::time_chatter, 1, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = nh.subscribe(Config::groundrobot_chatter, 1, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = nh.subscribe(Config::drone_chatter, 1, drone_chatterCallback);
+    ros::Subscriber time_sub = nh.subscribe(Config::TIME_CHATTER, 1, timeChatterCallback);
+    ros::Subscriber ground_robot_sub = nh.subscribe(Config::GROUNDROBOT_CHATTER, 1, groundRobotChatterCallback);
+    ros::Subscriber drone_sub = nh.subscribe(Config::DRONE_CHATTER, 1, droneChatterCallback);
 
-    ClientType client(Config::control_action_server, true);
+    ClientType client(Config::CONTROL_ACTION_CHATTER, true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
@@ -114,8 +114,7 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::spinOnce();
 
-        // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600) {
+        if(elapsed_time > Config::TOTAL_COMPETITION_TIME) {
           break;
         }
 

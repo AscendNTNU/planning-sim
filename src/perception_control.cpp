@@ -98,12 +98,12 @@ int main(int argc, char **argv)
   std_msgs::Float32 time_msg; 
 
   // Define publishers
-  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>(Config::groundrobot_chatter, 1);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>(Config::drone_chatter, 1);
-  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>(Config::time_chatter,1);
+  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>(Config::GROUNDROBOT_CHATTER, 1);
+  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>(Config::DRONE_CHATTER, 1);
+  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>(Config::TIME_CHATTER,1);
 
   // Define action server
-  ActionServerType server(nh, Config::control_action_server, false);
+  ActionServerType server(nh, Config::CONTROL_ACTION_CHATTER, false);
   server.registerGoalCallback(boost::bind(newGoalCB, &server));
   server.registerPreemptCallback(boost::bind(preemptCB, &server));
   server.start();

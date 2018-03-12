@@ -5,12 +5,19 @@ using planning::Config;
 
 std::set<std::string> Config::missing_param_set_;
 
-//Global config params
+//===============  Global config params  =================
 
-std::string Config::time_chatter;
-std::string Config::groundrobot_chatter;
-std::string Config::drone_chatter;
-std::string Config::control_action_server;
+//--------------------  Topic nodes  ---------------------
+
+std::string Config::TIME_CHATTER;
+std::string Config::GROUNDROBOT_CHATTER;
+std::string Config::DRONE_CHATTER;
+std::string Config::CONTROL_ACTION_CHATTER;
+
+//------------------  World variables  -------------------
+
+double Config::TOTAL_COMPETITION_TIME;
+
 
 void Config::loadParams() {
     // if(!ros::isInitialized()) {
@@ -68,8 +75,9 @@ void Config::loadParams() {
         }
     };
 
-    getStringParam("time_chatter_topic", time_chatter);
-    getStringParam("ground_robot_topic",  groundrobot_chatter);
-    getStringParam("drone_topic",  drone_chatter);
-    getStringParam("control_action_server",  control_action_server);
+    getStringParam("time_chatter_topic", TIME_CHATTER);
+    getStringParam("ground_robot_topic",  GROUNDROBOT_CHATTER);
+    getStringParam("drone_topic",  DRONE_CHATTER);
+    getStringParam("control_action_server",  CONTROL_ACTION_CHATTER);
+    getDoubleParam("total_competition_time", TOTAL_COMPETITION_TIME, 0.0, 610.0);
 }
