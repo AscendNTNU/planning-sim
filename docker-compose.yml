@@ -15,9 +15,10 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make"
+    command: catkin_make
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws
   build:
     image: ascend-kinetic-build-cache:1.2
     depends_on:
@@ -25,20 +26,27 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make"
+    command: catkin_make
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws
   tests:
-    image: ascendntnu/ros-kinetic:1.2
+    image: ascend-kinetic-build-cache:1.2
+    depends_on:
+      - build-cache
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make run_tests"
+    command: catkin_make run_tests
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws
   build-cache:
     image: ascend-kinetic-build-cache:1.2
-    build: src/docker-build-cache
+    build:
+      context: src/docker-build-cache
+      args:
+        - version=1.2
     tty: true
     environment:
       - ASCEND_ENV
