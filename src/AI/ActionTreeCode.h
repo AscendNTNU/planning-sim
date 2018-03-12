@@ -41,7 +41,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
         Plank temp_Plank = new Plank(temp_Position, orientation, time_after_turn_start, n);
         temp.reward = findRobotValue(robot);
 		temp = currentLevel;
-		robot.setPositionOrientation(robot.getPosition(), robot.getOrientation()+0.785);
+		robot.setPositionOrientation(robot.getPosition(), robot.plank.getAngle()+0.785);
 		action_Top.when_To_Act = i;
         temp.actions.push(action_Top);
         temp = DFS(robot,temp, n);
@@ -52,7 +52,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 
         //Try action land in front
         temp = currentLevel;
-        robot.setPositionOrientation(robot.getPosition(), robot.getOrientation()-0.785 + 3.14);
+        robot.setPositionOrientation(robot.getPosition(), robot.plank.getAngle()-0.785 + 3.14);
         float rewardInFront = findRobotValue(robot);
         temp.reward = findRobotValue(robot);
         action_Front.when_To_Act = i;
