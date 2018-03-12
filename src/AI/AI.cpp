@@ -81,7 +81,7 @@ action_t AI::chooseAction(Robot target) {
         for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
-            step_Action = getBestActionAtPosition(target.getOrientation(), target.plank.getPoint(i));
+            step_Action = getBestActionAtPosition(target.plank.getAngle(), target.plank.getPoint(i));
 
             if (step_Action.reward > best_Action.reward) {
                 best_Action = step_Action;

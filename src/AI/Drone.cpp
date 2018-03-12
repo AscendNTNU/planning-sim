@@ -39,7 +39,7 @@ point_t Drone::getInterceptPoint(Robot robot) {
 	
 	//Drone* drone = new Drone(); 
 	float time_Until_Turn = 20 - robot.getTimeAfterTurn();
-	float robot_Ori = robot.getOrientation();
+	float robot_Ori = robot.plank.getAngle();
 	point_t robot_Pos = robot.getPosition();
 	float x_d = this->position.x;
 	float y_d = this->position.y;
