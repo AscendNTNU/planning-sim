@@ -52,10 +52,12 @@ catkin_add_gtest(World src/test/world_test.cpp)
 catkin_add_gtest(Drone src/test/drone_test.cpp)
 catkin_add_gtest(Robot src/test/robot_test.cpp)
 catkin_add_gtest(AI src/test/ai_test.cpp)
+catkin_add_gtest(Fuser src/test/fuser_test.cpp)
 
 target_link_libraries(Plank libAI ${catkin_LIBRARIES})
 target_link_libraries(Drone libAI ${catkin_LIBRARIES})
 target_link_libraries(Robot libAI ${catkin_LIBRARIES})
 target_link_libraries(AI libAI ${catkin_LIBRARIES})
+target_link_libraries(Fuser libAI ${catkin_LIBRARIES})
 
 # %EndTag(FULLTEXT)%

@@ -1,28 +1,9 @@
-#include <array>
-#include <vector>
-#include <stdio.h>
-
-#include "ros/ros.h"
-#include "geometry_msgs/PoseStamped.h"
-#include "std_msgs/Float32.h"
-#include "std_msgs/Time.h"
-
-#include "ascend_msgs/DetectedRobotsGlobalPositions.h"
-#include "ascend_msgs/AIWorldObservation.h"
-
-#include "AI/Robot.h"
-#include "AI/World.h"
+#include "fuser.h"
 
 World world = World(0);
 
-std::array<Robot, 10> robots_in_memory;
-std::vector<Robot> observed_robots;
-std::array<Robot, 4> obstacle_robots;
-std::vector<Robot> new_obstacle_robots;
-
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
-
 
 float TIMEOUT_OBSERVATION = 5;
 
@@ -163,7 +144,7 @@ int main(int argc, char **argv){
 
     ros::NodeHandle node;
     // geometry_msgs::Pose2D drone_msg;
-    std_msgs::Float32 time_msg; 
+    std_msgs::Float32 time_msg;
 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
@@ -183,14 +164,14 @@ int main(int argc, char **argv){
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             updateRobot(*it);
         }
-        for(auto it = new_obstacle_robots.begin(); it != new_obstacle_robots.end(); it++){
+        for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
             // updateRobot(*it);
         }
 
         ascend_msgs::AIWorldObservation observation;
         float current_time = calcCurrentTime(ros::Time::now().sec);
         observation.elapsed_time = current_time;
-        
+
         for(int i=0; i<10; i++){
             ascend_msgs::GRState robot;
             point_t position = robots_in_memory[i].getPosition();
@@ -221,7 +202,7 @@ int main(int argc, char **argv){
         //     // std::cout<<robot<<std::endl;
         // }
 
-        // for(auto it = obstacle_robots.begin(); it != obstacle_robots.end(); it++){
+        // for(auto it = obstacle_robots_in_memory.begin(); it != obstacle_robots_in_memory.end(); it++){
 
         //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
         //         it->setVisible(false);
@@ -236,7 +217,7 @@ int main(int argc, char **argv){
         //     robot.y = position.y;
         //     robot.theta = it->getOrientation();
         //     robot.visible = it->getVisible();
-        //     observation.obstacle_robots[it->getIndex()] = robot;
+        //     observation.obstacle_robots_in_memory[it->getIndex()] = robot;
         // }
 
         geometry_msgs::Point32 drone;
