@@ -190,7 +190,6 @@ int main(int argc, char **argv) {
                 if (action.type == land_at_point) { // land in front of
                     ros::Duration(0.5).sleep();
                 } else if (action.type == land_on_top_of) {
-                    printf("Sleeeeeeeep");
                     ros::Duration(ROBOT_TURN_TIME/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!

@@ -109,7 +109,7 @@ int main(int argc, char **argv){
     // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg;
 
-    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position_pose", 1, dronePositionCallback);
     ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
@@ -124,14 +124,16 @@ int main(int argc, char **argv){
             continue;
         }
 
-        int counter = 0;
-        for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
-            updateRobot(*it);
 
-            //// If you want to ignore nearest neighbour updates CURRENTLY DOESNT WORK
-            // robots_in_memory[counter].update(*it);
-            // counter++;
-            // std::cout << counter << std::endl;
+        for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
+            // updateRobot(*it);
+
+            //// If you want to ignore nearest neighbour updates uncomment the below
+            int counter = 0;
+            for(auto it2 = it->begin(); it2 != it->end(); it2++){
+                robots_in_memory[counter].update(*it2);
+                counter++;
+            }
         }
 
 

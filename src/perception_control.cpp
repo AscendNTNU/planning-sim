@@ -51,7 +51,6 @@ sim_Command action_ROS2Sim(GoalType goal){
       command.type = sim_CommandType_Search;
       break;
     case ascend_msgs::ControlFSMGoal::TAKEOFF:
-      std::cout << "--ROS2Sim TAKEOFF--" << std::endl;
       command.type = sim_CommandType_Search; // Could result in taking off at wrong point?
     default:
       command.type = sim_CommandType_NoCommand;
