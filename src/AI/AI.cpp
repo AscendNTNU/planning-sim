@@ -81,7 +81,7 @@ action_t AI::chooseAction(Robot target) {
         for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
-            plank_point_t step_point = target.current_Plank.getPoint(i);
+            plank_point_t step_point = target.plank.getPoint(i);
             if (step_point.point.y < 19.5) { // not outside of green
                 step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 

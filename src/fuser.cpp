@@ -89,7 +89,6 @@ float calcCurrentTime(float seconds){
 
 int main(int argc, char **argv){
 
-    int counter = 0;
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
 
@@ -114,13 +113,14 @@ int main(int argc, char **argv){
             continue;
         }
 
-        counter = 0;
+        int counter = 0;
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             updateRobot(*it);
 
-            //// If you want to ignore nearest neighbour updates
+            //// If you want to ignore nearest neighbour updates CURRENTLY DOESNT WORK
             // robots_in_memory[counter].update(*it);
             // counter++;
+            // std::cout << counter << std::endl;
         }
 
 
@@ -137,7 +137,7 @@ int main(int argc, char **argv){
             robot.visible = robots_in_memory[i].getVisible();
             observation.ground_robots[i] = robot;
         }
-        
+
         geometry_msgs::Point32 drone;
         drone.x = drone_position.x;
         drone.y = drone_position.y;
