@@ -10,7 +10,6 @@ float TIMEOUT_OBSERVATION = 5;
 point_t drone_position = point_zero;
 
 void initializeRobotsInMemory(){
-
     for(int i=0;i<10;i++){
         float t = 3.14*2.0 * i / 10.0;
         point_t point;
@@ -21,7 +20,6 @@ void initializeRobotsInMemory(){
     }
 
 }
-
 
 //Can only handle 10 robots_in_memory in one message.
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
@@ -81,7 +79,7 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
 
 
 int nearestNeighbor(Robot robot) {
-    double min_distance = 2;
+    double min_distance = 100;
     int index = -1;
     int not_visible_index = -1;
     int counter = 0;
@@ -95,7 +93,7 @@ int nearestNeighbor(Robot robot) {
             if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
                 min_distance = distanceBetweenRobots(robot, robot_in_memory);
                 index = counter;
-                std::cout << index << std::endl;
+                // std::cout << index << std::endl;
             }
         }
 
@@ -118,7 +116,7 @@ void updateRobot(Robot new_robot){
     int nearest_robot_index = nearestNeighbor(new_robot);
     if(nearest_robot_index >= 0){
         robots_in_memory[nearest_robot_index].update(new_robot);
-        std::cout << "Updated robot " << nearest_robot_index << std::endl;
+        // std::cout << "Updated robot " << nearest_robot_index << std::endl;
     }
     // std::cout << "old robot" << std::endl;
     // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
@@ -153,7 +151,7 @@ int main(int argc, char **argv){
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
-    ros::Rate rate(30.0);
+    ros::Rate rate(60);
 
     while (ros::ok()) {
         ros::spinOnce();
