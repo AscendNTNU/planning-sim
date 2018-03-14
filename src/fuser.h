@@ -15,9 +15,9 @@
 #include "AI/World.h"
 
 std::array<Robot, 10> robots_in_memory;
-std::vector<Robot> observed_robots;
+std::vector<std::vector<Robot>> observed_robots;
 std::array<Robot, 4> obstacle_robots_in_memory;
-std::vector<Robot> observed_obstacle_robots;
+std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 void initializeRobotsInMemory();
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg);
@@ -33,23 +33,26 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
 
-int nearestNeighbor(Robot robot) {
+int nearestNeighbor(Robot robot, std::set<int> used_index) {
     double min_distance = 2;
     int index = -1;
     int not_visible_index = -1;
     int counter = 0;
 
     for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
+        
+        if(used_index.find(counter) != used_index.end()){
+            counter++;
+            continue;
+        }
 
         if(it->getVisible()){
 
             Robot robot_in_memory = it->getRobotPositionAtTime(robot.getTimeLastSeen());
-            //std::cout << robot_in_memory << std::endl;
 
             if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
                 min_distance = distanceBetweenRobots(robot, robot_in_memory);
                 index = counter;
-                //std::cout << index << std::endl;
             }
         }
 
