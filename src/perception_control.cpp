@@ -99,18 +99,15 @@ int main(int argc, char **argv){
     cmd.y = 0;
     cmd.i = 0;
 
-  // Initialize ros-messages
-  ros::init(argc, argv, "perception_control");
-  ros::NodeHandle nh;
-  planning_ros_sim::groundRobotList groundrobot_msg;
-  geometry_msgs::Point32 drone_msg;
-  std_msgs::Float32 time_msg; 
+    // Initialize ros-messages
+    ros::init(argc, argv, "perception_control");
+    ros::NodeHandle nh;
+    planning_ros_sim::groundRobotList groundrobot_msg;
+    geometry_msgs::Point32 drone_msg;
+    std_msgs::Float32 time_msg; 
 
-  // Define publishers
-  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Point32>("drone_chatter", 100);
-  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",100);
-  ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 100);
+    // Define publishers
+    ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
 
     // Subsciber for fuser visualisation
     // ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuserCallback);

@@ -18,7 +18,6 @@ void initializeRobotsInMemory(){
         float orientation = t;
         robots_in_memory[i].update(i,point,orientation, 0, false);
     }
-
 }
 
 //Can only handle 10 robots_in_memory in one message.
@@ -78,13 +77,7 @@ void updateRobot(Robot new_robot){
     int nearest_robot_index = nearestNeighbor(new_robot);
     if(nearest_robot_index >= 0){
         robots_in_memory[nearest_robot_index].update(new_robot);
-        // std::cout << "Updated robot " << nearest_robot_index << std::endl;
     }
-    // std::cout << "old robot" << std::endl;
-    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
-    
-    // std::cout << "new robot" << std::endl;
-    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
 }
 
 float calcCurrentTime(float seconds){
@@ -121,12 +114,15 @@ int main(int argc, char **argv){
             continue;
         }
 
+        counter = 0;
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             updateRobot(*it);
+
+            //// If you want to ignore nearest neighbour updates
+            // robots_in_memory[counter].update(*it);
+            // counter++;
         }
-        for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-            // updateRobot(*it);
-        }
+
 
         ascend_msgs::AIWorldObservation observation;
         float current_time = calcCurrentTime(ros::Time::now().sec);
@@ -141,45 +137,7 @@ int main(int argc, char **argv){
             robot.visible = robots_in_memory[i].getVisible();
             observation.ground_robots[i] = robot;
         }
-        // for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
-
-        //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-        //         it->setVisible(false);
-        //     }
-
-        //     ascend_msgs::GRState robot;
-
-        //     robot.header = observation.header;
-
-        //     point_t position = it->getPosition();
-        //     robot.x = position.x;
-        //     robot.y = position.y;
-        //     robot.theta = it->getOrientation();
-        //     robot.visible = it->getVisible();
-        //     observation.ground_robots[it->getIndex()] = robot;
-        //     std::cout << robot << std::endl;
-
-        //     // std::cout<<robot<<std::endl;
-        // }
-
-        // for(auto it = obstacle_robots_in_memory.begin(); it != obstacle_robots_in_memory.end(); it++){
-
-        //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-        //         it->setVisible(false);
-        //     }
-
-        //     ascend_msgs::GRState robot;
-
-        //     robot.header = observation.header;
-
-        //     point_t position = it->getPosition();
-        //     robot.x = position.x;
-        //     robot.y = position.y;
-        //     robot.theta = it->getOrientation();
-        //     robot.visible = it->getVisible();
-        //     observation.obstacle_robots_in_memory[it->getIndex()] = robot;
-        // }
-
+        
         geometry_msgs::Point32 drone;
         drone.x = drone_position.x;
         drone.y = drone_position.y;
