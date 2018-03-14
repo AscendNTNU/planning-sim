@@ -11,55 +11,154 @@ protected:
     }
 };
 
-TEST_F (FuserTest, nearestNeighborTest) {
-    // Case 1:
+TEST_F (FuserTest, nearestNeighborTestObviousRobot) {
+    // Case 1: Obvious robot
     // ----------------------
     // |                    |
     // |                    |
     // |                    |
     // |      ^             |
-    // |      1       2>    |
+    // |      0       1>    |
     // |                    |
     // |                    |
     // ----------------------
     //
-    // After 2 seconds
+    // After 5 seconds
     // ----------------------
+    // |                    |
     // |                    |
     // |      ^             |
     // |      x             |
     // |                    |
     // |                    |
     // |                    |
+    // ----------------------
+    //
+    // Should return x = 0
+
+    Robot robot0 = Robot();
+    point_t pos = point_zero;
+    pos.x = 8;
+    pos.y = 10;
+    robot0.update(0, pos, PI / 2, 5, true);
+    robots_in_memory[0] = robot0;
+
+    Robot robot1 = Robot();
+    pos.x = 12;
+    pos.y = 10;
+    robot1.update(1, pos, 0, 5, true);
+    robots_in_memory[1] = robot1;
+
+    Robot robotX = Robot();
+    pos.x = 8;
+    pos.y = 14;
+    robotX.update(-1, pos, PI / 2, 10, true);
+
+    EXPECT_EQ(nearestNeighbor(robotX), 0);
+}
+
+TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
+    // Case 2: No changes
+    // ----------------------
+    // |                    |
+    // |                    |
+    // |                    |
+    // |      ^             |
+    // |      0       1>    |
+    // |                    |
     // |                    |
     // ----------------------
     //
-    // Should return x = 1
+    // After 0 seconds
+    // ----------------------
+    // |                    |
+    // |                    |
+    // |                    |
+    // |      ^             |
+    // |      x       y>    |
+    // |                    |
+    // |                    |
+    // ----------------------
+    //
+    // Should return x = 0, y = 1
 
-    Robot robot1 = Robot(1);
-    point_t pos1 = point_zero;
-    pos1.x = 8;
-    pos1.y = 10;
-    robot1.setPositionOrientation(pos1, PI / 2);
-    robots_in_memory[0] = robot1;
+    Robot robot0 = Robot();
+    point_t pos = point_zero;
+    pos.x = 8;
+    pos.y = 10;
+    robot0.update(0, pos, PI / 2, 5, true);
+    robots_in_memory[0] = robot0;
 
-    Robot robot2 = Robot(2);
-    point_t pos2 = point_zero;
-    pos2.x = 12;
-    pos2.y = 10;
-    robot2.setPositionOrientation(pos2, 0);
-    robots_in_memory[1] = robot2;
+    Robot robot1 = Robot();
+    pos.x = 12;
+    pos.y = 10;
+    robot1.update(1, pos, 0, 5, true);
+    robots_in_memory[1] = robot1;
 
-    Robot observed_robot = Robot();
-    point_t posX = point_zero;
-    posX.x = 8;
-    posX.y = 12;
-    observed_robot.setPositionOrientation(posX, PI / 2);
-    nearestNeighbor(observed_robot);
+    Robot robotX = Robot();
+    pos.x = 8;
+    pos.y = 10;
+    robotX.update(-1, pos, PI / 2, 5, true);
 
-    std::cout << "works!!" << robots_in_memory.size() << std::endl;
-    std::cout << robots_in_memory[0].getPosition().y << std::endl;
-    EXPECT_EQ(1, 1);
+    Robot robotY = Robot();
+    pos.x = 12;
+    pos.y = 10;
+    robotY.update(-1, pos, 0, 5, true);
+
+    EXPECT_EQ(nearestNeighbor(robotX), 0);
+    EXPECT_EQ(nearestNeighbor(robotY), 1);
+}
+
+TEST_F (FuserTest, nearestNeighborTestSameDirection) {
+    // Case 2: No changes
+    // ----------------------
+    // |                    |
+    // |         0>         |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |         1>         |
+    // |                    |
+    // ----------------------
+    //
+    // After 6 seconds
+    // ----------------------
+    // |                    |
+    // |               x>   |
+    // |                    |
+    // |                    |
+    // |                    |
+    // |               y>   |
+    // |                    |
+    // ----------------------
+    //
+    // Should return x = 0, y = 1
+
+    Robot robot0 = Robot();
+    point_t pos = point_zero;
+    pos.x = 10;
+    pos.y = 15;
+    robot0.update(0, pos, 0, 5, true);
+    robots_in_memory[0] = robot0;
+
+    Robot robot1 = Robot();
+    pos.x = 10;
+    pos.y = 5;
+    robot1.update(1, pos, 0, 5, true);
+    robots_in_memory[1] = robot1;
+
+    Robot robotX = Robot();
+    pos.x = 12;
+    pos.y = 15;
+    robotX.update(-1, pos, 0, 11, true);
+
+    Robot robotY = Robot();
+    pos.x = 12;
+    pos.y = 5;
+    robotY.update(-1, pos, 0, 11, true);
+
+    EXPECT_EQ(nearestNeighbor(robotX), 0);
+    EXPECT_EQ(nearestNeighbor(robotY), 1);
 }
 
 int main(int argc, char **argv){

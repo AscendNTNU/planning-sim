@@ -43,12 +43,13 @@ int nearestNeighbor(Robot robot) {
 
         if(it->getVisible()){
 
-            Robot robot_in_memory = it->getRobotPositionAtTime(it->getTimeLastSeen());
+            Robot robot_in_memory = it->getRobotPositionAtTime(robot.getTimeLastSeen());
+            //std::cout << robot_in_memory << std::endl;
 
             if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
                 min_distance = distanceBetweenRobots(robot, robot_in_memory);
                 index = counter;
-                std::cout << index << std::endl;
+                //std::cout << index << std::endl;
             }
         }
 
