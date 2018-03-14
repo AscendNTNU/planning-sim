@@ -45,16 +45,23 @@ target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
 
+add_executable(fuser src/fuser.cpp)
+target_link_libraries(fuser libAI ${catkin_LIBRARIES})
+add_dependencies(fuser planning_ros_sim_generate_messages_cpp
+	ascend_msgs_generate_messages_cpp)
+
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)
 catkin_add_gtest(Drone src/test/drone_test.cpp)
 catkin_add_gtest(Robot src/test/robot_test.cpp)
 catkin_add_gtest(AI src/test/ai_test.cpp)
+catkin_add_gtest(Fuser src/test/fuser_test.cpp)
 
 target_link_libraries(Plank libAI ${catkin_LIBRARIES})
 target_link_libraries(Drone libAI ${catkin_LIBRARIES})
 target_link_libraries(Robot libAI ${catkin_LIBRARIES})
 target_link_libraries(AI libAI ${catkin_LIBRARIES})
+target_link_libraries(Fuser libAI ${catkin_LIBRARIES})
 
 # %EndTag(FULLTEXT)%

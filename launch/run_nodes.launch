@@ -1,5 +1,6 @@
 <launch>
     <node name="planning" pkg="planning_ros_sim" type="planning" output="screen"/>
+    <node name="fuser" pkg="planning_ros_sim" type="fuser"/>
     <node name="perception_control" pkg="planning_ros_sim" type="perception_control" output="screen" unless="$(eval optenv('ASCEND_ENV') == 'production')"/>
     <node name="action_safety_checker" pkg="planning_ros_sim" type="action_safety_checker" output="screen" unless="$(eval optenv('ASCEND_ENV') == 'production')"/>
 </launch>

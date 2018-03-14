@@ -20,8 +20,9 @@ private:
     float orientation;
     point_t old_Position;
     float old_Orientation;
-    float time_After_Turn_Start; ///< Is the elapsed time passed since the start of the last rotation/turn.
+    float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
+    float time_last_seen;
     float speed;
     bool visible;
     bool wasInteractedWith;
@@ -29,7 +30,8 @@ public:
     ///Robot constructors
     Robot();
     Robot(int index);
-    Plank current_Plank;
+    
+    Plank plank;
 
     static bool robotsAtTurnTime(float elapsed_time);
 
@@ -38,6 +40,8 @@ public:
     @return The robot index
     */
     int getIndex();
+
+    float getTimeLastSeen();
 
     /**
     @brief Get the current position for the robot.
@@ -72,7 +76,11 @@ public:
     @brief Get the visibility of the Robot
     @return If it is visible
     */
-    bool getVisibility();
+    bool getVisible();
+
+    void setVisible(bool set_value);
+
+    void setIndex(int index);
 
     /**
     @brief Set the visibility of the Robot
@@ -101,8 +109,9 @@ public:
     @param time Time to add to robots elapsed time since the last turn started
     */
     void addToTimer(float time);
+
     void update(int index, point_t position,float q, float elapsed_time, bool visible);
-    
+    void update(Robot robot);
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */
@@ -119,6 +128,14 @@ public:
     */
     void setInteractedWithTrue();
 
+
+    /**
+     * @brief      Gets the robot position at a time_stamp given no random movement, drone interactions or collisions.
+     * @param[in]  elapsed_time  The elapsed time
+
+     * @return     The robot position at time.
+     */
+    Robot getRobotPositionAtTime(float elapsed_time);
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

@@ -81,7 +81,7 @@ void AIController::idleState(){
     if(this->planned_action_.type == no_command){
         // This is triggered when we do not have any targets
         int target_id = this->planned_action_.target;
-        bool target_visibility = this->observation.getRobot(target_id).getVisibility();
+        bool target_visibility = this->observation.getRobot(target_id).getVisible();
         if (this->observation.anyRobotsVisible() == false) {
             this->transitionTo(no_visible_robots);
         }
@@ -197,7 +197,7 @@ action_t AIController::noVisibleRobotsState(){
 
     action_t search_Action = empty_action;
 
-    point_t next_search_point = point_Zero;
+    point_t next_search_point = point_zero;
 
     point_t pos = this->observation.getDrone().getPosition();
     float x = pos.x;
@@ -206,7 +206,7 @@ action_t AIController::noVisibleRobotsState(){
     // These should be global values
     bounds_t bounds = world.getBounds();
 
-    point_t track_center = point_Zero;
+    point_t track_center = point_zero;
     track_center.x = bounds.x_Max / 2.0;
     track_center.y = bounds.y_Max / 2.0;
     float padding = 5.0;

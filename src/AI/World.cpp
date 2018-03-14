@@ -8,7 +8,7 @@
     @param orientation - float value describing the orientation of the field.
 */
 World::World(float orientation){
-	this->origin = point_Zero;
+	this->origin = point_zero;
 	this->orientation = orientation;
 	this->bounds = (bounds_t){.x_Max = 20, .y_Max = 20}; 
 }
