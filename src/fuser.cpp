@@ -23,6 +23,7 @@ void initializeRobotsInMemory(){
 
 //Can only handle 10 robots_in_memory in one message.
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+    std::vector<Robot> robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
         Robot robot;
 
@@ -35,8 +36,10 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
-        observed_robots.push_back(robot);
+        robots_seen_in_one_message.push_back(robot);
+        
     }
+    observed_robots.push_back(robots_seen_in_one_message);
 }
 
 void startTimeCallback(std_msgs::Time::ConstPtr msg){
@@ -58,6 +61,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     drone_position.z = obs->drone_position.z;
 
     int i = -1;
+    std::vector<Robot> robots_seen_in_one_message;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
         Robot robot;
 
@@ -69,22 +73,23 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
         bool visible = it->visible;
 
         robot.update(i, position, q , time, visible);
-        observed_robots.push_back(robot);
+        robots_seen_in_one_message.push_back(robot);
     }
+    observed_robots.push_back(robots_seen_in_one_message);
 }
 
-void updateRobot(Robot new_robot){
+void updateRobot(std::vector<Robot> robots_in_single_message){
+    std::set<int> used_index;
+    for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
 
-    int nearest_robot_index = nearestNeighbor(new_robot);
-    if(nearest_robot_index >= 0){
-        robots_in_memory[nearest_robot_index].update(new_robot);
-        // std::cout << "Updated robot " << nearest_robot_index << std::endl;
+        Robot new_robot_observation = *it;
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, used_index);
+
+        if(nearest_robot_index >= 0){
+            robots_in_memory[nearest_robot_index].update(new_robot_observation);
+            used_index.insert(nearest_robot_index);
+        }
     }
-    // std::cout << "old robot" << std::endl;
-    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
-    
-    // std::cout << "new robot" << std::endl;
-    // std::cout<< robots_in_memory[nearest_robot_index] << std::endl;
 }
 
 float calcCurrentTime(float seconds){
