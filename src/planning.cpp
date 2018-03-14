@@ -99,7 +99,10 @@ int main(int argc, char **argv) {
     ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
 
     ClientType client("control_action_server", true);
+    ClientType action_safety_checker("action_safety_checker_server", true);
+
     client.waitForServer(); //Waits until server is ready
+    action_safety_checker.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
     action_t action = empty_action;
@@ -128,8 +131,19 @@ int main(int argc, char **argv) {
                 if (action.type == no_command) {
                     rate.sleep();
                     continue;
-                    
                 } else {
+                    drone_action = action_plank2ROS(action);
+                    action_safety_checker.sendGoal(drone_action);
+                    bool finished_before_timeout = action_safety_checker.waitForResult(ros::Duration(30.0));
+                    if (finished_before_timeout) {
+                        auto state = action_safety_checker.getState();
+                        if(state != state.SUCCEEDED) {
+                            ROS_INFO("Action was refused by user.");
+                            rate.sleep();
+                            continue;
+                        }
+                    }
+
                     ready_for_new_action = false;
                     drone_action = action_plank2ROS(action);
                     client.sendGoal(drone_action);
