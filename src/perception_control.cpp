@@ -30,8 +30,6 @@ void fuserCallback(ascend_msgs::AIWorldObservation observation) {
         estimated_robots.target_q[i] = observation.ground_robots[i].theta;
         // estimated_robots.robot_visible[i] = observation.ground_robots[i].visible;
     }
-    std::cout << "estimated robot 9: " << estimated_robots.target_x[9] << std::endl;
-    sim_send_estimated_state(&estimated_robots);
 }
 
 sim_Command action_ROS2Sim(GoalType goal){

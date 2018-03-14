@@ -113,7 +113,7 @@ int main(int argc, char **argv){
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
-    ros::Rate rate(60);
+    ros::Rate rate(30);
 
     while (ros::ok()) {
         ros::spinOnce();
