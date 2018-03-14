@@ -113,7 +113,7 @@ int main(int argc, char **argv){
 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
-    ros::Subscriber drone_sub = node.subscribe("/mavros/local_position_pose", 1, dronePositionCallback);
+    ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
     ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
