@@ -28,3 +28,40 @@ double distanceBetweenRobots(Robot r1, Robot r2);
 int nearestNeighbor(Robot robot);
 void updateRobot(Robot new_robot);
 float calcCurrentTime(float seconds);
+
+double distanceBetweenRobots(Robot r1, Robot r2) {
+    return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
+}
+
+int nearestNeighbor(Robot robot) {
+    double min_distance = 2;
+    int index = -1;
+    int not_visible_index = -1;
+    int counter = 0;
+
+    for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
+
+        if(it->getVisible()){
+
+            Robot robot_in_memory = it->getRobotPositionAtTime(it->getTimeLastSeen());
+
+            if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
+                min_distance = distanceBetweenRobots(robot, robot_in_memory);
+                index = counter;
+                std::cout << index << std::endl;
+            }
+        }
+
+        else{
+            not_visible_index = counter;
+        }
+
+        counter++;
+    }
+
+    if(index == -1){
+        return not_visible_index;
+    }
+
+    return index;
+}

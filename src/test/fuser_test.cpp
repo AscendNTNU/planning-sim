@@ -55,7 +55,7 @@ TEST_F (FuserTest, nearestNeighborTest) {
     posX.x = 8;
     posX.y = 12;
     observed_robot.setPositionOrientation(posX, PI / 2);
-    //nearestNeighbor(observed_robot); <-- Undefined reference error
+    nearestNeighbor(observed_robot);
 
     std::cout << "works!!" << robots_in_memory.size() << std::endl;
     std::cout << robots_in_memory[0].getPosition().y << std::endl;
