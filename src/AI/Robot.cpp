@@ -27,7 +27,8 @@ Robot::Robot(int index) {
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 3.0;
+    float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
+    //std::cout << "timedrift: " << time_drift << std::endl;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
@@ -58,6 +59,13 @@ bool Robot::getVisibility() {
 }
 void Robot::setVisibility(bool visible) {
     this->visible = visible;
+}
+
+bool Robot::approaching(point_t point) {
+    float old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
+    float new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
+
+    return (new_dist < old_dist);
 }
 
 bool Robot::getWasInteractedWith() {

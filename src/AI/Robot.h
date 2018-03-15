@@ -79,6 +79,14 @@ public:
     bool setVisibility();
     @param visibility Boolean value representing if the robot is visible or not
     */
+
+    bool approaching(point_t point);
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    
+
     void setVisibility(bool visible);
 
     /**
@@ -110,6 +118,7 @@ public:
     @brief sets the wasInteractedWith variable to true. Only sets to true, since it should never be reset to false after it is first set to true.
     */
     void setInteractedWithTrue();
+
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

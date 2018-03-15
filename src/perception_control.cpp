@@ -3,6 +3,7 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
+#include "geometry_msgs/Point32.h"
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
@@ -20,7 +21,7 @@ using ActionServerType = actionlib::SimpleActionServer<ascend_msgs::ControlFSMAc
 using GoalType = ascend_msgs::ControlFSMGoal;
 
 
-sim_Command action_ROS2Sim(GoalType goal){
+sim_Command action_ROS2Sim(GoalType goal) {
   sim_Command command;
 
   switch(goal.cmd){
@@ -32,11 +33,14 @@ sim_Command action_ROS2Sim(GoalType goal){
       command.type = sim_CommandType_LandOnTopOf;
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
-      command.type = sim_CommandType_LandInFrontOf; 
+      command.type = sim_CommandType_Land;
       break;
     case ascend_msgs::ControlFSMGoal::SEARCH:
       command.type = sim_CommandType_Search;
       break;
+    case ascend_msgs::ControlFSMGoal::TAKEOFF:
+      std::cout << "--ROS2Sim TAKEOFF--" << std::endl;
+      command.type = sim_CommandType_Search; // Could result in taking off at wrong point?
     default:
       command.type = sim_CommandType_NoCommand;
       break;
@@ -88,12 +92,12 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "perception_control");
   ros::NodeHandle nh;
   planning_ros_sim::groundRobotList groundrobot_msg;
-  geometry_msgs::Pose2D drone_msg;
+  geometry_msgs::Point32 drone_msg;
   std_msgs::Float32 time_msg; 
 
   // Define publishers
   ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Pose2D>("drone_chatter", 100);
+  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Point32>("drone_chatter", 100);
   ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",100);
   ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 100);
 
@@ -113,6 +117,8 @@ int main(int argc, char **argv)
     // Generate messages from observation
     drone_msg.x = state.drone_x;
     drone_msg.y = state.drone_y;
+    drone_msg.z = state.drone_z;
+
     for (int n = 0; n < 10; n++) { // Will it always be 10 targets in the observed state? What if not?
       groundrobot_msg.groundRobot[n].x = state.target_x[n];
       groundrobot_msg.groundRobot[n].y = state.target_y[n];

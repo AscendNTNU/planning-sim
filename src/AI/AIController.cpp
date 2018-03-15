@@ -24,6 +24,7 @@ AIController::AIController(){
 }
 
 action_t AIController::stateHandler(){
+    std::cout << "z-pos from stateHandler: " << this->observation.getDrone().getPosition().z << std::endl;
     action_t action = empty_action;
     switch(this->state_){
         case no_input_data:
@@ -155,18 +156,28 @@ action_t AIController::landOnTopState(){
 
 action_t AIController::landInFrontState(){
     printf("Land in front state\n");
+    int target_id = this->planned_action_.target;
+    point_t drone_pos = this->observation.getDrone().getPosition();
 
-    // sjekk hvor lenge drone står på bakken
-    if (this->observation.getTimeStamp() - prev_transition_timestamp > 5) {
-        // slutt å stå på bakken (send lette kommando)
-        // gå til idle
+    if(drone_pos.z >= 0.1 && this->observation.getRobot(target_id).approaching(drone_pos)) { // hvis drone flyr og robot går mot drone
+        this->planned_action_.type = land_at_point; // land
+        return this->planned_action_;
     }
-    
+
+    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) { // hvis drone har stått på bakken i 2sek
+            this->planned_action_.type = take_off; // fly
+            this->transitionTo(idle);
+            return this->planned_action_;
+
+    }
+
+    std::cout << "I have landed" << std::endl;
+    std::cout << "timediff: " << (this->observation.getTimeStamp() - prev_transition_timestamp) << std::endl;
+
     //bumper: lytt til bumpers (for å se når vi treffer target), hvis vi venter lengre enn konst slutt å stå på bakken
     //sammenlikn predicted target intersect tidspunkt med faktisk intersect
 
-    this->transitionTo(idle);
-    return this->planned_action_; 
+    return empty_action;
 }
 
 action_t AIController::missionCompleteState(){
