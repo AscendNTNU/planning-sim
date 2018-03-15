@@ -11,6 +11,15 @@ protected:
     }
 };
 
+Robot createRobot(float x, float y, float q, float elapsed_time, int index) {
+    Robot robot;
+    point_t pos = point_zero;
+    pos.x = x;
+    pos.y = y;
+    robot.update(index, pos, q, elapsed_time, true);
+    return robot;
+}
+
 TEST_F (FuserTest, nearestNeighborTestObviousRobot) {
     // Case 1: Obvious robot
     // ----------------------
@@ -36,24 +45,10 @@ TEST_F (FuserTest, nearestNeighborTestObviousRobot) {
     //
     // Should return x = 0
 
-    Robot robot0 = Robot();
-    point_t pos = point_zero;
-    pos.x = 8;
-    pos.y = 10;
-    robot0.update(0, pos, PI / 2, 5, true);
-    robots_in_memory[0] = robot0;
+    robots_in_memory[0] = createRobot(8, 10, PI/2, 5, 0);
+    robots_in_memory[1] = createRobot(12, 10, 0, 5, 1);
 
-    Robot robot1 = Robot();
-    pos.x = 12;
-    pos.y = 10;
-    robot1.update(1, pos, 0, 5, true);
-    robots_in_memory[1] = robot1;
-
-    Robot robotX = Robot();
-    pos.x = 8;
-    pos.y = 14;
-    robotX.update(-1, pos, PI / 2, 10, true);
-
+    Robot robotX = createRobot(8, 14, PI/2, 10, -1);
     EXPECT_EQ(nearestNeighbor(robotX), 0);
 }
 
@@ -82,28 +77,11 @@ TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
     //
     // Should return x = 0, y = 1
 
-    Robot robot0 = Robot();
-    point_t pos = point_zero;
-    pos.x = 8;
-    pos.y = 10;
-    robot0.update(0, pos, PI / 2, 5, true);
-    robots_in_memory[0] = robot0;
+    robots_in_memory[0] = createRobot(8, 10, PI/2, 5, 0);
+    robots_in_memory[1] = createRobot(12, 10, 0, 5, 1);
 
-    Robot robot1 = Robot();
-    pos.x = 12;
-    pos.y = 10;
-    robot1.update(1, pos, 0, 5, true);
-    robots_in_memory[1] = robot1;
-
-    Robot robotX = Robot();
-    pos.x = 8;
-    pos.y = 10;
-    robotX.update(-1, pos, PI / 2, 5, true);
-
-    Robot robotY = Robot();
-    pos.x = 12;
-    pos.y = 10;
-    robotY.update(-1, pos, 0, 5, true);
+    Robot robotX = createRobot(8, 10, PI/2, 5, -1);
+    Robot robotY = createRobot(12, 10, 0, 5, -1);
 
     EXPECT_EQ(nearestNeighbor(robotX), 0);
     EXPECT_EQ(nearestNeighbor(robotY), 1);
@@ -134,28 +112,11 @@ TEST_F (FuserTest, nearestNeighborTestSameDirection) {
     //
     // Should return x = 0, y = 1
 
-    Robot robot0 = Robot();
-    point_t pos = point_zero;
-    pos.x = 10;
-    pos.y = 15;
-    robot0.update(0, pos, 0, 5, true);
-    robots_in_memory[0] = robot0;
+    robots_in_memory[0] = createRobot(10, 15, 0, 5, 0);
+    robots_in_memory[1] = createRobot(10, 5, 0, 5, 1);
 
-    Robot robot1 = Robot();
-    pos.x = 10;
-    pos.y = 5;
-    robot1.update(1, pos, 0, 5, true);
-    robots_in_memory[1] = robot1;
-
-    Robot robotX = Robot();
-    pos.x = 12;
-    pos.y = 15;
-    robotX.update(-1, pos, 0, 11, true);
-
-    Robot robotY = Robot();
-    pos.x = 12;
-    pos.y = 5;
-    robotY.update(-1, pos, 0, 11, true);
+    Robot robotX = createRobot(12, 15, 0, 11, -1);
+    Robot robotY = createRobot(12, 5, 0, 11, -1);
 
     EXPECT_EQ(nearestNeighbor(robotX), 0);
     EXPECT_EQ(nearestNeighbor(robotY), 1);
