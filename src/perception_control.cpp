@@ -30,8 +30,6 @@ void fuserCallback(ascend_msgs::AIWorldObservation observation) {
         estimated_robots.target_q[i] = observation.ground_robots[i].theta;
         // estimated_robots.robot_visible[i] = observation.ground_robots[i].visible;
     }
-    std::cout << "estimated robot 9: " << estimated_robots.target_x[9] << std::endl;
-    sim_send_estimated_state(&estimated_robots);
 }
 
 sim_Command action_ROS2Sim(GoalType goal){
@@ -105,7 +103,7 @@ int main(int argc, char **argv){
     ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
 
     // Subsciber for fuser visualisation
-    ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuserCallback);
+    // ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuserCallback);
 
     // Define action server
     ActionServerType server(nh, "control_action_server", false);
@@ -113,7 +111,7 @@ int main(int argc, char **argv){
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();
 
-    ros::Rate rate(20.0);
+    ros::Rate rate(30.0);
     while (ros::ok()){
         ros::spinOnce();
         // Collect new observation
