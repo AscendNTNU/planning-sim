@@ -78,16 +78,16 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     observed_robots.push_back(robots_seen_in_one_message);
 }
 
-void updateRobot(std::vector<Robot> robots_in_single_message){
-    std::set<int> used_index;
+void updateRobots(std::vector<Robot> robots_in_single_message){
+    std::set<int> used_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
 
         Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, used_index);
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, used_indices);
 
         if(nearest_robot_index >= 0){
             robots_in_memory[nearest_robot_index].update(new_robot_observation);
-            used_index.insert(nearest_robot_index);
+            used_indices.insert(nearest_robot_index);
         }
     }
 }
@@ -127,10 +127,10 @@ int main(int argc, char **argv){
         }
 
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
-            updateRobot(*it);
+            updateRobots(*it);
         }
         for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-            // updateRobot(*it);
+            // updateRobots(*it);
         }
 
         ascend_msgs::AIWorldObservation observation;
