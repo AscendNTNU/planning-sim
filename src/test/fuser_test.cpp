@@ -92,7 +92,7 @@ TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
 }
 
 TEST_F (FuserTest, nearestNeighborTestSameDirection) {
-    // Case 2: No changes
+    // Case 3: Parallell robots in same direction
     // ----------------------
     // |                    |
     // |         0>         |
@@ -118,7 +118,6 @@ TEST_F (FuserTest, nearestNeighborTestSameDirection) {
 
     robots_in_memory[0] = createRobot(10, 15, 0, 5, 0);
     robots_in_memory[1] = createRobot(10, 5, 0, 5, 1);
-
 
     Robot robotX = createRobot(12, 15, 0, 11, -1);
     Robot robotY = createRobot(12, 5, 0, 11, -1);
