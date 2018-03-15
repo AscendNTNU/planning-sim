@@ -49,7 +49,9 @@ TEST_F (FuserTest, nearestNeighborTestObviousRobot) {
     robots_in_memory[1] = createRobot(12, 10, 0, 5, 1);
 
     Robot robotX = createRobot(8, 14, PI/2, 10, -1);
-    EXPECT_EQ(nearestNeighbor(robotX), 0);
+
+    std::set<int> used_indices;
+    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
 }
 
 TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
@@ -83,8 +85,10 @@ TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
     Robot robotX = createRobot(8, 10, PI/2, 5, -1);
     Robot robotY = createRobot(12, 10, 0, 5, -1);
 
-    EXPECT_EQ(nearestNeighbor(robotX), 0);
-    EXPECT_EQ(nearestNeighbor(robotY), 1);
+    std::set<int> used_indices;
+    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
+    used_indices.insert(0);
+    EXPECT_EQ(nearestNeighbor(robotY, used_indices), 1);
 }
 
 TEST_F (FuserTest, nearestNeighborTestSameDirection) {
@@ -115,11 +119,14 @@ TEST_F (FuserTest, nearestNeighborTestSameDirection) {
     robots_in_memory[0] = createRobot(10, 15, 0, 5, 0);
     robots_in_memory[1] = createRobot(10, 5, 0, 5, 1);
 
+
     Robot robotX = createRobot(12, 15, 0, 11, -1);
     Robot robotY = createRobot(12, 5, 0, 11, -1);
 
-    EXPECT_EQ(nearestNeighbor(robotX), 0);
-    EXPECT_EQ(nearestNeighbor(robotY), 1);
+    std::set<int> used_indices;
+    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
+    used_indices.insert(0);
+    EXPECT_EQ(nearestNeighbor(robotY, used_indices), 1);
 }
 
 int main(int argc, char **argv){

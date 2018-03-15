@@ -40,7 +40,7 @@ int nearestNeighbor(Robot robot, std::set<int> used_index) {
     int counter = 0;
 
     for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
-        
+
         if(used_index.find(counter) != used_index.end()){
             counter++;
             continue;
