@@ -47,7 +47,9 @@ sim_Command action_ROS2Sim(GoalType goal) {
   }
 
   command.x = goal.x;
+  std::cout << "x (from ros2sim): " << goal.x << std::endl;
   command.y = goal.y;
+  std::cout << "y (from ros2sim): " << goal.y << std::endl;
   command.i = goal.target_id;
   command.reward = goal.reward;
   return command;

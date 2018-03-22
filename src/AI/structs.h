@@ -121,6 +121,8 @@ inline std::string actionTypeToString(action_Type_t type) {
             return "land at point";
         case search:
             return "search";
+        case take_off:
+            return "take_off";
     }
 }
 
