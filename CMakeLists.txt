@@ -4,7 +4,7 @@ project(planning_ros_sim)
 
 ## Find catkin and any catkin packages + message_generation
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs message_generation actionlib
-	actionlib_msgs ascend_msgs)
+	actionlib_msgs ascend_msgs visualization_msgs)
 ## Declare ROS messages and services
 
 #add_service_files(DIRECTORY srv FILES)
@@ -19,6 +19,7 @@ catkin_package(
 	CATKIN_DEPENDS message_runtime roscpp ascend_msgs
 	LIBRARIES libAI
 	roscpp ascend_msgs
+	visualization_msgs
 )
 
 add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
@@ -45,6 +46,10 @@ add_executable(fuser src/fuser.cpp)
 target_link_libraries(fuser libAI ${catkin_LIBRARIES})
 add_dependencies(fuser planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
+
+add_executable(visualizer src/RViz_nodes/AIWorldObservationVisualization.cpp)
+add_dependencies(visualizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(visualizer ${catkin_LIBRARIES} )
 
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)

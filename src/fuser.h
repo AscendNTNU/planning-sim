@@ -34,7 +34,7 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
 }
 
 int nearestNeighbor(Robot robot, std::set<int> used_index) {
-    double min_distance = 2;
+    double min_distance = 0.5;
     int index = -1;
     int not_visible_index = -1;
     int counter = 0;

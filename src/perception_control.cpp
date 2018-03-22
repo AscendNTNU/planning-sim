@@ -147,6 +147,7 @@ int main(int argc, char **argv){
         if(state.drone_cmd_done && server.isActive()) {
             server.setSucceeded();
         }
+        observation.header.seq = 0;
         ai_sim_pub.publish(observation);
         rate.sleep();
     }

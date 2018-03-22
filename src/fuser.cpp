@@ -190,7 +190,7 @@ int main(int argc, char **argv){
         drone.y = drone_position.y;
         drone.z = drone_position.z;
         observation.drone_position = drone;
-
+        observation.header.seq = 1;
         observation_pub.publish(observation);
         rate.sleep();
     }
