@@ -70,6 +70,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
             break;
         case take_off:
+            std::cout << "--action_plank2ROS TAKEOFF--" << std::endl;
             drone_action.cmd = ascend_msgs::ControlFSMGoal::TAKEOFF;
             break;
         default:

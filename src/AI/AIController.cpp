@@ -17,9 +17,25 @@ float similarity(action_t action1 ,action_t action2) {
     return 0;
 }
 
+
+bool is_too_close(point_t current_Where_To_Act, point_t target) {  
+    double min_dist = 0.8; // 0.333m/s * 2s = 0.8m  
+  
+    double x1 = current_Where_To_Act.x;  
+    double y1 = current_Where_To_Act.y; 
+    double x2 = target.x;  
+    double y2 = target.y;  
+  
+    double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);  
+  
+    std::cout << "dist between drone and robot to land in front of: " << dist << std::endl;  
+    return dist < min_dist; 
+}
+
+
 AIController::AIController(){
 	this->ai_ = AI();
-	this->state_ = no_input_data;
+	this->state_ = no_input_data; // of type ai_state_t
     this->observation = Observation();
 }
 
@@ -54,6 +70,11 @@ action_t AIController::stateHandler(){
         case no_visible_robots:
             action = this->noVisibleRobotsState();
             break;
+
+        case take_off_state:
+            action = this->takeOffState();
+            break;
+
     }
 
     return action;
@@ -98,6 +119,17 @@ void AIController::idleState(){
 	return;
 }
 
+action_t AIController::takeOffState() {
+    if (this->observation.getDrone().getPosition().z > 2) { // if drone can see (could be replaced with checks for when control and perception are ready)
+        this->planned_action_.type = no_command;
+        this->transitionTo(idle); // go think and do stuff
+    }
+
+    // else, keep taking off
+    std::cout << "PLANNED ACTION (IN TAKEOFF STATE): " << actionTypeToString(this->planned_action_.type) << std::endl;
+    return this->planned_action_; // will always be a take_off action and SHOULD make drone take off in sim :(
+}
+
 action_t AIController::positioningState() {
     printf("Positioning state\n");
 
@@ -115,7 +147,7 @@ action_t AIController::positioningState() {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        } else if (this->planned_action_.type == land_in_front_of) {
+        } else if (this->planned_action_.type == land_in_front_of) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
             this->transitionTo(land_in_front);
         } else {
             printf("Action is not defined in positionState.");
@@ -166,7 +198,7 @@ action_t AIController::landInFrontState(){
 
     else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) { // hvis drone har stått på bakken i 2sek
             this->planned_action_.type = take_off; // fly
-            this->transitionTo(idle);
+            this->transitionTo(take_off_state);
             return this->planned_action_;
 
     }
