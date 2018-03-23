@@ -69,8 +69,9 @@ void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation)
 int main(int argc, char** argv) {
     ros::init(argc, argv, "AIWorldObservationVisualizer");
 	ros::NodeHandle n;
-	ros::Publisher marker_pub = n.advertise<visualization_msgs::MarkerArray>("/AIWorldObservationVisualizer", 1000);
-	
+	ros::Publisher sim_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/SimVisualizer", 1);
+	ros::Publisher fuser_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/FuserVisualizer", 1);
+
 	ros::Subscriber fuser_sub = n.subscribe("AIWorldObservation", 1, FusedCallback);
 	ros::Subscriber sim_sub = n.subscribe("/ai/sim", 1, ObservationCallback);
 
@@ -81,7 +82,7 @@ int main(int argc, char** argv) {
 
 	visualization_msgs::Marker robot_marker;
 	visualization_msgs::Marker direction_marker;
-    visualization_msgs::MarkerArray marker_array;
+
 		
 	//Setup params for the robot marker
 	// Set the frame ID and timestamp.  See the TF tutorials for information on these.
@@ -129,6 +130,7 @@ int main(int argc, char** argv) {
 		robot_marker.header.stamp = ros::Time::now();
 		direction_marker.header.stamp = ros::Time::now();
 
+	    visualization_msgs::MarkerArray marker_array1;
 		
 		for(int i=0; i<fused_robots_g.size(); i++){
 			//First reset the previously added markers
@@ -140,10 +142,10 @@ int main(int argc, char** argv) {
 			robot_marker.pose.position.x = robot.x;
 			robot_marker.pose.position.y = robot.y;
 			robot_marker.pose.position.z = 0.0;
-			robot_marker.id = i * 2 + 10;
+			robot_marker.id = i * 2;
 			
 			
-			marker_array.markers.push_back(robot_marker);
+			marker_array1.markers.push_back(robot_marker);
 			
 			//Find position and orientation of the marker
 			RotationQuaternion direction_quaternion = eulerAnglesToQuaternion(0.0, 0.0, robot.angle);
@@ -154,11 +156,15 @@ int main(int argc, char** argv) {
 			direction_marker.pose.position.x = robot.x + (0.1 * cos(robot.angle)); //Half the size of the circle
 			direction_marker.pose.position.y = robot.y + (0.1 * sin(robot.angle)); //Half the size of the circle
 			direction_marker.pose.position.z = 0.025; //It should be placed higher than the circle.
-			direction_marker.id = (i * 2) + 1 + 10;
+			direction_marker.id = (i * 2) + 1;
 			
 			
-			marker_array.markers.push_back(direction_marker);			
+			marker_array1.markers.push_back(direction_marker);			
 		}
+
+		fuser_pub.publish(marker_array1);
+
+		visualization_msgs::MarkerArray marker_array2;
 
 		for(int i=0; i<10; i++)
 		{
@@ -173,7 +179,7 @@ int main(int argc, char** argv) {
 			robot_marker.pose.position.z = 0.0;
 			robot_marker.id = i * 2;
 			
-			marker_array.markers.push_back(robot_marker);
+			marker_array2.markers.push_back(robot_marker);
 			
 			//Find position and orientation of the marker
 			RotationQuaternion direction_quaternion = eulerAnglesToQuaternion(0.0, 0.0, robot.angle);
@@ -186,10 +192,10 @@ int main(int argc, char** argv) {
 			direction_marker.pose.position.z = 0.025; //It should be placed higher than the circle.
 			direction_marker.id = (i * 2) + 1;
 			
-			marker_array.markers.push_back(direction_marker);
+			marker_array2.markers.push_back(direction_marker);
 		}
 		
-		marker_pub.publish(marker_array);
+		sim_pub.publish(marker_array2);
 	
 		ros::spinOnce();
         rate.sleep();
