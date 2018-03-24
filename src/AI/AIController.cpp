@@ -40,7 +40,6 @@ AIController::AIController(){
 }
 
 action_t AIController::stateHandler(){
-    std::cout << "z-pos from stateHandler: " << this->observation.getDrone().getPosition().z << std::endl;
     action_t action = empty_action;
     switch(this->state_){
         case no_input_data:
@@ -119,17 +118,6 @@ void AIController::idleState(){
 	return;
 }
 
-action_t AIController::takeOffState() {
-    if (this->observation.getDrone().getPosition().z > 2) { // if drone can see (could be replaced with checks for when control and perception are ready)
-        this->planned_action_.type = no_command;
-        this->transitionTo(idle); // go think and do stuff
-    }
-
-    // else, keep taking off
-    std::cout << "PLANNED ACTION (IN TAKEOFF STATE): " << actionTypeToString(this->planned_action_.type) << std::endl;
-    return this->planned_action_; // will always be a take_off action and SHOULD make drone take off in sim :(
-}
-
 action_t AIController::positioningState() {
     printf("Positioning state\n");
 
@@ -203,13 +191,18 @@ action_t AIController::landInFrontState(){
 
     }
 
-    std::cout << "I have landed" << std::endl;
-    std::cout << "timediff: " << (this->observation.getTimeStamp() - prev_transition_timestamp) << std::endl;
-
     //bumper: lytt til bumpers (for å se når vi treffer target), hvis vi venter lengre enn konst slutt å stå på bakken
     //sammenlikn predicted target intersect tidspunkt med faktisk intersect
 
     return empty_action;
+}
+
+action_t AIController::takeOffState() {
+    if (this->observation.getDrone().getPosition().z > 2) { // if drone can see (could be replaced with checks for when control and perception are ready)
+        this->planned_action_.type = no_command;
+        this->transitionTo(idle); // go think and do stuff
+    }
+    return this->planned_action_;
 }
 
 action_t AIController::missionCompleteState(){

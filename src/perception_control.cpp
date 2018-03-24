@@ -39,17 +39,15 @@ sim_Command action_ROS2Sim(GoalType goal) {
       command.type = sim_CommandType_Search;
       break;
     case ascend_msgs::ControlFSMGoal::TAKEOFF:
-      std::cout << "--ROS2Sim TAKEOFF--" << std::endl;
-      command.type = sim_CommandType_Search; // Could result in taking off at wrong point?
+      command.type = sim_CommandType_TakeOff;
+      break;
     default:
       command.type = sim_CommandType_NoCommand;
       break;
   }
 
   command.x = goal.x;
-  std::cout << "x (from ros2sim): " << goal.x << std::endl;
   command.y = goal.y;
-  std::cout << "y (from ros2sim): " << goal.y << std::endl;
   command.i = goal.target_id;
   command.reward = goal.reward;
   return command;
