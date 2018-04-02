@@ -107,6 +107,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
         this->orientation = fmod(new_Orientation, 2*MATH_PI);
         this->current_Plank.updatePlank(this->position, this->orientation, this->time_After_Turn_Start);
     }
+    kalmanStep(index, new_Position, new_Orientation, elapsed_time, visible);
 }
 
 void Robot::setPositionOrientation(point_t position, float q) {
