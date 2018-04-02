@@ -63,17 +63,19 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     int i = -1;
     std::vector<Robot> robots_seen_in_one_message;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
-        Robot robot;
+        if(it->visible){
+            Robot robot;
 
-        point_t position;
-        position.x = it->x;
-        position.y = it->y;
-        float q = it->theta;
-        float time = elapsed_time;
-        bool visible = it->visible;
+            point_t position;
+            position.x = it->x;
+            position.y = it->y;
+            float q = it->theta;
+            float time = elapsed_time;
+            bool visible = true;
 
-        robot.update(i, position, q , time, visible);
-        robots_seen_in_one_message.push_back(robot);
+            robot.update(i, position, q , time, visible);
+            robots_seen_in_one_message.push_back(robot);
+        }
     }
     observed_robots.push_back(robots_seen_in_one_message);
 }
@@ -119,7 +121,7 @@ int main(int argc, char **argv){
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
-    ros::Rate rate(10);
+    ros::Rate rate(20);
 
     while (ros::ok()) {
         ros::spinOnce();
@@ -140,10 +142,13 @@ int main(int argc, char **argv){
 
         for(int i=0; i<10; i++){
             ascend_msgs::GRState robot;
+
+            Robot robot_at_current_time = robots_in_memory[i].getRobotPositionAtTime(current_time);
+            
             point_t position = robots_in_memory[i].getPosition();
             robot.x = position.x;
             robot.y = position.y;
-            robot.theta = robots_in_memory[i].getOrientation();
+            robot.theta = robots_in_memory[i].getOrientation(); //Need to upate 
 
             if(observation.elapsed_time - robots_in_memory[i].getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 robots_in_memory[i].setVisible(false);
