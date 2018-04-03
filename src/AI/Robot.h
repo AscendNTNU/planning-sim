@@ -33,7 +33,6 @@ private:
     cv::Mat P_k;
     cv::Mat P_km1;
     cv::Mat P_km1_km1;
-    cv::Mat x_hat_k;
     cv::Mat x_hat_km1;
     cv::Mat R_k;
     cv::Mat Q_k;
@@ -46,6 +45,8 @@ private:
     double thMeasCovar_sideCam;
     
 public:
+    
+    cv::Mat x_hat_k;
     ///Robot constructors
     Robot();
     Robot(int index);
@@ -150,9 +151,12 @@ public:
      */
     Robot getRobotPositionAtTime(float elapsed_time);
 
-    void kalmanStep(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
-    void kalmanPredict(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
-    void kalmanMeasurementUpdate(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanStep(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanMeasurementUpdate(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+
+    void kalmanStepNoObservation(float elapsed_time);
+
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

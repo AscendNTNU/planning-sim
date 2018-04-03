@@ -80,18 +80,22 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     observed_robots.push_back(robots_seen_in_one_message);
 }
 
-void updateRobots(std::vector<Robot> robots_in_single_message){
+void updateRobots(std::vector<Robot> robots_in_single_message, float current_time){
     std::set<int> used_indices;
+
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
 
         Robot new_robot_observation = *it;
         int nearest_robot_index = nearestNeighbor(new_robot_observation, used_indices);
-        std::cout << "Length of used set: " << used_indices.size() << std::endl;
-        std::cout << "Index chosen:" << nearest_robot_index << std::endl;
+
         if(nearest_robot_index >= 0){
             robots_in_memory[nearest_robot_index].update(new_robot_observation);
             used_indices.insert(nearest_robot_index);
         }
+    }
+
+    for(auto it = used_indices.begin(); it != used_indices.end(); it++){
+        robots_in_memory[*it].kalmanStepNoObservation(current_time);
     }
 }
 
@@ -125,30 +129,32 @@ int main(int argc, char **argv){
 
     while (ros::ok()) {
         ros::spinOnce();
+
         if(elapsed_time == 0.0 && start_time.sec == 0.0){
             continue;
         }
+        
+        ascend_msgs::AIWorldObservation observation;
+
+        float current_time = calcCurrentTime(ros::Time::now().sec);
+        observation.elapsed_time = current_time;
 
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
-            updateRobots(*it);
+            updateRobots(*it, current_time);
         }
         // for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
             // updateRobots(*it);
         // }
 
-        ascend_msgs::AIWorldObservation observation;
-        float current_time = calcCurrentTime(ros::Time::now().sec);
-        observation.elapsed_time = current_time;
 
         for(int i=0; i<10; i++){
             ascend_msgs::GRState robot;
 
             Robot robot_at_current_time = robots_in_memory[i].getRobotPositionAtTime(current_time);
             
-            point_t position = robots_in_memory[i].getPosition();
-            robot.x = position.x;
-            robot.y = position.y;
-            robot.theta = robots_in_memory[i].getOrientation(); //Need to upate 
+            robot.x = robots_in_memory[i].x_hat_k.at<double>(1,1);
+            robot.y = robots_in_memory[i].x_hat_k.at<double>(2,1);
+            robot.theta = robots_in_memory[i].x_hat_k.at<double>(3,1);
 
             if(observation.elapsed_time - robots_in_memory[i].getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 robots_in_memory[i].setVisible(false);

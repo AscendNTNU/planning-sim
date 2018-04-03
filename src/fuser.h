@@ -28,7 +28,7 @@ float calcCurrentTime(float seconds);
 
 void initializeRobotsInMemory();
 int nearestNeighbor(Robot robot);
-void updateRobots(std::vector<Robot> robots_in_single_message);
+void updateRobots(std::vector<Robot> robots_in_single_message, float current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
