@@ -2,8 +2,7 @@
 // using namespace Eigen;
 
 // Redundant as you can call Robot(-1)
-Robot::Robot() {
-    Robot(-1);
+Robot::Robot():Robot(-1) {
 }
 
 Robot::Robot(int index) {
