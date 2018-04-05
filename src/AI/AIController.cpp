@@ -136,16 +136,16 @@ action_t AIController::positioningState() {
         return empty_action;
     }
 
-
-    float drone_to_point = getDistanceBetweenPoints(this->observation.getDrone().getPosition(), this->planned_action_.where_To_Act); 
-    float robot_to_point = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
+    point_t drone_pos = this->observation.getDrone().getPosition();
+    float drone_to_point_dist = getDistanceBetweenPoints(drone_pos, this->planned_action_.where_To_Act); 
+    float robot_to_point_dist = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
  
     // Is the drone and the robot at the rendezvous point
-    if(drone_to_point < MAXDIST_DRONE_TO_POINT && robot_to_point < MAXDIST_ROBOT_TO_POINT) { // why is this the same for land in...
+    if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && robot_to_point_dist < MAXDIST_ROBOT_TO_POINT) {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition())) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
+        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // land in front of + robot is not too close + robot is approaching drone = land in front of
             this->transitionTo(land_in_front);
         }
         else {
@@ -194,7 +194,7 @@ action_t AIController::landInFrontState(){
     point_t drone_pos = this->observation.getDrone().getPosition();
     float time_landed = 3.5;
 
-    if(drone_pos.z >= 0.1 && this->observation.getRobot(target_id).approaching(drone_pos)) { // hvis drone flyr og robot går mot drone
+    if(drone_pos.z >= 0.1) { // hvis drone flyr
         this->planned_action_.type = land_at_point; // land
         return this->planned_action_;
     }
