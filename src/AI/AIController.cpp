@@ -18,8 +18,10 @@ float similarity(action_t action1 ,action_t action2) {
 }
 
 
-bool is_too_close(point_t current_Where_To_Act, point_t target) {  
-    double min_dist = 0.8; // 0.333m/s * 2s = 0.8m  
+bool is_too_close(point_t current_Where_To_Act, point_t target) {
+    double land_time = 2; // after checking once
+    double robot_speed = 0.3333; 
+    double min_dist = robot_speed*land_time; // 0.333m/s * 2s = 0.8m  (2sek being landing time)
   
     double x1 = current_Where_To_Act.x;  
     double y1 = current_Where_To_Act.y; 
@@ -124,7 +126,13 @@ action_t AIController::positioningState() {
     int target_id = this->planned_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
-    if(!target.isMoving()){
+    if(!target.isMoving()) { // if robot is in a state when we can't / shouldnt interact with it
+        return empty_action;
+    }
+
+    if (target.getCurrentPlank().willExitGreen()) {
+        std::cout << "<--current plank will exit green-->" << std::endl;
+        this->transitionTo(idle);
         return empty_action;
     }
 
@@ -135,12 +143,16 @@ action_t AIController::positioningState() {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        } else if (this->planned_action_.type == land_in_front_of) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
+        } else if (this->planned_action_.type == land_in_front_of && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
             this->transitionTo(land_in_front);
-        } else {
+        }
+        else {
             printf("Action is not defined in positionState.");
+            printf("OR! likely too close when trying to land in front of");
+            //this->transitionTo(idle);
         }
         return empty_action;
+
     } else { // The drone or robot is too far from rendezvous point
         action_t updated_action = this->ai_.getBestAction(target);
 
@@ -178,13 +190,14 @@ action_t AIController::landInFrontState(){
     printf("Land in front state\n");
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
+    float time_landed = 3.5;
 
     if(drone_pos.z >= 0.1 && this->observation.getRobot(target_id).approaching(drone_pos)) { // hvis drone flyr og robot går mot drone
         this->planned_action_.type = land_at_point; // land
         return this->planned_action_;
     }
 
-    else if (this->observation.getTimeStamp() - prev_transition_timestamp > 2.0) { // hvis drone har stått på bakken i 2sek
+    else if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
             this->transitionTo(take_off_state);
             return this->planned_action_;
