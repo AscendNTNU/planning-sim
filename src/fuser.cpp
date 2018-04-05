@@ -10,7 +10,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 0.01;
+float TIMEOUT_OBSERVATION = 5;
 
 point_t drone_position = point_zero;
 
@@ -172,7 +172,6 @@ int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_i
 
 void updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
     std::set<int> used_indices;
-    std::cout << "here" << std::endl;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, used_indices);

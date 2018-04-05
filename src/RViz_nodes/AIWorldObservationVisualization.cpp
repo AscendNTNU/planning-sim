@@ -18,13 +18,12 @@ typedef struct struct_rotation_quaternion
 	float x,y,z,w;
 }RotationQuaternion;
 
-std::array<DetectedRobot,10> ground_robots_g;
-std::array<DetectedRobot,10> fused_robots_g;
-std::array<DetectedRobot,4> ground_obstacles_g;
-std::array<DetectedRobot,4> fused_obstacles_g;
+std::vector<DetectedRobot> ground_robots_g;
+std::vector<DetectedRobot> fused_robots_g;
+std::vector<DetectedRobot> ground_obstacles_g;
+std::vector<DetectedRobot> fused_obstacles_g;
 
-RotationQuaternion eulerAnglesToQuaternion(double pitch, double roll, double yaw)
-{
+RotationQuaternion eulerAnglesToQuaternion(double pitch, double roll, double yaw){
 	RotationQuaternion q;
         // Abbreviations for the various angular functions
 	double cy = cos(yaw * 0.5);
@@ -41,45 +40,51 @@ RotationQuaternion eulerAnglesToQuaternion(double pitch, double roll, double yaw
 	return q;
 }
 
-void ObservationCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation)
-{
-	for(int i=0; i<10; i++)
-	{
-		float x_pos = observation->ground_robots[i].x;
-		float y_pos = observation->ground_robots[i].y;
-		float angle = observation->ground_robots[i].theta;
+void ObservationCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation){
+	ground_robots_g.clear();
+	ground_obstacles_g.clear();
+
+	for(int i=0; i<10; i++){
+		float x_pos = observation->ground_robots.at(i).x;
+		float y_pos = observation->ground_robots.at(i).y;
+		float angle = observation->ground_robots.at(i).theta;
 		int color = 1;
 		DetectedRobot robot = {x_pos, y_pos, angle, color};
-		ground_robots_g[i] = robot;
+		ground_robots_g.push_back(robot);
+
 	}
+
 	for(int i=0; i<4; i++){
-		float x_pos = observation->obstacle_robots[i].x;
-		float y_pos = observation->obstacle_robots[i].y;
-		float angle = observation->obstacle_robots[i].theta;
+		float x_pos = observation->obstacle_robots.at(i).x;
+		float y_pos = observation->obstacle_robots.at(i).y;
+		float angle = observation->obstacle_robots.at(i).theta;
 		int color = 3;
 		DetectedRobot robot = {x_pos, y_pos, angle, color};
-		ground_obstacles_g[i] = robot;
+		ground_obstacles_g.push_back(robot);
 	}
 }
 
-void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation)
-{
-	for(int i=0; i<10; i++)
-	{
-		float x_pos = observation->ground_robots[i].x;
-		float y_pos = observation->ground_robots[i].y;
-		float angle = observation->ground_robots[i].theta;
-		int color = 2;
-		DetectedRobot robot = {x_pos, y_pos, angle, color};
-		fused_robots_g[i] = robot;
+void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation){
+	fused_robots_g.clear();
+	fused_obstacles_g.clear();
+
+	for(int i=0; i<10; i++){
+		if(observation->ground_robots.at(i).visible){
+			float x_pos = observation->ground_robots.at(i).x;
+			float y_pos = observation->ground_robots.at(i).y;
+			float angle = observation->ground_robots.at(i).theta;
+			int color = 2;
+			DetectedRobot robot = {x_pos, y_pos, angle, color};
+			fused_robots_g.push_back(robot);
+		}
 	}
 	for(int i=0; i<4; i++){
-		float x_pos = observation->obstacle_robots[i].x;
-		float y_pos = observation->obstacle_robots[i].y;
-		float angle = observation->obstacle_robots[i].theta;
+		float x_pos = observation->obstacle_robots.at(i).x;
+		float y_pos = observation->obstacle_robots.at(i).y;
+		float angle = observation->obstacle_robots.at(i).theta;
 		int color = 4;
 		DetectedRobot robot = {x_pos, y_pos, angle, color};
-		fused_obstacles_g[i] = robot;
+		fused_obstacles_g.push_back(robot);
 	}
 }
 
@@ -147,9 +152,6 @@ int main(int argc, char** argv) {
     robot_marker.scale.y = 0.2;
     robot_marker.scale.z = 0.05;
     robot_marker.color.a = 1.0;
-    robot_marker.color.r = 0.0;
-    robot_marker.color.g = 0.0;
-    robot_marker.color.b = 0.0;
     robot_marker.lifetime = ros::Duration(ros_rate);
 	
 	//Now setup the params for the direction marker the same way as the robot marker
@@ -180,7 +182,7 @@ int main(int argc, char** argv) {
 		    robot_marker.color.g = 0.0;
 		    robot_marker.color.b = 0.0;
 
-			DetectedRobot& robot = fused_robots_g[i];
+			DetectedRobot& robot = fused_robots_g.at(i);
 			createRobotMarker(robot, robot_marker, direction_marker, 2*i);
 
 			marker_array_fuser.markers.push_back(robot_marker);
@@ -193,13 +195,15 @@ int main(int argc, char** argv) {
 			robot_marker.color.g = 0.5;
 			robot_marker.color.b = 1.0;
 
-			DetectedRobot& robot = fused_obstacles_g[i];
+			DetectedRobot& robot = fused_obstacles_g.at(i);
 			createRobotMarker(robot, robot_marker, 2*fused_robots_g.size()+i);
 
 			marker_array_fuser.markers.push_back(robot_marker);		
 		}
+		std::cout << fused_obstacles_g.size() << std::endl;
 
 		fuser_pub.publish(marker_array_fuser);
+		marker_array_fuser.markers.clear();
 
 		visualization_msgs::MarkerArray marker_array;
 
@@ -210,7 +214,7 @@ int main(int argc, char** argv) {
 			robot_marker.color.g = 1.0;
 			robot_marker.color.b = 0.0;
 
-			DetectedRobot& robot = ground_robots_g[i];
+			DetectedRobot& robot = ground_robots_g.at(i);
 
 			createRobotMarker(robot, robot_marker, direction_marker, 2*i);
 			marker_array.markers.push_back(robot_marker);
@@ -223,7 +227,7 @@ int main(int argc, char** argv) {
 		    robot_marker.color.g = 1.0;
 		    robot_marker.color.b = 1.0;
 
-			DetectedRobot& robot = ground_obstacles_g[i];
+			DetectedRobot& robot = ground_obstacles_g.at(i);
 			createRobotMarker(robot, robot_marker, 2*ground_robots_g.size()+i);
 
 			marker_array.markers.push_back(robot_marker);		
