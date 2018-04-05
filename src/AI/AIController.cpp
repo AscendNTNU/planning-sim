@@ -18,7 +18,7 @@ float similarity(action_t action1 ,action_t action2) {
 }
 
 
-bool is_too_close(point_t current_Where_To_Act, point_t target) {
+bool too_close(point_t current_Where_To_Act, point_t target) {
     double land_time = 2; // after checking once
     double robot_speed = 0.3333; 
     double min_dist = robot_speed*land_time; // 0.333m/s * 2s = 0.8m  (2sek being landing time)
@@ -143,7 +143,7 @@ action_t AIController::positioningState() {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        } else if (this->planned_action_.type == land_in_front_of && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
+        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition())) { // && !is_too_close(this->observation.getDrone().getPosition(), target.getPosition())
             this->transitionTo(land_in_front);
         }
         else {
