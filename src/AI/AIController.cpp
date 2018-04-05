@@ -136,10 +136,12 @@ action_t AIController::positioningState() {
         return empty_action;
     }
 
+
+    float drone_to_point = getDistanceBetweenPoints(this->observation.getDrone().getPosition(), this->planned_action_.where_To_Act); 
+    float robot_to_point = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
+ 
     // Is the drone and the robot at the rendezvous point
-    if( is_nearby(this->observation.getDrone().getPosition(), this->planned_action_.where_To_Act) &&
-        is_nearby(this->planned_action_.where_To_Act, target.getPosition()))
-    {
+    if(drone_to_point < MAXDIST_DRONE_TO_POINT && robot_to_point < MAXDIST_ROBOT_TO_POINT) { // why is this the same for land in...
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
