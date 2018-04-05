@@ -1,5 +1,10 @@
 #include "fuser.h"
 
+std::array<Robot, 10> robots_in_memory;
+std::vector<std::vector<Robot>> observed_robots;
+std::array<Robot, 4> obstacle_robots_in_memory;
+std::vector<std::vector<Robot>> observed_obstacle_robots;
+
 World world = World(0);
 
 ros::Time start_time(0.0);
@@ -18,12 +23,11 @@ void initializeRobotsInMemory(){
         float orientation = t;
         robots_in_memory[i].update(i,point,orientation, 0, false);
     }
-
 }
 
-//Can only handle 10 robots_in_memory in one message.
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     std::vector<Robot> robots_seen_in_one_message;
+    std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
         Robot robot;
 
@@ -36,10 +40,14 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
-        robots_seen_in_one_message.push_back(robot);
-        
+        if(msg->robot_color[i]!=3){
+            robots_seen_in_one_message.push_back(robot);
+        }else{
+            obstacle_robots_seen_in_one_message.push_back(robot);
+        }        
     }
     observed_robots.push_back(robots_seen_in_one_message);
+    observed_obstacle_robots.push_back(obstacle_robots_seen_in_one_message);
 }
 
 void startTimeCallback(std_msgs::Time::ConstPtr msg){
@@ -78,6 +86,25 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
         }
     }
     observed_robots.push_back(robots_seen_in_one_message);
+
+    i = -1;
+    std::vector<Robot> obstacle_robots_seen_in_one_message;
+    for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){
+        if(it->visible){
+
+            Robot robot;
+            point_t position;
+            position.x = it->x;
+            position.y = it->y;
+            float q = it->theta;
+            float time = elapsed_time;
+            bool visible = true;
+
+            robot.update(i, position, q , time, visible);
+            obstacle_robots_seen_in_one_message.push_back(robot);
+        }
+    }
+    observed_obstacle_robots.push_back(robots_seen_in_one_message);
 }
 
 void updateRobots(std::vector<Robot> robots_in_single_message, float current_time){
@@ -142,12 +169,12 @@ int main(int argc, char **argv){
         for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             updateRobots(*it, current_time);
         }
-        // for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-            // updateRobots(*it);
-        // }
+        for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
+            updateRobots(*it, current_time);
+        }
 
 
-        for(int i=0; i<10; i++){
+        for(int i=0; i<robots_in_memory.size(); i++){
             ascend_msgs::GRState robot;
 
             Robot robot_at_current_time = robots_in_memory[i].getRobotPositionAtTime(current_time);
@@ -164,24 +191,22 @@ int main(int argc, char **argv){
             observation.ground_robots[i] = robot;
         }
 
+        for(int i=0; i<obstacle_robots_in_memory.size(); i++){
+            ascend_msgs::GRState robot;
 
-        // for(auto it = obstacle_robots_in_memory.begin(); it != obstacle_robots_in_memory.end(); it++){
+            Robot robot_at_current_time = obstacle_robots_in_memory[i].getRobotPositionAtTime(current_time);
+            
+            robot.x = obstacle_robots_in_memory[i].x_hat_k.at<double>(1,1);
+            robot.y = obstacle_robots_in_memory[i].x_hat_k.at<double>(2,1);
+            robot.theta = obstacle_robots_in_memory[i].x_hat_k.at<double>(3,1);
 
-        //     if(observation.elapsed_time - it->getTimeLastSeen() > TIMEOUT_OBSERVATION){
-        //         it->setVisible(false);
-        //     }
+            if(observation.elapsed_time - obstacle_robots_in_memory[i].getTimeLastSeen() > TIMEOUT_OBSERVATION){
+                obstacle_robots_in_memory[i].setVisible(false);
+            }
 
-        //     ascend_msgs::GRState robot;
-
-        //     robot.header = observation.header;
-
-        //     point_t position = it->getPosition();
-        //     robot.x = position.x;
-        //     robot.y = position.y;
-        //     robot.theta = it->getOrientation();
-        //     robot.visible = it->getVisible();
-        //     observation.obstacle_robots_in_memory[it->getIndex()] = robot;
-        // }
+            robot.visible = obstacle_robots_in_memory[i].getVisible();
+            observation.obstacle_robots[i] = robot;
+        }
 
         geometry_msgs::Point32 drone;
         drone.x = drone_position.x;

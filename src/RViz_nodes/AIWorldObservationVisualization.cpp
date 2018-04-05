@@ -20,6 +20,8 @@ typedef struct struct_rotation_quaternion
 
 std::array<DetectedRobot,10> ground_robots_g;
 std::array<DetectedRobot,10> fused_robots_g;
+std::array<DetectedRobot,4> ground_obstacles_g;
+std::array<DetectedRobot,4> fused_obstacles_g;
 
 RotationQuaternion eulerAnglesToQuaternion(double pitch, double roll, double yaw)
 {
@@ -50,6 +52,14 @@ void ObservationCallback(const ascend_msgs::AIWorldObservation::ConstPtr observa
 		DetectedRobot robot = {x_pos, y_pos, angle, color};
 		ground_robots_g[i] = robot;
 	}
+	for(int i=0; i<4; i++){
+		float x_pos = observation->obstacle_robots[i].x;
+		float y_pos = observation->obstacle_robots[i].y;
+		float angle = observation->obstacle_robots[i].theta;
+		int color = 3;
+		DetectedRobot robot = {x_pos, y_pos, angle, color};
+		ground_obstacles_g[i] = robot;
+	}
 }
 
 void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation)
@@ -63,14 +73,46 @@ void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation)
 		DetectedRobot robot = {x_pos, y_pos, angle, color};
 		fused_robots_g[i] = robot;
 	}
+	for(int i=0; i<4; i++){
+		float x_pos = observation->obstacle_robots[i].x;
+		float y_pos = observation->obstacle_robots[i].y;
+		float angle = observation->obstacle_robots[i].theta;
+		int color = 4;
+		DetectedRobot robot = {x_pos, y_pos, angle, color};
+		fused_obstacles_g[i] = robot;
+	}
 }
 
+void createRobotMarker(DetectedRobot& robot, visualization_msgs::Marker &robot_marker, visualization_msgs::Marker &direction_marker, int id){
+	robot_marker.pose.position.x = robot.x;
+	robot_marker.pose.position.y = robot.y;
+	robot_marker.pose.position.z = 0.0;
+	robot_marker.id = id;
+				
+	//Find position and orientation of the marker
+	RotationQuaternion direction_quaternion = eulerAnglesToQuaternion(0.0, 0.0, robot.angle);
+	direction_marker.pose.orientation.x = direction_quaternion.x;
+	direction_marker.pose.orientation.y = direction_quaternion.y;
+	direction_marker.pose.orientation.z = direction_quaternion.z;
+	direction_marker.pose.orientation.w = direction_quaternion.w;
+	direction_marker.pose.position.x = robot.x + (0.1 * cos(robot.angle)); //Half the size of the circle
+	direction_marker.pose.position.y = robot.y + (0.1 * sin(robot.angle)); //Half the size of the circle
+	direction_marker.pose.position.z = 0.025; //It should be placed higher than the circle.
+	direction_marker.id = id+1;
+}
+
+void createRobotMarker(DetectedRobot& robot, visualization_msgs::Marker &robot_marker, int id){
+	robot_marker.pose.position.x = robot.x;
+	robot_marker.pose.position.y = robot.y;
+	robot_marker.pose.position.z = 0.0;
+	robot_marker.id = id;
+}
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "AIWorldObservationVisualizer");
 	ros::NodeHandle n;
-	ros::Publisher sim_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/SimVisualizer", 1);
-	ros::Publisher fuser_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/FuserVisualizer", 1);
+	ros::Publisher sim_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/SimVisualizer", 10);
+	ros::Publisher fuser_pub = n.advertise<visualization_msgs::MarkerArray>("/ai/FuserVisualizer", 10);
 
 	ros::Subscriber fuser_sub = n.subscribe("AIWorldObservation", 1, FusedCallback);
 	ros::Subscriber sim_sub = n.subscribe("/ai/sim", 1, ObservationCallback);
@@ -130,72 +172,64 @@ int main(int argc, char** argv) {
 		robot_marker.header.stamp = ros::Time::now();
 		direction_marker.header.stamp = ros::Time::now();
 
-	    visualization_msgs::MarkerArray marker_array1;
+	    visualization_msgs::MarkerArray marker_array_fuser;
 		
 		for(int i=0; i<fused_robots_g.size(); i++){
 			//First reset the previously added markers
 		    robot_marker.color.r = 1.0;
 		    robot_marker.color.g = 0.0;
+		    robot_marker.color.b = 0.0;
 
 			DetectedRobot& robot = fused_robots_g[i];
-			
-			robot_marker.pose.position.x = robot.x;
-			robot_marker.pose.position.y = robot.y;
-			robot_marker.pose.position.z = 0.0;
-			robot_marker.id = i * 2;
-			
-			
-			marker_array1.markers.push_back(robot_marker);
-			
-			//Find position and orientation of the marker
-			RotationQuaternion direction_quaternion = eulerAnglesToQuaternion(0.0, 0.0, robot.angle);
-			direction_marker.pose.orientation.x = direction_quaternion.x;
-			direction_marker.pose.orientation.y = direction_quaternion.y;
-			direction_marker.pose.orientation.z = direction_quaternion.z;
-			direction_marker.pose.orientation.w = direction_quaternion.w;
-			direction_marker.pose.position.x = robot.x + (0.1 * cos(robot.angle)); //Half the size of the circle
-			direction_marker.pose.position.y = robot.y + (0.1 * sin(robot.angle)); //Half the size of the circle
-			direction_marker.pose.position.z = 0.025; //It should be placed higher than the circle.
-			direction_marker.id = (i * 2) + 1;
-			
-			
-			marker_array1.markers.push_back(direction_marker);			
+			createRobotMarker(robot, robot_marker, direction_marker, 2*i);
+
+			marker_array_fuser.markers.push_back(robot_marker);
+			marker_array_fuser.markers.push_back(direction_marker);
 		}
 
-		fuser_pub.publish(marker_array1);
+		for(int i=0; i<fused_obstacles_g.size(); i++){
+			//First reset the previously added markers
+			robot_marker.color.r = 0.5;
+			robot_marker.color.g = 0.5;
+			robot_marker.color.b = 1.0;
 
-		visualization_msgs::MarkerArray marker_array2;
+			DetectedRobot& robot = fused_obstacles_g[i];
+			createRobotMarker(robot, robot_marker, 2*fused_robots_g.size()+i);
 
-		for(int i=0; i<10; i++)
+			marker_array_fuser.markers.push_back(robot_marker);		
+		}
+
+		fuser_pub.publish(marker_array_fuser);
+
+		visualization_msgs::MarkerArray marker_array;
+
+		for(int i=0; i<ground_robots_g.size(); i++)
 		{
 			//First reset the previously added markers
-		    robot_marker.color.r = 0.0;
-		    robot_marker.color.g = 1.0;
+			robot_marker.color.r = 0.0;
+			robot_marker.color.g = 1.0;
+			robot_marker.color.b = 0.0;
 
 			DetectedRobot& robot = ground_robots_g[i];
-			
-			robot_marker.pose.position.x = robot.x;
-			robot_marker.pose.position.y = robot.y;
-			robot_marker.pose.position.z = 0.0;
-			robot_marker.id = i * 2;
-			
-			marker_array2.markers.push_back(robot_marker);
-			
-			//Find position and orientation of the marker
-			RotationQuaternion direction_quaternion = eulerAnglesToQuaternion(0.0, 0.0, robot.angle);
-			direction_marker.pose.orientation.x = direction_quaternion.x;
-			direction_marker.pose.orientation.y = direction_quaternion.y;
-			direction_marker.pose.orientation.z = direction_quaternion.z;
-			direction_marker.pose.orientation.w = direction_quaternion.w;
-			direction_marker.pose.position.x = robot.x + (0.1 * cos(robot.angle)); //Half the size of the circle
-			direction_marker.pose.position.y = robot.y + (0.1 * sin(robot.angle)); //Half the size of the circle
-			direction_marker.pose.position.z = 0.025; //It should be placed higher than the circle.
-			direction_marker.id = (i * 2) + 1;
-			
-			marker_array2.markers.push_back(direction_marker);
+
+			createRobotMarker(robot, robot_marker, direction_marker, 2*i);
+			marker_array.markers.push_back(robot_marker);
+			marker_array.markers.push_back(direction_marker);
+		}
+
+		for(int i=0; i<ground_obstacles_g.size(); i++){
+			//First reset the previously added markers
+		    robot_marker.color.r = 1.0;
+		    robot_marker.color.g = 1.0;
+		    robot_marker.color.b = 1.0;
+
+			DetectedRobot& robot = ground_obstacles_g[i];
+			createRobotMarker(robot, robot_marker, 2*ground_robots_g.size()+i);
+
+			marker_array.markers.push_back(robot_marker);		
 		}
 		
-		sim_pub.publish(marker_array2);
+		sim_pub.publish(marker_array);
 	
 		ros::spinOnce();
         rate.sleep();

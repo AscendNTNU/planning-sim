@@ -14,10 +14,10 @@
 #include "AI/Robot.h"
 #include "AI/World.h"
 
-std::array<Robot, 10> robots_in_memory;
-std::vector<std::vector<Robot>> observed_robots;
-std::array<Robot, 4> obstacle_robots_in_memory;
-std::vector<std::vector<Robot>> observed_obstacle_robots;
+extern std::array<Robot, 10> robots_in_memory;
+extern std::vector<std::vector<Robot>> observed_robots;
+extern std::array<Robot, 4> obstacle_robots_in_memory;
+extern std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg);
 void startTimeCallback(std_msgs::Time::ConstPtr msg);

@@ -120,13 +120,13 @@ int main(int argc, char **argv){
             observation.ground_robots[i] = robot;
         }
 
-        // for(int i = 0; i < Num_Obstacles; i++) {
-        //     ascend_msgs::GRState robot;
-        //     robot.x = state.obstacle_x[i];
-        //     robot.y = state.obstacle_y[i];
-        //     robot.theta = state.obstacle_q[i];
-        //     observation.obstacle_robots[i] = robot;
-        // }
+        for(int i = 0; i < Num_Obstacles; i++) {
+            ascend_msgs::GRState robot;
+            robot.x = state.obstacle_x[i];
+            robot.y = state.obstacle_y[i];
+            robot.theta = state.obstacle_q[i];
+            observation.obstacle_robots[i] = robot;
+        }
 
         // Check if command done in sim and that
         // there exists an active goal and it is completed

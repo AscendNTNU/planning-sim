@@ -1,5 +1,4 @@
 #include "Robot.h"
-// using namespace Eigen;
 
 // Redundant as you can call Robot(-1)
 Robot::Robot():Robot(-1) {
@@ -15,6 +14,7 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
+    
     //Kalman parameters
     this->F1 = (cv::Mat_<double>(3,3) << 0, 0, 0, 0, 0, 0, 0, 0, 0); //state transition matrix while spinning
     this->F2 = (cv::Mat_<double>(3,3) << 0, 0, 0, 0, 0, 0, 0, 0, 0); //state transition matrix while driving (initialized to 0)
