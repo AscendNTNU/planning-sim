@@ -168,7 +168,7 @@ action_t AIController::positioningState() {
             }
         }
 
-        if(!similarity(updated_action, this->planned_action_)) {
+        if(getDistanceBetweenPoints(updated_action.where_To_Act, this->planned_action_.where_To_Act) > MAXDIST_ACTIONPOINTS) { // if(!similarity(updated_action, this->planned_action_))
             this->transitionTo(idle);
             return empty_action;
         }
