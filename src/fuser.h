@@ -14,9 +14,9 @@
 #include "AI/Robot.h"
 #include "AI/World.h"
 
-extern std::array<Robot, 10> robots_in_memory;
+extern std::vector<Robot> robots_in_memory;
 extern std::vector<std::vector<Robot>> observed_robots;
-extern std::array<Robot, 4> obstacle_robots_in_memory;
+extern std::vector<Robot> obstacle_robots_in_memory;
 extern std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg);
@@ -27,57 +27,9 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 float calcCurrentTime(float seconds);
 
 void initializeRobotsInMemory();
-int nearestNeighbor(Robot robot);
-void updateRobots(std::vector<Robot> robots_in_single_message, float current_time);
+int nearestNeighbor(Robot robot, std::vector<Robot> memory, float current_time);
+void updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
-}
-
-
-int nearestNeighbor(Robot robot, std::set<int> used_index) {
-    double min_distance = 40;
-    int index = -1;
-    int not_visible_index = -1;
-    int counter = 0;
-
-    //Loop through our robot memory
-    for(auto it = robots_in_memory.begin(); it != robots_in_memory.end(); it++){
-
-        //If we already have updated this robot in memory, skip
-        if(used_index.find(counter) != used_index.end()){
-            counter++;
-            continue;
-        }
-
-
-        //If the robot in memory is visible, check the distance between the newly observed
-        //robot and where the robot in memory should be at the corresponding time.
-        if(it->getVisible()){
-
-            Robot robot_in_memory = it->getRobotPositionAtTime(robot.getTimeLastSeen());
-
-            //If this distance is small, update the robot in memory.
-            if(distanceBetweenRobots(robot, robot_in_memory) < min_distance) {
-                min_distance = distanceBetweenRobots(robot, robot_in_memory);
-                index = counter;
-            }
-        }
-
-        // Save an index of a not visible robot incase no visible robots match the new
-        // observation.
-        else{
-            not_visible_index = counter;
-        }
-
-        counter++;
-    }
-
-    //If we found no matching robot, return the index to a not visible robot in memory to
-    // replace with the new observation.
-    if(index == -1){
-        return not_visible_index;
-    }
-
-    return index;
 }

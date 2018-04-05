@@ -115,7 +115,7 @@ int main(int argc, char **argv){
             robot.x = state.target_x[i];
             robot.y = state.target_y[i];
             robot.theta = state.target_q[i];
-            //robot.visible = true;
+            // robot.visible = true;
             robot.visible = state.target_in_view[i];
             observation.ground_robots[i] = robot;
         }
@@ -125,6 +125,7 @@ int main(int argc, char **argv){
             robot.x = state.obstacle_x[i];
             robot.y = state.obstacle_y[i];
             robot.theta = state.obstacle_q[i];
+            robot.visible = true;
             observation.obstacle_robots[i] = robot;
         }
 
