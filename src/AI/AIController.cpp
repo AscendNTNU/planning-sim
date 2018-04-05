@@ -145,13 +145,14 @@ action_t AIController::positioningState() {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
-        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // land in front of + robot is not too close + robot is approaching drone = land in front of
-            this->transitionTo(land_in_front);
+        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // robot NOT too close + robot IS approaching drone ==> land in front of 
+            this->transitionTo(land_in_front); 
+        } else if (this->planned_action_.type == land_in_front_of && static_cast<int>(this->observation.getTimeStamp()) % 20 > 15 ) { // Will land in front of if drone is close and is soon going to turn  
+            this->transitionTo(land_in_front);    
         }
         else {
             printf("Action is not defined in positionState.");
             printf("OR! likely too close when trying to land in front of");
-            //this->transitionTo(idle);
         }
         return empty_action;
 

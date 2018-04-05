@@ -9,7 +9,7 @@ static const float SIMILARITY_THRESHOLD = 1.5;
 
 static const float MAXDIST_DRONE_TO_POINT = 0.5;
 static const float MAXDIST_ROBOT_TO_POINT = 1.5; 
-static const float MAXDIST_ACTIONPOINTS = 10; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
+static const float MAXDIST_ACTIONPOINTS = 5; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
 /**
 @brief Struct describing a point on the course.
