@@ -19,7 +19,7 @@
 //Typedefs
 using ActionServerType = actionlib::SimpleActionServer<ascend_msgs::ControlFSMAction>;
 using GoalType = ascend_msgs::ControlFSMGoal;
-
+sim_Observed_State state;
 
 sim_Command action_ROS2Sim(GoalType goal) {
   sim_Command command;
@@ -46,8 +46,9 @@ sim_Command action_ROS2Sim(GoalType goal) {
       break;
   }
 
-  command.x = goal.x;
-  command.y = goal.y;
+  command.x = goal.dx + state.drone_x;
+  command.y = goal.dy + state.drone_y;
+  std::cout << goal.dx << ", " << goal.dy << std::endl;
   command.i = goal.target_id;
   command.reward = goal.reward;
   return command;
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 {
   // Initialize sim-messages
   sim_init_msgs(true);
-  sim_Observed_State state;
+  //sim_Observed_State state; // Made state global as it is used in a callback function
   sim_Command cmd;
   cmd.type = sim_CommandType_NoCommand;
   cmd.x = 0;

@@ -27,6 +27,8 @@ using GoalType = ascend_msgs::ControlFSMGoal;
 
 int step_length = 5; //SO this is in units of step length, and one step length as of this writing is .1 sec //60*4/10; //Frames?
 
+sim_State state;
+sim_Observed_State obs_state; 
 
 sim_Command action_ROS2Sim(GoalType goal){
   sim_Command command;
@@ -50,14 +52,12 @@ sim_Command action_ROS2Sim(GoalType goal){
       break;
   }
 
-  command.x = goal.x;
-  command.y = goal.y;
+  command.x = goal.dx + obs_state.drone_x;
+  command.y = goal.dy + obs_state.drone_y;
   command.i = goal.target_id;
   command.reward = goal.reward;
   return command;
 }
-
-sim_State state;
 
 //Accepts new goal from client when recieved
 void newGoalCB(ActionServerType* server) {
@@ -135,8 +135,7 @@ int main(int argc, char **argv)
   server.start();
 
   ros::Rate loop_rate(10);
-  
-  sim_Observed_State obs_state; 
+
   double prevTime=0;
   while (ros::ok())
   {
