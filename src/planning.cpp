@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(20);
+    ros::Rate rate(10);
     while (ros::ok()) {
         ros::spinOnce();
 

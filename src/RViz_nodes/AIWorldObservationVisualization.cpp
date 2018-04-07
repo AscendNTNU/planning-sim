@@ -41,8 +41,7 @@ RotationQuaternion eulerAnglesToQuaternion(double pitch, double roll, double yaw
 }
 
 void ObservationCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation){
-	ground_robots_g.clear();
-	ground_obstacles_g.clear();
+
 
 	for(int i=0; i<10; i++){
 		float x_pos = observation->ground_robots.at(i).x;
@@ -65,9 +64,6 @@ void ObservationCallback(const ascend_msgs::AIWorldObservation::ConstPtr observa
 }
 
 void FusedCallback(const ascend_msgs::AIWorldObservation::ConstPtr observation){
-	fused_robots_g.clear();
-	fused_obstacles_g.clear();
-
 	for(int i=0; i<10; i++){
 		if(observation->ground_robots.at(i).visible){
 			float x_pos = observation->ground_robots.at(i).x;
@@ -200,10 +196,9 @@ int main(int argc, char** argv) {
 
 			marker_array_fuser.markers.push_back(robot_marker);		
 		}
-		std::cout << fused_obstacles_g.size() << std::endl;
 
 		fuser_pub.publish(marker_array_fuser);
-		marker_array_fuser.markers.clear();
+		// marker_array_fuser.markers.clear();
 
 		visualization_msgs::MarkerArray marker_array;
 
@@ -234,6 +229,13 @@ int main(int argc, char** argv) {
 		}
 		
 		sim_pub.publish(marker_array);
+		
+		
+		
+		fused_robots_g.clear();
+		fused_obstacles_g.clear();
+		ground_robots_g.clear();
+		ground_obstacles_g.clear();
 	
 		ros::spinOnce();
         rate.sleep();
