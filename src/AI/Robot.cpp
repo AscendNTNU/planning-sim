@@ -376,7 +376,7 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
         double th_meas;
         if(true) { //sideCamera - TODO: update to actually change between the cameras
             // std::cout << "test8" << std::endl;
-            if(yk-ykm1 == 0 && xk-xkm1 == 0) {
+            if(yk-ykm1 < 0.001 && xk-xkm1 < 0.001) {
                 th_meas = this->x_hat_k.at<double>(4,0);
             }
             else {
