@@ -37,7 +37,6 @@ AIController::AIController(){
 	this->ai_ = AI();
 	this->state_ = no_input_data; // of type ai_state_t
     this->observation = Observation();
-    this->prev_state_name = "No Input data state";
 }
 
 action_t AIController::stateHandler(){
@@ -142,11 +141,6 @@ action_t AIController::positioningState() {
             this->transitionTo(land_on_top);
         } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // land in front of + robot is not too close + robot is approaching drone = land in front of
             this->transitionTo(land_in_front);
-        }
-        else {
-            // printf("Action is not defined in positionState.");
-            printf("Likely too close when trying to land in front of");
-            //this->transitionTo(idle);
         }
         return empty_action;
 
