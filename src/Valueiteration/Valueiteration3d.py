@@ -17,27 +17,20 @@ t_plank = 18.5 #time taken for a full plank
 
 
 planksize = t_plank*v_robot
-disc_thetas = [i*pi/6 for i in range(12)] #from 0 to 11pi/6 (aka 12 discrete angles for robots)
+disc_thetas = [i*pi/6 for i in range(12)] #from 0 to 11pi/6 (aka 12 discrete angles for robots, i + Pi/6)
 gamma = 0.9
 
-
-def createGrid(): # initializing 3d grid (x,y, theta)
-	grid = np.zeros((22,22,12))
-	grid[:,0,:] = -1000
-	grid[:,len(grid)-1,:] = -1000
-	grid[len(grid)-1,:,:] = -1000
-	grid[0,:,:] = 2000
-	return grid
-
-def oldValuegrid(): # initializing 2d grid (x,y)
-	valuegrid = createGrid()
-	printGrid(valuegrid)
+def oldValuegrid(): #performs valuiteration, prints and shows grid
+	numiter = 1000
+	valuegrid = createGrid2d()
+	#printGrid(valuegrid)
 	print()
 
 	print("loading...")
-	for k in range(10000):
-		for i in range(0,len(valuegrid)-2):
-			for j in range(0,len(valuegrid[i])-2):
+	for k in range(numiter):
+		print("Iteration " + str(k+1) + " out of " + str(numiter), end="\r")
+		for i in range(0,len(valuegrid)-2): # x
+			for j in range(0,len(valuegrid[i])-2): # y
 				valuegrid[i+1, j+1] = (valuegrid[i,j+1] + valuegrid[i+1, j] + valuegrid[i+1, j+2] + valuegrid[i+2, j+1])/4		
 	
 	printGrid(valuegrid)
@@ -49,7 +42,33 @@ def printGrid(grid): #prints 2d grid
 		print(row[1:21])
 		print()
 
-def showGrid(grid, zmin = -1000, zmax = 2000):
+def printAngle(theta_i):
+	print("angle:", theta_i*pi / 6)
+
+def placeObstacleRing(valuegrid):
+
+	# code for placing obstacle ring
+	
+	return valuegrid
+
+def createGrid(): # initializing 3d grid (x,y, theta)
+	grid = np.zeros((22,22,12))
+	grid[:,0,:] = -1000
+	grid[:,len(grid)-1,:] = -1000
+	grid[len(grid)-1,:,:] = -1000
+	grid[0,:,:] = 2000
+	return grid
+
+def createGrid2d(): # initializing 2d grid (x,y)
+	grid = np.zeros((22,22))
+	grid[:,0] = -1000
+	grid[:,len(grid)-1] = -1000
+	grid[len(grid)-1,:] = -1000
+	grid[0,:] = 2000
+	return grid
+
+
+def showGrid(grid, zmin = -1000, zmax = 2000): # prints out 3d grid
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
 
@@ -87,12 +106,12 @@ def posAfterPlank(y, x, theta):
 		return next_y , next_x, theta
 
 
-# actions possible to do on a robot
+# Possible for a robot
 def doNothing(y, x, theta):
 	return posAfterPlank(y, x, theta)
 
 def landOnTop(y, x, theta):
-	return posAfterPlank(y, x, theta + pi/4)
+	return posAfterPlank(y, x, theta - pi/4)
 
 def landInFront(y, x, theta):
 	return posAfterPlank(y, x, theta + pi)
@@ -122,13 +141,13 @@ def indexClosestTheta(actual_theta):
 	return index
 
 
-def valueiteration():
+def valueiteration(): # valueiterates for (x,y,theta)
 	numiter = 1000
-	for i in range(numiter): # number of iteration for this valueiteration
+	for i in range(numiter): # number of iterations
 		print("Iteration " + str(i+1) + " out of " + str(numiter), end="\r")
 		for x in range(1, len(valuegrid) - 1):
 			for y in range(1, len(valuegrid) - 1):
-				for t in range(0,12): # robot angle
+				for t in range(0,12): # robot angles
 					theta = t*pi/6
 					y0, x0, theta1 = doNothing(y, x, theta) #make numbers match action type in strucs.h
 					y1, x1, theta2 = landOnTop(y, x, theta)
@@ -150,9 +169,9 @@ def valueiteration():
 						if maxvalue == value0:
 							actiongrid[y][x][t] = 1 #donothing
 						elif maxvalue == value1:
-							actiongrid[y][x][t] = 2 #landontop 45degrees (blå)
+							actiongrid[y][x][t] = 2 #landontop 45degrees (shows blue in jupyter)
 						elif maxvalue == value2:
-							actiongrid[y][x][t] = 3 # landinfront 180degrees (rød)
+							actiongrid[y][x][t] = 3 # landinfront 180degrees (shows red in jupyter)
 
 	print()
 	print()
