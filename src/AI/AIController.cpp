@@ -37,6 +37,7 @@ AIController::AIController(){
 	this->ai_ = AI();
 	this->state_ = no_input_data; // of type ai_state_t
     this->observation = Observation();
+    this->prev_state_name = "No Input data state";
 }
 
 action_t AIController::stateHandler(){
@@ -80,22 +81,20 @@ action_t AIController::stateHandler(){
 }
 
 void AIController::transitionTo(ai_state_t state) {
-    std::cout << "transitioning to: ";
+    std::cout << "transitioning to: " << state << std::endl;
     this->state_ = state;
     this->prev_transition_timestamp = this->observation.getTimeStamp();
 }
 
 
 void AIController::noInputDataState(){
-    printf("No Input data state\n");
-	if(this->observation.getRobot(0).getPosition().x != 0){
+    if(this->observation.getRobot(0).getPosition().x != 0){
         this->transitionTo(idle);
     }
     return;
 }
 
 void AIController::idleState(){
-    printf("Idle state\n");
     this->planned_action_ = ai_.getBestGeneralAction(this->observation);
     
     if(this->planned_action_.type == no_command){
@@ -119,8 +118,6 @@ void AIController::idleState(){
 }
 
 action_t AIController::positioningState() {
-    printf("Positioning state\n");
-
     int target_id = this->planned_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
@@ -181,13 +178,11 @@ action_t AIController::positioningState() {
 }
 
 action_t AIController::landOnTopState(){
-    printf("Land on top state\n");
     this->transitionTo(idle);
     return this->planned_action_;
 }
 
 action_t AIController::landInFrontState(){
-    printf("Land in front state\n");
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
     float time_landed = 3.5;
@@ -219,8 +214,6 @@ action_t AIController::takeOffState() {
 }
 
 action_t AIController::missionCompleteState(){
-    printf("Mission complete state\n");
-
     point_t drone_pos = this->observation.getDrone().getPosition();
     action_t land_action;
 
@@ -231,8 +224,6 @@ action_t AIController::missionCompleteState(){
 }
 
 action_t AIController::noVisibleRobotsState(){
-    printf("No visible robots state\n");
-
     // action_t search_Action = empty_action;
 
     // point_t next_search_point = point_zero;
