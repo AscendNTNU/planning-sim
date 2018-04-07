@@ -38,6 +38,7 @@ private:
     cv::Mat Q_k;
     float t_k;
     float t_km1;
+    float dt;
 
     double xMeasCovar;
     double yMeasCovar;
