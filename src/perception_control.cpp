@@ -49,7 +49,6 @@ sim_Command action_ROS2Sim(GoalType goal) {
 
   command.x = goal.dx + state.drone_x;
   command.y = goal.dy + state.drone_y;
-  std::cout << goal.dx << ", " << goal.dy << std::endl;
   command.i = goal.target_id;
   command.reward = goal.reward;
   return command;
