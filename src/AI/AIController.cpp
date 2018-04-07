@@ -200,7 +200,7 @@ action_t AIController::landInFrontState(){
 }
 
 action_t AIController::takeOffState() {
-    if (this->observation.getDrone().getPosition().z > 2) { // if drone can see (could be replaced with checks for when control and perception are ready)
+    if (this->observation.getDrone().getPosition().z > 0.5) { // if drone can see (could be replaced with checks for when control and perception are ready)
         this->planned_action_.type = no_command;
         this->transitionTo(idle); // go think and do stuff
     }
