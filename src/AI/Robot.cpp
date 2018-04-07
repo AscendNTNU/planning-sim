@@ -141,7 +141,7 @@ void Robot::update(Robot robot){
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();
 
-    kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
+    // kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }
 
 Robot Robot::getRobotPositionAtTime(float elapsed_time){

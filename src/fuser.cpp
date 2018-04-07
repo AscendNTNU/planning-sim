@@ -12,7 +12,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 5;
+float TIMEOUT_OBSERVATION = 1;
 
 point_t drone_position = point_zero;
 
@@ -242,18 +242,17 @@ int main(int argc, char **argv){
 
         else{
             int i = 0;
-            auto last_observation = observed_robots.end();
-
-            for(auto it2 = last_observation->begin(); it2 != last_observation->end(); it2++){
-                robots_in_memory[i].update(*it2);
+            std::vector<Robot> last_observation = *observed_robots.begin();
+            for(auto it = last_observation.begin(); it != last_observation.end(); it++){
+                std::cout << i << std::endl;
+                robots_in_memory.at(i).update(*it);
                 i++;
             }
 
             i = 0;
-            last_observation = observed_obstacle_robots.end();
-
-            for(auto it2 = last_observation->begin(); it2 != last_observation->end(); it2++){
-                robots_in_memory[i].update(*it2);
+            std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
+            for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
+                obstacle_robots_in_memory.at(i).update(*it);
                 i++;
             }
         }
