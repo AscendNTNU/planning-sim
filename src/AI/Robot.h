@@ -107,6 +107,14 @@ public:
     bool setVisibility();
     @param visibility Boolean value representing if the robot is visible or not
     */
+
+    bool approaching(point_t point);
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    
+
     void setVisibility(bool visible);
 
     /**

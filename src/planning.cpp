@@ -2,7 +2,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
-#include "geometry_msgs/Pose2D.h"
+#include "geometry_msgs/Point32.h"
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
@@ -19,7 +19,7 @@ using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
 planning_ros_sim::groundRobotList GroundRobots;
-geometry_msgs::Pose2D Drone;
+//geometry_msgs::Pose2D Drone;
 
 World world = World(0);
 AIController ai_controller = AIController();
@@ -67,6 +67,10 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             break;
         case land_at_point: // For landing when mission completed
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
+            break;
+        case take_off:
+            drone_action.cmd = ascend_msgs::ControlFSMGoal::TAKEOFF;
+            break;
         default:
             ROS_INFO("Action type: %i was not recognized.", (int)action.type);
             // This should never happen.
@@ -75,9 +79,9 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     }
 
     drone_action.target_id = action.target;
-    drone_action.x = action.where_To_Act.x;
-    drone_action.y = action.where_To_Act.y;
-    drone_action.z = action.where_To_Act.z;
+    point_t drone_pos = ai_controller.observation.getDrone().getPosition();
+    drone_action.dx = action.where_To_Act.x - drone_pos.x;
+    drone_action.dy = action.where_To_Act.y - drone_pos.y;
 
     // Is used by the sim to show reward in gui
     drone_action.reward = action.reward;
@@ -145,10 +149,8 @@ int main(int argc, char **argv) {
             // std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
-        } else {
-            printf("/");
         }
-
+        
         // When no break is present, it falls through to next case
         switch(action_state.state_){
             case GoalState::PENDING:
@@ -166,11 +168,12 @@ int main(int argc, char **argv) {
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
+                break;
             case GoalState::SUCCEEDED:
-                if (action.type == land_in_front_of) {
-                    ros::Duration(2.6).sleep();
+                if (action.type == land_at_point) { // land in front of
+                    ros::Duration(0.5).sleep();
                 } else if (action.type == land_on_top_of) {
-                    ros::Duration(2.5/4.0 + 0.1).sleep();
+                    ros::Duration(ROBOT_TURN_TIME/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!
             case GoalState::LOST:
@@ -179,8 +182,6 @@ int main(int argc, char **argv) {
                 ready_for_new_action = true;
                 break;
         }
-
-        
 
         rate.sleep();
     }

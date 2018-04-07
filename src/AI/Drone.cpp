@@ -13,7 +13,7 @@ point_t Drone::getPosition(){
 
 bool Drone::update(observation_t observation){
 	
-	point_t new_Position = {observation.drone_x, observation.drone_y, 1};
+	point_t new_Position = {observation.drone_x, observation.drone_y, observation.drone_z};
 	this->prev_Position = this->position;
 
 	this->position = new_Position;
