@@ -1,5 +1,4 @@
 #include "Robot.h"
-// using namespace Eigen;
 
 // Redundant as you can call Robot(-1)
 Robot::Robot():Robot(-1) {
@@ -15,6 +14,7 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
+    
     //Kalman parameters
     this->F1 = (cv::Mat_<double>(6,6) << 1, 0, 0, 0, 0, 0,
                                          0, 1, 0, 0, 0, 0,
@@ -103,7 +103,8 @@ Robot::Robot(int index) {
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 3.0;
+    float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
+    //std::cout << "timedrift: " << time_drift << std::endl;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
@@ -135,6 +136,13 @@ Plank Robot::getCurrentPlank() {
 }
 bool Robot::getVisible() {
     return this->visible;
+}
+
+bool Robot::approaching(point_t point) {
+    float old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
+    float new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
+
+    return (new_dist < old_dist);
 }
 
 bool Robot::getWasInteractedWith() {
@@ -193,7 +201,7 @@ void Robot::update(Robot robot){
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();
 
-    kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
+    // kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }
 
 Robot Robot::getRobotPositionAtTime(float elapsed_time){
