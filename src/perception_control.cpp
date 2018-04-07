@@ -7,6 +7,7 @@
 #include "planning_ros_sim/groundRobotList.h"
 #include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
+#include "ascend_msgs/AIWorldObservation.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
 #include "ai-sim/sim.h"
@@ -24,7 +25,7 @@ sim_Observed_State state;
 sim_Command action_ROS2Sim(GoalType goal) {
   sim_Command command;
 
-  switch(goal.cmd){
+    switch(goal.cmd){
 
     case ascend_msgs::ControlFSMGoal::GO_TO_XYZ:
       command.type = sim_CommandType_Search;
@@ -55,27 +56,27 @@ sim_Command action_ROS2Sim(GoalType goal) {
 }
 
 //Accepts new goal from client when recieved
-void newGoalCB(ActionServerType* server) {
-  //Check there really is a new one available
-  if(!server->isNewGoalAvailable()) return;
-  //Accept the new goal
-  ascend_msgs::ControlFSMGoal goal = *server->acceptNewGoal();
-  //Check that the client hasn't cancelled the request already calls
-  if(server->isPreemptRequested()) {
-    //Goal is already stopped by client
-    // Should we send no_command to sim?
-    return;
-  }
-  //Read the goal and do something with it!
-  sim_Command command = action_ROS2Sim(goal);
-  sim_send_cmd(&command);
+void newGoalCB(ActionServerType* server){
+    //Check there really is a new one available
+    if(!server->isNewGoalAvailable()) return;
+    //Accept the new goal
+    ascend_msgs::ControlFSMGoal goal = *server->acceptNewGoal();
+    //Check that the client hasn't cancelled the request already calls
+    if(server->isPreemptRequested()) {
+        //Goal is already stopped by client
+        // Should we send no_command to sim?
+        return;
+    }
+    //Read the goal and do something with it!
+    sim_Command command = action_ROS2Sim(goal);
+    sim_send_cmd(&command);
 }
 
 //Terminates current goal when requested.
-void preemptCB(ActionServerType* server) {
-  //Abort whatever you are doing first!
-  // Should we send no_command to sim?
-  ROS_WARN("Preempted!");
+void preemptCB(ActionServerType* server){
+    //Abort whatever you are doing first!
+    // Should we send no_command to sim?
+    ROS_WARN("Preempted!");
 }
 
 int main(int argc, char **argv)
@@ -89,57 +90,60 @@ int main(int argc, char **argv)
   cmd.y = 0;
   cmd.i = 0;
 
-  // Initialize ros-messages
-  ros::init(argc, argv, "perception_control");
-  ros::NodeHandle nh;
-  planning_ros_sim::groundRobotList groundrobot_msg;
-  geometry_msgs::Point32 drone_msg;
-  std_msgs::Float32 time_msg; 
+    // Initialize ros-messages
+    ros::init(argc, argv, "perception_control");
+    ros::NodeHandle nh;
 
-  // Define publishers
-  ros::Publisher ground_robots_pub = nh.advertise<planning_ros_sim::groundRobotList>("groundrobot_chatter", 100);
-  ros::Publisher drone_pub = nh.advertise<geometry_msgs::Point32>("drone_chatter", 100);
-  ros::Publisher elapsed_time_pub = nh.advertise<std_msgs::Float32>("time_chatter",100);
-  ros::Publisher command_done_pub = nh.advertise<std_msgs::Bool>("command_done_chatter", 100);
+    // Define publishers
+    ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
+    
+    // Define action server
+    ActionServerType server(nh, "control_action_server", false);
+    server.registerGoalCallback(boost::bind(newGoalCB, &server));
+    server.registerPreemptCallback(boost::bind(preemptCB, &server));
+    server.start();
 
-  // Define action server
-  ActionServerType server(nh, "control_action_server", false);
-  server.registerGoalCallback(boost::bind(newGoalCB, &server));
-  server.registerPreemptCallback(boost::bind(preemptCB, &server));
-  server.start();
+    ros::Rate rate(20.0);
+    while (ros::ok()){
+        ros::spinOnce();
+        // Collect new observation
+        sim_recv_state(&state);
 
-  ros::Rate rate(30.0);
-  while (ros::ok()) {
-    ros::spinOnce();
 
-    // Collect new observation
-    sim_recv_state(&state);
+        ascend_msgs::AIWorldObservation observation;
+        observation.elapsed_time = state.elapsed_time;
 
-    // Generate messages from observation
-    drone_msg.x = state.drone_x;
-    drone_msg.y = state.drone_y;
-    drone_msg.z = state.drone_z;
+        observation.drone_position.x = state.drone_x;
+        observation.drone_position.y = state.drone_y;
+        observation.drone_position.z = state.drone_z;
 
-    for (int n = 0; n < 10; n++) { // Will it always be 10 targets in the observed state? What if not?
-      groundrobot_msg.groundRobot[n].x = state.target_x[n];
-      groundrobot_msg.groundRobot[n].y = state.target_y[n];
-      groundrobot_msg.groundRobot[n].theta = state.target_q[n];
-      groundrobot_msg.groundRobot[n].visible = state.target_in_view[n];
+        for(int i = 0; i < Num_Targets; i++) {
+            ascend_msgs::GRState robot;
+            robot.x = state.target_x[i];
+            robot.y = state.target_y[i];
+            robot.theta = state.target_q[i];
+            robot.visible = true;
+            // robot.visible = state.target_in_view[i];
+            observation.ground_robots[i] = robot;
+        }
+
+        for(int i = 0; i < Num_Obstacles; i++) {
+            ascend_msgs::GRState robot;
+            robot.x = state.obstacle_x[i];
+            robot.y = state.obstacle_y[i];
+            robot.theta = state.obstacle_q[i];
+            robot.visible = true;
+            observation.obstacle_robots[i] = robot;
+        }
+
+        // Check if command done in sim and that
+        // there exists an active goal and it is completed
+        if(state.drone_cmd_done && server.isActive()) {
+            server.setSucceeded();
+        }
+        observation.header.seq = 0;
+        ai_sim_pub.publish(observation);
+        rate.sleep();
     }
-
-    // Check if command done in sim and that
-    // there exists an active goal and it is completed
-    if(state.drone_cmd_done && server.isActive()) {
-      server.setSucceeded();
-    }
-
-    ground_robots_pub.publish(groundrobot_msg);
-    drone_pub.publish(drone_msg);
-
-    time_msg.data = state.elapsed_time;
-    elapsed_time_pub.publish(time_msg);
-
-    rate.sleep();
-  }
-  return 0;
+    return 0;
 }

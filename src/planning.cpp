@@ -11,6 +11,8 @@
 #include "AI/AIController.h"
 #include "AI/structs.h"
 
+#include "ascend_msgs/AIWorldObservation.h"
+
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
@@ -19,35 +21,32 @@ using GoalState = actionlib::SimpleClientGoalState;
 planning_ros_sim::groundRobotList GroundRobots;
 //geometry_msgs::Pose2D Drone;
 
-float elapsed_time = 0;
-
-// Is this world used?
 World world = World(0);
 AIController ai_controller = AIController();
 
-void time_chatterCallback(std_msgs::Float32 msg) {
-    elapsed_time = (float)msg.data;
-}
+void fuser_chatterCallback(ascend_msgs::AIWorldObservation observation) {
 
-void groundRobot_chatterCallback(const planning_ros_sim::groundRobotList &msg) {
-    observation_t robotObs = observation_Empty;
+    observation_t new_observation = observation_Empty;
+    new_observation.elapsed_time = observation.elapsed_time;
+    
+    new_observation.drone_x = observation.drone_position.x;
+    new_observation.drone_y = observation.drone_position.y;
+    new_observation.drone_z = observation.drone_position.z;
+
     for(int i = 0; i < 10; i++) {
-            robotObs.robot_x[i] = msg.groundRobot[i].x;
-            robotObs.robot_y[i] = msg.groundRobot[i].y;
-            robotObs.robot_q[i] = msg.groundRobot[i].theta;
-            // robotObs.robot_visible[i] = msg.groundRobot[i].visible;
-            robotObs.robot_visible[i] = true;
+        new_observation.robot_x[i] = observation.ground_robots[i].x;
+        new_observation.robot_y[i] = observation.ground_robots[i].y;
+        new_observation.robot_q[i] = observation.ground_robots[i].theta;
+        new_observation.robot_visible[i] = observation.ground_robots[i].visible;
     }
-    ai_controller.observation.updateRobot(robotObs, elapsed_time);
-}
 
-void drone_chatterCallback(geometry_msgs::Point32 msg) {
-    observation_t droneObs = observation_Empty;
-    droneObs.drone_x = msg.x;
-    droneObs.drone_y = msg.y;
-    droneObs.drone_z = msg.z;
+    for(int i = 0; i < 4; i++) {
+        new_observation.obstacle_x[i] = observation.obstacle_robots[i].x;
+        new_observation.obstacle_y[i] = observation.obstacle_robots[i].y;
+        new_observation.obstacle_q[i] = observation.obstacle_robots[i].theta;
+    }
 
-    ai_controller.observation.updateDrone(droneObs, elapsed_time);
+    ai_controller.observation.update(new_observation, new_observation.elapsed_time);
 }
 
 ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
@@ -95,9 +94,8 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
 
-    ros::Subscriber time_sub = nh.subscribe("time_chatter", 1000, time_chatterCallback);
-    ros::Subscriber ground_robot_sub = nh.subscribe("groundrobot_chatter", 1000, groundRobot_chatterCallback);
-    ros::Subscriber drone_sub = nh.subscribe("drone_chatter", 1000, drone_chatterCallback);
+    ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
+    //ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
     ClientType client("control_action_server", true);
     client.waitForServer(); //Waits until server is ready
@@ -112,12 +110,13 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(25.0);
+    ros::Rate rate(20);
     while (ros::ok()) {
         ros::spinOnce();
 
+        float elapsed_time = ai_controller.observation.getTimeStamp();
         // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600) {
+        if(elapsed_time > 600 && elapsed_time != 0.0) {
           break;
         }
 
@@ -146,8 +145,8 @@ int main(int argc, char **argv) {
         GoalState action_state = client.getState();
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
-            std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
-            std::cout << "-----------" << action_state.toString() << "----------" << std::endl;
+            // std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
+            // std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
         }

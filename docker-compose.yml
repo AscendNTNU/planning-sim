@@ -15,7 +15,7 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make"
+    command: catkin_make
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   tests:
@@ -23,7 +23,7 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make run_tests"
+    command: catkin_make
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build-cache:
@@ -35,19 +35,19 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
+    command: catkin_make run_tests
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
-  benchmark:
-    image: ascend-kinetic-build-cache
-    depends_on:
-      - build-cache
+    working_dir: /catkin_ws
+  build-cache:
+    image: ascend-kinetic-build-cache:1.2
+    build:
+      context: src/docker-build-cache
+      args:
+        - version=1.2
     tty: true
     environment:
-      - IS_DOCKER=1
-      - RUNS_PER_SEED
-      - SEEDS
-    entrypoint: /ros_entrypoint.sh /catkin_ws/src/planning-sim/src/BenchmarkLaunch/BENCHMARK_TESTS.sh
-    command: "multiple"
+      - ASCEND_ENV
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   syntax:
