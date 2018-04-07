@@ -39,17 +39,6 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     working_dir: /catkin_ws
-  build-cache:
-    image: ascend-kinetic-build-cache:1.4
-    build:
-      context: src/docker-build-cache
-      args:
-        - version=1.2
-    tty: true
-    environment:
-      - ASCEND_ENV
-    volumes:
-      - .:/catkin_ws/src/planning-sim/:rw
   syntax:
     image: stefanhudelmaier/cppcheck:latest
     tty: true
