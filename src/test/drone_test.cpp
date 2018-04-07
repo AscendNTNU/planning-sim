@@ -50,6 +50,7 @@ struct observation_t observer_Zero
 	.elapsed_time = 0.0f,
 	.drone_x = 0.0f,
 	.drone_y = 0.0f,
+	.drone_z = 0.0f,
 	.drone_cmd_done = true,
 	.num_targets = 1,
 };
