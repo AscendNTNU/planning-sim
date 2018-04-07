@@ -38,7 +38,7 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   benchmark:
-    image: ascend-kinetic-build-cache
+    image: ascend-kinetic-build-cache:1.3
     depends_on:
       - build-cache
     tty: true
