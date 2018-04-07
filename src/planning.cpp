@@ -146,14 +146,11 @@ int main(int argc, char **argv) {
 
         if (action.type != current_action_type || action_state.toString() != current_action_state){
             std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
-            std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
+            std::cout << "-----------" << action_state.toString() << "----------" << std::endl;
             current_action_type = action.type;
             current_action_state = action_state.toString();
-        } else {
-            printf("/");
         }
-
-        std::cout << "ACTION TYPE: " << actionTypeToString(action.type) << std::endl;
+        
         // When no break is present, it falls through to next case
         switch(action_state.state_){
             case GoalState::PENDING:
@@ -176,7 +173,6 @@ int main(int argc, char **argv) {
                 if (action.type == land_at_point) { // land in front of
                     ros::Duration(0.5).sleep();
                 } else if (action.type == land_on_top_of) {
-                    printf("Sleeeeeeeep");
                     ros::Duration(ROBOT_TURN_TIME/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!

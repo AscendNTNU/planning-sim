@@ -19,7 +19,8 @@ enum ai_state_t{
     land_in_front,
     land_on_top,
     mission_complete,
-    no_visible_robots /// No targets available, find them!
+    no_visible_robots, /// No targets available, find them!
+    take_off_state
 };
 
 class AIController{
@@ -87,4 +88,6 @@ public:
     action_t missionCompleteState();
 
     action_t noVisibleRobotsState();
+
+    action_t takeOffState();
 };
