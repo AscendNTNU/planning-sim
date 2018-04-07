@@ -168,6 +168,8 @@ int main(int argc, char **argv) {
                 // Control node aborted the goal
                     // Fly higher to see more?
                     // Lift off ground so we dont get disqualified?
+                ai_controller.transitionTo(idle);
+                ready_for_new_action = true;
                 break;
             case GoalState::SUCCEEDED:
                 if (action.type == land_at_point) { // land in front of

@@ -27,12 +27,13 @@ catkin_package(
 add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(planning src/planning.cpp)
 target_link_libraries(planning libAI ${catkin_LIBRARIES})
 add_dependencies(planning planning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
-	
+
 #include <opencv2/opencv.hpp>
 add_executable(fuser src/fuser.cpp)
 target_link_libraries(fuser libAI ${catkin_LIBRARIES})
@@ -42,6 +43,7 @@ add_dependencies(fuser planning_ros_sim_generate_messages_cpp
 add_executable(visualizer src/RViz_nodes/AIWorldObservationVisualization.cpp)
 add_dependencies(visualizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(visualizer ${catkin_LIBRARIES} )
+
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)
