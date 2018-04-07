@@ -4,11 +4,7 @@ project(planning_ros_sim)
 
 ## Find catkin and any catkin packages
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
-find_package(Eigen3 REQUIRED)
 find_package( OpenCV REQUIRED )
-
-#find_package(Eigen REQUIRED)
-include_directories(${Eigen_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 ## Declare ROS messages and services
 #add_message_files(DIRECTORY msg FILES Num.msg)

@@ -29,8 +29,6 @@ bool too_close(point_t current_Where_To_Act, point_t target) {
     double y2 = target.y;  
   
     double dist = pow(pow(x2-x1,2) + pow(y2-y1,2), .5);  
-  
-    std::cout << "dist between drone and robot to land in front of: " << dist << std::endl;  
     return dist < min_dist; 
 }
 
@@ -115,7 +113,7 @@ void AIController::idleState(){
         this->transitionTo(mission_complete);
         return;
     }
-	
+	std::cout << this->planned_action_ << std::endl;
     this->transitionTo(positioning);
 	return;
 }
@@ -149,8 +147,8 @@ action_t AIController::positioningState() {
             this->transitionTo(land_in_front);
         }
         else {
-            printf("Action is not defined in positionState.");
-            printf("OR! likely too close when trying to land in front of");
+            // printf("Action is not defined in positionState.");
+            printf("Likely too close when trying to land in front of");
             //this->transitionTo(idle);
         }
         return empty_action;
