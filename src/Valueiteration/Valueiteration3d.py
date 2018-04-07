@@ -29,12 +29,13 @@ def createGrid(): # 3d grid
 	grid[0,:,:] = 2000
 	return grid
 
-def oldValuegrid():
+def oldValuegrid(): # Valueiteration not taking actions and angles into account
 	valuegrid = createGrid()
 	printGrid(valuegrid)
 	print()
 
-	for i in range(10000):
+	print("loading...")
+	for k in range(10000):
 		for i in range(0,len(valuegrid)-2):
 			for j in range(0,len(valuegrid[i])-2):
 				valuegrid[i+1, j+1] = (valuegrid[i,j+1] + valuegrid[i+1, j] + valuegrid[i+1, j+2] + valuegrid[i+2, j+1])/4		
@@ -122,12 +123,11 @@ def indexClosestTheta(actual_theta):
 
 def valueiteration():
 	numiter = 1000
-	#Do this many times, for 20, iterating over grid 10000 times, return grid
-	for i in range(numiter):
+	for i in range(numiter): # number of iteration for this valueiteration
 		print("Iteration " + str(i+1) + " out of " + str(numiter), end="\r")
 		for x in range(1, len(valuegrid) - 1):
 			for y in range(1, len(valuegrid) - 1):
-				for t in range(0,12): #theta
+				for t in range(0,12): # robot angle
 					theta = t*pi/6
 					y0, x0, theta1 = doNothing(y, x, theta) #make numbers match action type in strucs.h
 					y1, x1, theta2 = landOnTop(y, x, theta)
@@ -159,7 +159,7 @@ def valueiteration():
 
 
 actiongrid = createGrid()
-valuegrid = createGrid() #valuegrid
+valuegrid = createGrid()
 
 
 #valueiteration()
@@ -168,7 +168,7 @@ valuegrid = createGrid() #valuegrid
 
 
 #TESTSS
-#oldValuegrid() #checks if old valuegrid works
+oldValuegrid() #checks if old valuegrid works
 
 #checks if plank lenght is consistent with angles from 0 - 2pi
 '''
