@@ -17,11 +17,11 @@ t_plank = 18.5 #time taken for a full plank
 
 
 planksize = t_plank*v_robot
-disc_thetas = [i*pi/6 for i in range(12)] #fra 0 - 11pi/6 (aka nesten 2pi)
+disc_thetas = [i*pi/6 for i in range(12)] #from 0 to 11pi/6 (aka 12 discrete angles for robots)
 gamma = 0.9
 
 
-def createGrid(): # 3d grid
+def createGrid(): # initializing 3d grid (x,y, theta)
 	grid = np.zeros((22,22,12))
 	grid[:,0,:] = -1000
 	grid[:,len(grid)-1,:] = -1000
@@ -29,7 +29,7 @@ def createGrid(): # 3d grid
 	grid[0,:,:] = 2000
 	return grid
 
-def oldValuegrid(): # Valueiteration not taking actions and angles into account
+def oldValuegrid(): # initializing 2d grid (x,y)
 	valuegrid = createGrid()
 	printGrid(valuegrid)
 	print()
@@ -87,6 +87,7 @@ def posAfterPlank(y, x, theta):
 		return next_y , next_x, theta
 
 
+# actions possible to do on a robot
 def doNothing(y, x, theta):
 	return posAfterPlank(y, x, theta)
 
