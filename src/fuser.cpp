@@ -244,7 +244,6 @@ int main(int argc, char **argv){
             int i = 0;
             std::vector<Robot> last_observation = *observed_robots.begin();
             for(auto it = last_observation.begin(); it != last_observation.end(); it++){
-                std::cout << i << std::endl;
                 robots_in_memory.at(i).update(*it);
                 i++;
             }
