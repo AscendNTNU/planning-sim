@@ -1,5 +1,7 @@
 #include "fuser.h"
 
+const bool USE_FUSER = false;
+
 std::vector<Robot> robots_in_memory (10);
 std::vector<std::vector<Robot>> observed_robots;
 std::vector<Robot> obstacle_robots_in_memory (4);
@@ -110,8 +112,8 @@ void initializeRobotsInMemory(){
         float orientation = t;
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
     }
-    for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++)
-    {
+
+    for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
         float t =3.14*2.0 * i / (float)obstacle_robots_in_memory.size();
 
         // The obstacles are also spawned in a circle,
@@ -125,6 +127,7 @@ void initializeRobotsInMemory(){
 }
 
 int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_index) {
+    
     double min_distance = 40;
     int index = -1;
     int not_visible_index = -1;
@@ -227,14 +230,35 @@ int main(int argc, char **argv){
         float current_time = calcCurrentTime(ros::Time::now().sec);
         observation.elapsed_time = current_time;
 
-        for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
-            updateRobots(*it, robots_in_memory, current_time);
-        }
-        observed_robots.clear();
 
-        for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-            updateRobots(*it, obstacle_robots_in_memory, current_time);
+        if(USE_FUSER){
+            for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
+                updateRobots(*it, robots_in_memory, current_time);
+            }
+            for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
+                updateRobots(*it, obstacle_robots_in_memory, current_time);
+            }
         }
+
+        else{
+            int i = 0;
+            auto last_observation = observed_robots.end();
+
+            for(auto it2 = last_observation->begin(); it2 != last_observation->end(); it2++){
+                robots_in_memory[i].update(*it2);
+                i++;
+            }
+
+            i = 0;
+            last_observation = observed_obstacle_robots.end();
+
+            for(auto it2 = last_observation->begin(); it2 != last_observation->end(); it2++){
+                robots_in_memory[i].update(*it2);
+                i++;
+            }
+        }
+
+        observed_robots.clear();
         observed_obstacle_robots.clear();
 
         for(int i=0; i<robots_in_memory.size(); i++){
