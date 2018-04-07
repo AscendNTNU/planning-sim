@@ -81,7 +81,7 @@ action_t AI::chooseAction(Robot target) {
         for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
-            plank_point_t step_point = target.current_Plank.getPoint(i);
+            plank_point_t step_point = target.plank.getPoint(i);
             if (step_point.point.y < 19.5) { // not outside of green
                 step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 
@@ -114,13 +114,13 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
 
 action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action) {
 
-    if (reward_On_Top > reward_In_Front) {
-        action.type = land_on_top_of;
-        action.reward = reward_On_Top;
-    } else {
-        action.type = land_in_front_of;
-        action.reward = reward_In_Front;
-    }
+    // if (reward_On_Top > reward_In_Front) {
+    //     action.type = land_on_top_of;
+    //     action.reward = reward_On_Top;
+    // } else {
+    action.type = land_in_front_of;
+    action.reward = reward_In_Front;
+    // }
 
     return action;
 }
