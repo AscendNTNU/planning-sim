@@ -61,6 +61,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             break;
         case land_in_front_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
+            std::cout << "Sending land at point to control" << std::endl;
             break;
         case search:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;
@@ -121,7 +122,7 @@ int main(int argc, char **argv) {
         }
 
         if(ready_for_new_action) {
-            if(ai_controller.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
+            if(ai_controller.observation.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
                 // Right after start, robots are not turning while at turn time.
                 action = ai_controller.stateHandler();
 
