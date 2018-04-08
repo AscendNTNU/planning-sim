@@ -23,7 +23,7 @@ services:
     tty: true
     environment:
       - ASCEND_ENV
-    command: catkin_make
+    command: catkin_make run_tests
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build-cache:
