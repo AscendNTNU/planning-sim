@@ -4,5 +4,5 @@
     drone_topic: drone_chatter,
     control_action_server: control_action_chatter,
     total_competition_time: 600.0
-  }
+}
 
