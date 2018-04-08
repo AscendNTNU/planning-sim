@@ -53,7 +53,7 @@ Observation AccessToSim::getObservation() {
 
     observation_t new_observation;
     new_observation.elapsed_time = state.elapsed_time;
-    new_observation.num_Targets = Num_Targets;
+    new_observation.num_targets = Num_Targets;
     new_observation.drone_x = state.drone_x;
     new_observation.drone_y = state.drone_y;
     new_observation.drone_cmd_done = state.drone_cmd_done;
@@ -80,7 +80,7 @@ observation_t AccessToSim::getObservationStruct() {
 
     observation_t new_observation;
     new_observation.elapsed_time = state.elapsed_time;
-    new_observation.num_Targets = Num_Targets;
+    new_observation.num_targets = Num_Targets;
     new_observation.drone_x = state.drone_x;
     new_observation.drone_y = state.drone_y;
     new_observation.drone_cmd_done = state.drone_cmd_done;
@@ -121,7 +121,7 @@ std::array<Robot, 10> AccessToSim::getRobots() {
         position.x = observation.robot_x[i];
         position.y = observation.robot_y[i];
         float orientation = observation.robot_q[i];
-        robot.update(i, position, orientation, elapsed_time);
+        robot.update(i, position, orientation, elapsed_time, true);
 
         robots[i] = robot;
     }
@@ -141,7 +141,7 @@ std::array<Robot, 4> AccessToSim::getObstacles() {
         position.x = observation.robot_x[i];
         position.y = observation.robot_y[i];
         float orientation = observation.robot_q[i];
-        obstacle.update(i, position, orientation, elapsed_time);
+        obstacle.update(i, position, orientation, elapsed_time, true);
 
         obstacles[i] = obstacle;
     }
