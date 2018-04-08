@@ -23,19 +23,46 @@ gamma = 0.9
 def oldValuegrid(): #performs valuiteration, prints and shows grid
 	numiter = 1000
 	valuegrid = createGrid2d()
-	#printGrid(valuegrid)
+	showGrid(valuegrid)
+	# printGrid(valuegrid)
 	print()
 
 	print("loading...")
 	for k in range(numiter):
 		print("Iteration " + str(k+1) + " out of " + str(numiter), end="\r")
-		for i in range(0,len(valuegrid)-2): # x
-			for j in range(0,len(valuegrid[i])-2): # y
+		for i in range(0,len(valuegrid)-2): #x
+			for j in range(0,len(valuegrid[i])-2): #y
 				valuegrid[i+1, j+1] = (valuegrid[i,j+1] + valuegrid[i+1, j] + valuegrid[i+1, j+2] + valuegrid[i+2, j+1])/4		
 	
-	printGrid(valuegrid)
+	#printGrid(valuegrid)
 	showGrid(valuegrid)
 	return valuegrid
+
+def valuegridWithObst():
+	numiter = 1000
+	valuegrid = createGrid2d()
+	# valuegrid = placeObstacleRing(valuegrid)
+	valuegrid = placeObstacleRing(valuegrid)
+	showGrid(valuegrid)
+	# printGrid(valuegrid)
+
+	print()
+
+	print("loading...")
+	for k in range(numiter):
+		print("Iteration " + str(k+1) + " out of " + str(numiter), end="\r")
+		for i in range(0,len(valuegrid)-2): #x
+			for j in range(0,len(valuegrid[i])-2): #y
+
+				if k == 997:
+					valuegrid = placeObstacleRing(valuegrid)
+
+				valuegrid[i+1, j+1] = (valuegrid[i,j+1] + valuegrid[i+1, j] + valuegrid[i+1, j+2] + valuegrid[i+2, j+1])/4		
+	
+	#printGrid(valuegrid)
+	showGrid(valuegrid)
+	return valuegrid
+
 
 def printGrid(grid): #prints 2d grid
 	for row in grid[1:21]:
@@ -46,9 +73,12 @@ def printAngle(theta_i):
 	print("angle:", theta_i*pi / 6)
 
 def placeObstacleRing(valuegrid):
-
-	# code for placing obstacle ring
-	
+	r = 5 # radius of circle from mid, mid = ()
+	iterations = 25 # should likely be set to 30
+	for i in range(iterations):
+		x = 5*cos(i*2*pi / iterations) + 11
+		y = 5*sin(i*2*pi / iterations) + 11
+		valuegrid[int(y)][int(x)] = -1500
 	return valuegrid
 
 def createGrid(): # initializing 3d grid (x,y, theta)
@@ -106,7 +136,7 @@ def posAfterPlank(y, x, theta):
 		return next_y , next_x, theta
 
 
-# Possible for a robot
+# Possible actions for a robot
 def doNothing(y, x, theta):
 	return posAfterPlank(y, x, theta)
 
@@ -188,7 +218,7 @@ valuegrid = createGrid()
 
 
 #TESTSS
-oldValuegrid() #checks if old valuegrid works
+#oldValuegrid() #checks if old valuegrid works
 
 #checks if plank lenght is consistent with angles from 0 - 2pi
 '''
