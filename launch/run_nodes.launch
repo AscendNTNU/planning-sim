@@ -1,4 +1,5 @@
 <launch>
     <node name="planning" pkg="planning_ros_sim" type="planning" output="screen"/>
     <node name="fuser" pkg="planning_ros_sim" type="fuser"/>
+    <node name="visualizer" pkg="planning_ros_sim" type="visualizer"/>
 </launch>
