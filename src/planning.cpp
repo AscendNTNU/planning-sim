@@ -61,6 +61,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
             break;
         case land_in_front_of:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::LAND_AT_POINT;
+            std::cout << "Sending land at point to control" << std::endl;
             break;
         case search:
             drone_action.cmd = ascend_msgs::ControlFSMGoal::SEARCH;

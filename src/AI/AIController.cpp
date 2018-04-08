@@ -158,6 +158,7 @@ action_t AIController::positioningState() {
         }
 
         if(getDistanceBetweenPoints(updated_action.where_To_Act, this->planned_action_.where_To_Act) > MAXDIST_ACTIONPOINTS) { // if(!similarity(updated_action, this->planned_action_))
+            std::cout << "Distance from updated action to planned action is more than 10m" << std::endl;
             this->transitionTo(idle);
             return empty_action;
         }
