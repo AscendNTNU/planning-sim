@@ -140,7 +140,9 @@ action_t AIController::positioningState() {
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
         } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // land in front of + robot is not too close + robot is approaching drone = land in front of
+            this->planned_action_.type = land_at_point; // land
             this->transitionTo(land_in_front);
+            return this->planned_action_;
         }
         return empty_action;
 
@@ -157,7 +159,7 @@ action_t AIController::positioningState() {
             }
         }
 
-        if(getDistanceBetweenPoints(updated_action.where_To_Act, this->planned_action_.where_To_Act) > MAXDIST_ACTIONPOINTS) { // if(!similarity(updated_action, this->planned_action_))
+        if(getDistanceBetweenPoints(updated_action.where_To_Act, this->planned_action_.where_To_Act) > MAXDIST_ACTIONPOINTS) { 
             this->transitionTo(idle);
             return empty_action;
         }
@@ -181,16 +183,10 @@ action_t AIController::landInFrontState(){
     point_t drone_pos = this->observation.getDrone().getPosition();
     float time_landed = 3.5;
 
-    if(drone_pos.z >= 0.1) { // hvis drone flyr
-        this->planned_action_.type = land_at_point; // land
-        return this->planned_action_;
-    }
-
-    else if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
+    if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
             this->transitionTo(take_off_state);
             return this->planned_action_;
-
     }
 
     //bumper: lytt til bumpers (for å se når vi treffer target), hvis vi venter lengre enn konst slutt å stå på bakken
@@ -200,7 +196,7 @@ action_t AIController::landInFrontState(){
 }
 
 action_t AIController::takeOffState() {
-    if (this->observation.getDrone().getPosition().z > 0.5) { // if drone can see (could be replaced with checks for when control and perception are ready)
+    if (this->observation.getDrone().getPosition().z > 1) { // if drone can see (could be replaced with checks for when control and perception are ready)
         this->planned_action_.type = no_command;
         this->transitionTo(idle); // go think and do stuff
     }

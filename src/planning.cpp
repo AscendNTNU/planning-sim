@@ -170,6 +170,7 @@ int main(int argc, char **argv) {
                     // Lift off ground so we dont get disqualified?
                 ai_controller.transitionTo(idle);
                 ready_for_new_action = true;
+                std::cout << "Action rejected/aborted" << std::endl;
                 break;
             case GoalState::SUCCEEDED:
                 if (action.type == land_at_point) { // land in front of
