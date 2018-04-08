@@ -117,12 +117,12 @@ int main()
 				{
 					//for sim
 					int teller = 0;
-					for(int i = 0; i++; i < Num_Targets) {
+					for(int i = 0; i++; i < num_targets) {
 						if(observed_state.target_removed[i]) {
 							teller++;
 						}
 					}
-					if(teller == Num_Targets) {
+					if(teller == num_targets) {
 						ai_state = ai_terminate;
 					}
 					else {

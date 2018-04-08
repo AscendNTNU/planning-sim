@@ -23,8 +23,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot chooseTarget(std::array<Robot,10> robots, Drone drone);
-
+    Robot chooseTarget(std::array<Robot,10> robots, float elapsed_time);
 
     /**
     @brief Returns best action along the plank of a target robot
@@ -33,7 +32,7 @@ public:
     Given a robot, returns the action from different points on the plank that gives best value.
     If none found, returns an empty action, ie at (0,0)
     */
-    action_t chooseAction(Robot target, Drone drone);
+    action_t chooseAction(Robot target);
 
     /**
     @brief Gets the best action for a robot at a given position and time
@@ -70,5 +69,5 @@ public:
     @return Best possible action stack.
     Checks the best action for a target robot robot and returns the action stack for performing the action with best reward.
     */
-    action_t getBestAction(Robot target, Observation observation);
+    action_t getBestAction(Robot target);
 };

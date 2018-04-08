@@ -24,10 +24,10 @@ TEST (RobotTest, addToTimerTest) {
 TEST (RobotTest, updateTest) {
 	Robot robot = Robot();
 
-	robot.update(0, point_Zero, MATH_PI, 1, true); // test with 21 og 22
+	robot.update(0, point_zero, MATH_PI, 1, true); // test with 21 og 22
 	EXPECT_EQ(robot.getOrientation(), 0);
 	
-	robot.update(0, point_Zero, MATH_PI, 3, true);
+	robot.update(0, point_zero, MATH_PI, 3, true);
 	EXPECT_EQ(robot.getOrientation(), MATH_PI);
 
 
@@ -43,10 +43,10 @@ static point_t point_Updated = {
 TEST (RobotTest, isMoving) {
 	Robot robot = Robot();
 
-	robot.update(0, point_Zero, MATH_PI, 1, true); // is moving, false even if robot is turning
+	robot.update(0, point_zero, MATH_PI, 1, true); // is moving, false even if robot is turning
 	EXPECT_EQ(robot.isMoving(),false);
 
-	robot.update(0, point_Zero, MATH_PI, 3, true);
+	robot.update(0, point_zero, MATH_PI, 3, true);
 	EXPECT_EQ(robot.isMoving(),false);
 
 	robot.update(0, point_Updated, MATH_PI, 3, true);

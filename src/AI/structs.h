@@ -5,7 +5,11 @@
 static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
-static const float SIMILARITY_THRESHOLD = 1;
+static const float SIMILARITY_THRESHOLD = 1.5;
+
+static const float MAXDIST_DRONE_TO_POINT = 0.5;
+static const float MAXDIST_ROBOT_TO_POINT = 1.5; 
+static const float MAXDIST_ACTIONPOINTS = 10; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
 /**
 @brief Struct describing a point on the course.
@@ -29,12 +33,12 @@ struct point_t{
 */
 struct plank_point_t{
     point_t point;
-    bool is_ahead;
+    bool is_ahead;  
     float time_till_first_arrival;
     float time_since_start_turn;
 };
 
-static point_t point_Zero = {
+static point_t point_zero = {
 	.x = 0.0,
 	.y = 0.0,
 	.z = 0.0,
@@ -62,7 +66,7 @@ struct bounds_t{
 @param drone_x X coordinate of drone
 @param drone_y Y coordinate of drone
 @param drone_cmd_done If drone is doing an action or not
-@param num_Targets Number of targets in the game
+@param num_targets Number of targets in the game
 @param robot_x X coordinate of a robot
 @param robot_y Y coordinate of a robot
 @param robot_q Angle of a robot in radians
@@ -75,8 +79,9 @@ struct observation_t
     float elapsed_time;
     float drone_x;
     float drone_y;
+    float drone_z;
     bool  drone_cmd_done;
-    int num_Targets;
+    int num_targets;
 
     float robot_x[10];
     float robot_y[10];
@@ -92,19 +97,39 @@ static observation_t observation_Empty = {
     .elapsed_time = 0,
     .drone_x = 0,
     .drone_y = 0,
+    .drone_z = 0,
     .drone_cmd_done = false,
-    .num_Targets = 0,
+    .num_targets = 0,
 };
 
 enum action_Type_t
 {
-    no_Command = 0,   // continue doing whatever you are doing
-    land_On_Top_Of,   // trigger one 45 deg turn of robot (i)
-    land_In_Front_Of, // trigger one 180 deg turn of robot (i),
-    land_At_Point,    // land at a given point
+    no_command = 0,   // continue doing whatever you are doing
+    land_on_top_of,   // trigger one 45 deg turn of robot (i)
+    land_in_front_of, // trigger one 180 deg turn of robot (i),
+    land_at_point,    // land at a given point
+    take_off,         // take off
     track,            // follow robot (i) at a constant height
     search            // ascend to 3 meters and go to (x, y)
 };
+
+inline std::string actionTypeToString(action_Type_t type) {
+    switch(type) {
+        case no_command:
+            return "no command";
+        case land_on_top_of:
+            return "land on top of";
+        case land_in_front_of:
+            return "land in front of";
+        case land_at_point:
+            return "land at point";
+        case search:
+            return "search";
+        case take_off:
+            return "take_off";
+    }
+}
+
 
 struct action_t{
     int target;
@@ -115,17 +140,17 @@ struct action_t{
 };
 
 static action_t empty_action = {
-    .target = 0,
-	.type = no_Command,
+    .target = -1,
+	.type = no_command,
 	.reward = -200000,
 	.when_To_Act = 0,
-	.where_To_Act = point_Zero
+	.where_To_Act = point_zero
 };
 
 inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
     strm << "--- Action ---" << std::endl
     << "Target: " << action.target << std::endl
-    << "Type: " << action.type << std::endl
+    << "Type: " << actionTypeToString(action.type) << std::endl
     << "Reward: " << action.reward << std::endl
     << "Where to act: " << action.where_To_Act << std::endl;
     return strm;

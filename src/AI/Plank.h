@@ -13,7 +13,9 @@ movement. It is responisble for setting value on a ground robots position.
 
 extern World world;
 
-class Plank {
+class Robot;
+
+class Plank{
     private:
         plank_point_t end_point; //First endpoint robot meets
         plank_point_t start_point; //Second endpoint robot meets
@@ -26,7 +28,7 @@ class Plank {
         Plank();
 
         ///Plank constructor for a robot at a given position/time
-        Plank(point_t position, float angle, float time_After_Turn_Start);
+        Plank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
 
         ///Get reward of current plank
         float getReward();
@@ -86,9 +88,9 @@ class Plank {
         @brief Updates the plank given the ground robots state.
         @param position Robot position
         @param angle Robot angle in radians
-        @param time_After_Turn_Start Seconds passed since the robot started turning
+        @param time_after_turn_start Seconds passed since the robot started turning
         */
-        void updatePlank(point_t position, float angle, float time_After_Turn_Start);
+        void updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
         
         ///Check if a point is outside of the plank
         /**
@@ -97,6 +99,8 @@ class Plank {
         @return Boolean
         */
         bool pointIsOutsideOfPlank(point_t point);
+
+        point_t getRobotPositionAtTime(float elapsed_time);
 
         friend std::ostream& operator<<(std::ostream &strm, const Plank &plank);
 };
