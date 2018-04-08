@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
         }
 
         if(ready_for_new_action) {
-            if(ai_controller.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
+            if(ai_controller.observation.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
                 // Right after start, robots are not turning while at turn time.
                 action = ai_controller.stateHandler();
 
