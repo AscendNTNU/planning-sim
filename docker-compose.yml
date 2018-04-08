@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nodes:
-    image: ascendntnu/ros-kinetic:1.3
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
@@ -11,7 +11,7 @@ services:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
   build-only:
-    image: ascendntnu/ros-kinetic:1.3
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
@@ -19,7 +19,7 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   tests:
-    image: ascendntnu/ros-kinetic:1.3
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
@@ -27,11 +27,11 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build-cache:
-    image: ascend-kinetic-build-cache:1.3
+    image: ascend-kinetic-build-cache:1.4
     build:
       context: src/docker-build-cache
       args:
-        - version=1.3
+        - version=1.4
     tty: true
     environment:
       - ASCEND_ENV
@@ -39,17 +39,6 @@ services:
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
     working_dir: /catkin_ws
-  build-cache:
-    image: ascend-kinetic-build-cache:1.2
-    build:
-      context: src/docker-build-cache
-      args:
-        - version=1.2
-    tty: true
-    environment:
-      - ASCEND_ENV
-    volumes:
-      - .:/catkin_ws/src/planning-sim/:rw
   syntax:
     image: stefanhudelmaier/cppcheck:latest
     tty: true
