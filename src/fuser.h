@@ -27,7 +27,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 float calcCurrentTime(float seconds);
 
 void initializeRobotsInMemory();
-int nearestNeighbor(Robot robot, std::vector<Robot> memory, float current_time);
+int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_index);
 void updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
