@@ -24,7 +24,7 @@ catkin_package(
 	visualization_msgs
 )
 
-add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
+add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp src/AI/AccessToSim.cpp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})

@@ -82,6 +82,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
     point_t drone_pos = ai_controller.observation.getDrone().getPosition();
     drone_action.dx = action.where_To_Act.x - drone_pos.x;
     drone_action.dy = action.where_To_Act.y - drone_pos.y;
+    std::cout << drone_pos << std::endl;
 
     // Is used by the sim to show reward in gui
     drone_action.reward = action.reward;
@@ -92,6 +93,7 @@ ascend_msgs::ControlFSMGoal action_plank2ROS(action_t action) {
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "planning");
+
     ros::NodeHandle nh;
 
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
