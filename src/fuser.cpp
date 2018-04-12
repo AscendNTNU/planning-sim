@@ -1,6 +1,6 @@
 #include "fuser.h"
 
-const bool USE_FUSER = false;
+const bool USE_FUSER = true;
 
 std::vector<Robot> robots_in_memory (10);
 std::vector<std::vector<Robot>> observed_robots;
@@ -185,9 +185,9 @@ void updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot
         }
     }
 
-    // for(auto it = used_indices.begin(); it != used_indices.end(); it++){
-    //     memory.at(*it).kalmanStepNoObservation(current_time);
-    // }
+    for(auto it = used_indices.begin(); it != used_indices.end(); it++){
+        memory.at(*it).kalmanStepNoObservation(current_time);
+    }
 }
 
 float calcCurrentTime(float seconds){
@@ -263,12 +263,14 @@ int main(int argc, char **argv){
         for(int i=0; i<robots_in_memory.size(); i++){
             ascend_msgs::GRState robot;
 
-            // robot.x = robots_in_memory.at(i).x_hat_k.at<double>(1,1);
-            // robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,1);
-            // robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(3,1);
-            robot.x = robots_in_memory.at(i).getPosition().x;
-            robot.y = robots_in_memory.at(i).getPosition().y;
-            robot.theta = robots_in_memory.at(i).getOrientation();
+            robot.x = robots_in_memory.at(i).x_hat_k.at<double>(0,0);
+            robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,0);
+            robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(4,0);
+            // robot.x = robots_in_memory.at(i).getPosition().x;
+            // robot.y = robots_in_memory.at(i).getPosition().y;
+            // robot.theta = robots_in_memory.at(i).getOrientation();
+
+            robots_in_memory.at(i).setPositionToKalmanPosition();
 
             if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 robots_in_memory.at(i).setVisible(false);
