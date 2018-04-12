@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include <cmath>
 
 // Redundant as you can call Robot(-1)
 Robot::Robot():Robot(-1) {
@@ -106,9 +107,10 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isMoving() {
-    //std::cout << "y-diff: " << this->old_Position.y - this->position.y << std::endl;
-    if (this->old_Position.x == this->position.x &&
-        this->old_Position.y == this->position.y) {
+    std::cout << "y-diff: " << this->old_Position.y - this->position.y << std::endl;
+    double threshold = 0.001;
+    if (fabs(this->old_Position.y - this->position.y) < threshold &&
+        fabs(this->old_Position.x - this->position.x) < threshold) {
         return false;
     } else {
         return true;
@@ -118,15 +120,15 @@ bool Robot::isMoving() {
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
 
+    this->position = new_Position;
+    this->orientation = fmod(new_Orientation, 2*MATH_PI);
     this->old_Position = this->position;
     this->old_Orientation = this->orientation;
 
     this->index = index;
-    this->position = new_Position;
-    this->orientation = fmod(new_Orientation, 2*MATH_PI);
     this->time_after_turn_start = fmod(elapsed_time, 20);
     this->time_last_seen = elapsed_time;
-    this->visible = visible;
+    this->visible = visible;   
 
     // Kalman filter stuff
     this->t_km1 = this->t_k;
@@ -146,6 +148,7 @@ void Robot::update(Robot robot){
     this->old_Orientation = this->orientation;
     this->position = robot.getPosition();
     this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
+
     this->time_after_turn_start = robot.getTimeAfterTurn();
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();

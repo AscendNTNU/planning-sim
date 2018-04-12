@@ -115,7 +115,7 @@ float Plank::calculateReward(){
 void Plank::updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME){
     this->end_point.is_ahead   = true;
     this->start_point.is_ahead = false;
-    this->end_point.time_since_start_turn   = 20;
+    this->end_point.time_since_start_turn = 20;
     this->start_point.time_since_start_turn = 0;
 
     this->angle = angle;
