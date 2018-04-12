@@ -106,6 +106,7 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isMoving() {
+    //std::cout << "y-diff: " << this->old_Position.y - this->position.y << std::endl;
     if (this->old_Position.x == this->position.x &&
         this->old_Position.y == this->position.y) {
         return false;
