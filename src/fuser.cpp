@@ -1,6 +1,7 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
+const int NUMBER_OF_ROBOTS = 10;
 
 std::vector<Robot> robots_in_memory;
 std::vector<std::vector<Robot>> observed_robots;
@@ -101,7 +102,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
 
 //Helper functions
 void initializeRobotsInMemory(){
-    for(int i=0;i<robots_in_memory.size();i++){
+    for(int i=0;i<NUMBER_OF_ROBOTS;i++){
         // The robots spawn in a circle,
         // but at an initial radius of 1 meters.
         robots_in_memory.push_back(Robot(i));
@@ -112,7 +113,6 @@ void initializeRobotsInMemory(){
         point.y = 10.0 + sinf(t);
         float orientation = t;
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
-
     }
 
     for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
@@ -225,7 +225,6 @@ int main(int argc, char **argv){
             // robot.theta = robots_in_memory.at(i).getOrientation();
 
             robots_in_memory.at(i).setPositionToKalmanPosition();
-
             if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 robots_in_memory.at(i).setVisible(false);
             }
