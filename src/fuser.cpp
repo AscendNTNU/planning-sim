@@ -2,7 +2,7 @@
 
 const bool USE_FUSER = true;
 
-std::vector<Robot> robots_in_memory (10);
+std::vector<Robot> robots_in_memory;
 std::vector<std::vector<Robot>> observed_robots;
 std::vector<Robot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
@@ -60,7 +60,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     drone_position.y = obs->drone_position.y;
     drone_position.z = obs->drone_position.z;
 
-    int i = -1;
+    int i = 0;
     std::vector<Robot> robots_seen_in_one_message;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
         if(it->visible){
@@ -79,7 +79,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     }
     observed_robots.push_back(robots_seen_in_one_message);
 
-    i = -1;
+    i = 0;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){
         if(it->visible){
@@ -102,15 +102,17 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
 //Helper functions
 void initializeRobotsInMemory(){
     for(int i=0;i<robots_in_memory.size();i++){
-
         // The robots spawn in a circle,
         // but at an initial radius of 1 meters.
+        robots_in_memory.push_back(Robot(i));
+
         float t = 3.14*2.0 * i / (float)robots_in_memory.size();
         point_t point;
         point.x = 10.0 + cosf(t);
         point.y = 10.0 + sinf(t);
         float orientation = t;
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
+
     }
 
     for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){

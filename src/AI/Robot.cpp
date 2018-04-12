@@ -192,7 +192,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     } else {
         this->plank.updatePlank(this->position, this->orientation, this->time_after_turn_start, ROBOT_TURN_TIME);
     }
-    // kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
+    kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
 
 void Robot::update(Robot robot){
@@ -204,7 +204,7 @@ void Robot::update(Robot robot){
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();
 
-    // kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
+    kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }
 
 Robot Robot::getRobotPositionAtTime(float elapsed_time){
