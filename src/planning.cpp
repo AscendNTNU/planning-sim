@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include "AI/AIController.h"
 #include "AI/structs.h"
-#include "tools/config.h"
 
 #include <actionlib/client/simple_action_client.h>
 #include <ascend_msgs/ControlFSMAction.h>

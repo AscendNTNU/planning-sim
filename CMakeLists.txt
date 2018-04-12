@@ -46,14 +46,14 @@ catkin_package(
 
 file(GLOB planning_tools_SRC "src/tools/*.cpp")
 add_library(planning_tools_lib
-        ${planning_tools_SRC}
+	${planning_tools_SRC}
 )
 
-add_library(libAI 
-	src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp 
-	src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp 
-	src/AI/AIController.cpp
+file(GLOB libAI_SRC "src/AI/*.cpp")
+add_library(libAI
+	${libAI_SRC}
 )
+
 target_link_libraries(libAI planning_tools_lib)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
@@ -65,7 +65,7 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 		perception_control src/perception_control.cpp
 	)
 	target_link_libraries(
-		perception_control ${catkin_LIBRARIES}
+		perception_control planning_tools_lib ${catkin_LIBRARIES}
 	)
 	add_dependencies(
 		perception_control planning_ros_sim_generate_messages_cpp
@@ -75,7 +75,7 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 		benchmark_perception_control src/benchmark_perception_control.cpp
 	)
 	target_link_libraries(
-		benchmark_perception_control ${catkin_LIBRARIES}
+		benchmark_perception_control planning_tools_lib ${catkin_LIBRARIES}
 	)
 	add_dependencies(
 		benchmark_perception_control planning_ros_sim_generate_messages_cpp

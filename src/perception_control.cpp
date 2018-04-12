@@ -15,8 +15,6 @@
 #include <actionlib/server/simple_action_server.h>
 #include <ascend_msgs/ControlFSMAction.h>
 
-#include "tools/config.h"
-
 //Typedefs
 using ActionServerType = actionlib::SimpleActionServer<ascend_msgs::ControlFSMAction>;
 using GoalType = ascend_msgs::ControlFSMGoal;
