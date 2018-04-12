@@ -5,6 +5,11 @@
 World world = World(0);
 #define PI 3.14159
 
+std::vector<Robot> robots_in_memory (10);
+std::vector<std::vector<Robot>> observed_robots;
+std::vector<Robot> obstacle_robots_in_memory (4);
+std::vector<std::vector<Robot>> observed_obstacle_robots;
+
 class FuserTest: public ::testing::Test {
 protected:
     virtual void SetUp() {
@@ -51,7 +56,7 @@ TEST_F (FuserTest, nearestNeighborTestObviousRobot) {
     Robot robotX = createRobot(8, 14, PI/2, 10, -1);
 
     std::set<int> used_indices;
-    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
+    EXPECT_EQ(nearestNeighbor(robotX, robots_in_memory, used_indices), 0);
 }
 
 TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
@@ -86,9 +91,9 @@ TEST_F (FuserTest, nearestNeighborTestNoChangesNoTime) {
     Robot robotY = createRobot(12, 10, 0, 5, -1);
 
     std::set<int> used_indices;
-    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
+    EXPECT_EQ(nearestNeighbor(robotX, robots_in_memory, used_indices), 0);
     used_indices.insert(0);
-    EXPECT_EQ(nearestNeighbor(robotY, used_indices), 1);
+    EXPECT_EQ(nearestNeighbor(robotY, robots_in_memory, used_indices), 1);
 }
 
 TEST_F (FuserTest, nearestNeighborTestSameDirection) {
@@ -123,9 +128,9 @@ TEST_F (FuserTest, nearestNeighborTestSameDirection) {
     Robot robotY = createRobot(12, 5, 0, 11, -1);
 
     std::set<int> used_indices;
-    EXPECT_EQ(nearestNeighbor(robotX, used_indices), 0);
+    EXPECT_EQ(nearestNeighbor(robotX, robots_in_memory, used_indices), 0);
     used_indices.insert(0);
-    EXPECT_EQ(nearestNeighbor(robotY, used_indices), 1);
+    EXPECT_EQ(nearestNeighbor(robotY, robots_in_memory, used_indices), 1);
 }
 
 int main(int argc, char **argv){
