@@ -96,9 +96,9 @@ int main(int argc, char **argv) {
 
     ros::init(argc, argv, "planning");
     ros::NodeHandle nh;
+    Config::loadParams();
 
-    ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
-    //ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
+    ros::Subscriber fuser_sub = nh.subscribe(Config::AI_SIM_OBSERVATION_TOPIC, 1, fuser_chatterCallback);
 
     ClientType client(Config::CONTROL_FSM_ACTION_SERVER, true);
     client.waitForServer(); //Waits until server is ready

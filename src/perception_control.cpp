@@ -80,10 +80,10 @@ void preemptCB(ActionServerType* server){
 
 int main(int argc, char **argv) {
     using planning::Config;
-    Config::loadParams();
     
     ros::init(argc, argv, "perception_control");
     ros::NodeHandle nh;
+    Config::loadParams();
 
     // Initialize sim-messages
     sim_init_msgs(true);
