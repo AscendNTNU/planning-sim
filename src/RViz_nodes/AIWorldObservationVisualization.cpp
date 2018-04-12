@@ -198,7 +198,6 @@ int main(int argc, char** argv) {
 		}
 
 		fuser_pub.publish(marker_array_fuser);
-		// marker_array_fuser.markers.clear();
 
 		visualization_msgs::MarkerArray marker_array;
 
