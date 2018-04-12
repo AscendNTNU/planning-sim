@@ -27,8 +27,8 @@ private:
     float speed;
     bool visible;
     bool wasInteractedWith;
-    cv::Mat F1;//(3,3,DataType<float>::type);
-    cv::Mat F2;
+    cv::Mat F;//(3,3,DataType<float>::type);
+    // cv::Mat F2;
     cv::Mat H;
     cv::Mat P_k;
     cv::Mat P_km1;
@@ -44,6 +44,10 @@ private:
     double yMeasCovar;
     double thMeasCovar_downCam;
     double thMeasCovar_sideCam;
+
+    bool firstTimeTurning;
+    bool firstTimeDriving;
+
     
 public:
     
@@ -166,6 +170,7 @@ public:
 
     void kalmanStepNoObservation(float elapsed_time);
 
+    void setPositionToKalmanPosition();
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
