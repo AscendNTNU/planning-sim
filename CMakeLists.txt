@@ -13,7 +13,10 @@ find_package(
 	actionlib 
 	actionlib_msgs 
 	ascend_msgs
+	visualization_msgs
 )
+find_package( OpenCV REQUIRED )
+message( STATUS "OpenCV Include Dir: " ${OpenCV_INCLUDE_DIRS} )
 ## Declare ROS messages and services
 
 #add_service_files(DIRECTORY srv FILES)
@@ -42,6 +45,7 @@ catkin_package(
 	libAI
 	roscpp 
 	ascend_msgs
+	visualization_msgs
 )
 
 file(GLOB planning_tools_SRC "src/tools/*.cpp")
@@ -94,16 +98,43 @@ add_dependencies(
 	ascend_msgs_generate_messages_cpp
 )
 
+
+#include <opencv2/opencv.hpp>
+# ==================== Fuser =====================
+add_executable(
+	fuser src/fuser.cpp
+)
+target_link_libraries(
+	fuser libAI ${catkin_LIBRARIES}
+)
+add_dependencies(
+	fuser planning_ros_sim_generate_messages_cpp ascend_msgs_generate_messages_cpp
+)
+
+# ================= Visualizer ==================
+add_executable(
+	visualizer src/RViz_nodes/AIWorldObservationVisualization.cpp
+)
+add_dependencies(
+	visualizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS}
+)
+target_link_libraries(
+	visualizer ${catkin_LIBRARIES}
+)
+
 # Test
 catkin_add_gtest(Plank src/test/plank_test.cpp)
 catkin_add_gtest(World src/test/world_test.cpp)
 catkin_add_gtest(Drone src/test/drone_test.cpp)
 catkin_add_gtest(Robot src/test/robot_test.cpp)
 catkin_add_gtest(AI src/test/ai_test.cpp)
+catkin_add_gtest(Fuser src/test/fuser_test.cpp)
 
 target_link_libraries(Plank libAI ${catkin_LIBRARIES})
 target_link_libraries(Drone libAI ${catkin_LIBRARIES})
 target_link_libraries(Robot libAI ${catkin_LIBRARIES})
 target_link_libraries(AI libAI ${catkin_LIBRARIES})
+target_link_libraries(libAI ${OpenCV_LIBRARIES})
+target_link_libraries(Fuser libAI ${catkin_LIBRARIES})
 
 # %EndTag(FULLTEXT)%

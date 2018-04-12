@@ -26,14 +26,14 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
     for (int i = 0; i < robots.size(); i++) {
         robot = robots[i];
 
-        if (robot.current_Plank.willExitRed()) {
+        if (robot.plank.willExitRed()) {
             continue;
         }
 
-        if (robot.getVisibility() && robot.isMoving()) {
+        if (robot.getVisible() && robot.isMoving()) {
 
-            if (robot.current_Plank.getReward() > best_reward && !robot.current_Plank.willExitGreen()) {
-                best_reward = robot.current_Plank.getReward();
+            if (robot.plank.getReward() > best_reward && !robot.plank.willExitGreen()) {
+                best_reward = robot.plank.getReward();
                 target = robot;
             }
         }
@@ -45,7 +45,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
 // Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 //     Robot robot;
-//     point_t best_pos = point_Zero;
+//     point_t best_pos = point_zero;
 //     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
 //     // Return an invalid robot if none was assigned
@@ -53,10 +53,10 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 
 //     for (int i = 0; i < robots.size(); i++) {
 //         robot = robots[i];
-//         if (robot.getIndex() != -1 && robot.getVisibility() && robot.isMoving()) {
+//         if (robot.getIndex() != -1 && robot.getVisible() && robot.isMoving()) {
 
 //             // std::cout << "index" << robot.getIndex();
-//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.current_Plank.willExitGreen()){
+//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.plank.willExitGreen()){
 //                 best_pos = drone.getInterceptPoint(robot);
 //                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
 //                 target = robot;
@@ -78,14 +78,18 @@ action_t AI::chooseAction(Robot target) {
 
         action_t step_Action;
 
-        for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
-            // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
+        for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
+            // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
-            step_Action = getBestActionAtPosition(target.getOrientation(), target.current_Plank.getPoint(i));
+            plank_point_t step_point = target.plank.getPoint(i);
+            if (step_point.point.y < 19.5) { // not outside of green
+                step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 
-            if (step_Action.reward > best_Action.reward) {
-                best_Action = step_Action;
+                if (step_Action.reward > best_Action.reward) {
+                    best_Action = step_Action;
+                }
             }
+
         }
 
         best_Action.target = target.getIndex();

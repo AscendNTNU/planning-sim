@@ -6,7 +6,11 @@
 static const int DRONE_SPEED = 1;
 static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
-static const float SIMILARITY_THRESHOLD = 1;
+static const float SIMILARITY_THRESHOLD = 1.5;
+
+static const float MAXDIST_DRONE_TO_POINT = 0.3;
+static const float MAXDIST_ROBOT_TO_POINT = 1.5; 
+static const float MAXDIST_ACTIONPOINTS = 10; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
 /**
 @brief Struct describing a point on the course.
@@ -30,12 +34,12 @@ struct point_t{
 */
 struct plank_point_t{
     point_t point;
-    bool is_ahead;
+    bool is_ahead;  
     float time_till_first_arrival;
     float time_since_start_turn;
 };
 
-static point_t point_Zero = {
+static point_t point_zero = {
 	.x = 0.0,
 	.y = 0.0,
 	.z = 0.0,
@@ -76,6 +80,7 @@ struct observation_t
     float elapsed_time;
     float drone_x;
     float drone_y;
+    float drone_z;
     bool  drone_cmd_done;
     int num_targets;
 
@@ -93,6 +98,7 @@ static observation_t observation_Empty = {
     .elapsed_time = 0,
     .drone_x = 0,
     .drone_y = 0,
+    .drone_z = 0,
     .drone_cmd_done = false,
     .num_targets = 0,
 };
@@ -103,6 +109,7 @@ enum action_Type_t
     land_on_top_of,   // trigger one 45 deg turn of robot (i)
     land_in_front_of, // trigger one 180 deg turn of robot (i),
     land_at_point,    // land at a given point
+    take_off,         // take off
     track,            // follow robot (i) at a constant height
     search            // ascend to 3 meters and go to (x, y)
 };
@@ -119,6 +126,8 @@ inline std::string actionTypeToString(action_Type_t type) {
             return "land at point";
         case search:
             return "search";
+        case take_off:
+            return "take_off";
     }
 }
 
@@ -136,7 +145,7 @@ static action_t empty_action = {
 	.type = no_command,
 	.reward = -200000,
 	.when_To_Act = 0,
-	.where_To_Act = point_Zero
+	.where_To_Act = point_zero
 };
 
 inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nodes:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
@@ -11,42 +11,34 @@ services:
       - .:/catkin_ws/src/planning-sim/:rw
     network_mode: "host"
   build-only:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make"
+    command: catkin_make
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   tests:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.4
     tty: true
     environment:
       - ASCEND_ENV
-    command: bash -c "cd /catkin_ws && catkin_make run_tests"
+    command: catkin_make run_tests
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
   build-cache:
-    image: ascend-kinetic-build-cache
-    build: src/docker-build-cache
+    image: ascend-kinetic-build-cache:1.4
+    build:
+      context: src/docker-build-cache
+      args:
+        - version=1.4
     tty: true
     environment:
       - ASCEND_ENV
+    command: catkin_make run_tests
     volumes:
       - .:/catkin_ws/src/planning-sim/:rw
-  benchmark:
-    image: ascend-kinetic-build-cache
-    depends_on:
-      - build-cache
-    tty: true
-    environment:
-      - IS_DOCKER=1
-      - RUNS_PER_SEED
-      - SEEDS
-    entrypoint: /ros_entrypoint.sh /catkin_ws/src/planning-sim/src/BenchmarkLaunch/BENCHMARK_TESTS.sh
-    command: "multiple"
-    volumes:
-      - .:/catkin_ws/src/planning-sim/:rw
+    working_dir: /catkin_ws
   syntax:
     image: stefanhudelmaier/cppcheck:latest
     tty: true
