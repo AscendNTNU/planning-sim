@@ -1,6 +1,6 @@
 #include "fuser.h"
 
-const bool USE_FUSER = true;
+const bool USE_FUSER = false;
 
 std::vector<Robot> robots_in_memory (10);
 std::vector<std::vector<Robot>> observed_robots;
