@@ -9,10 +9,8 @@ std::set<std::string> Config::missing_param_set_;
 
 //--------------------  Topic nodes  ---------------------
 
-std::string Config::TIME_CHATTER;
-std::string Config::GROUNDROBOT_CHATTER;
-std::string Config::DRONE_CHATTER;
-std::string Config::CONTROL_ACTION_CHATTER;
+std::string Config::CONTROL_FSM_ACTION_SERVER;
+std::string Config::AI_SIM_OBSERVATION_TOPIC;
 
 //------------------  World variables  -------------------
 
@@ -75,9 +73,7 @@ void Config::loadParams() {
         }
     };
 
-    getStringParam("time_chatter_topic", TIME_CHATTER);
-    getStringParam("ground_robot_topic",  GROUNDROBOT_CHATTER);
-    getStringParam("drone_topic",  DRONE_CHATTER);
-    getStringParam("control_action_server",  CONTROL_ACTION_CHATTER);
+    getStringParam("control_fsm_action_server",  CONTROL_FSM_ACTION_SERVER);
+    getStringParam("ai_sim_observation_topic", AI_SIM_OBSERVATION_TOPIC);
     getDoubleParam("total_competition_time", TOTAL_COMPETITION_TIME, 0.0, 610.0);
 }

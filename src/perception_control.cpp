@@ -80,6 +80,8 @@ void preemptCB(ActionServerType* server){
 
 int main(int argc, char **argv) {
     using planning::Config;
+    Config::loadParams();
+    
     ros::init(argc, argv, "perception_control");
     ros::NodeHandle nh;
 
@@ -91,16 +93,12 @@ int main(int argc, char **argv) {
     cmd.x = 0;
     cmd.y = 0;
     cmd.i = 0;
-    Config::loadParams();
-    // Initialize ros-messages
-    ros::init(argc, argv, "perception_control");
-    ros::NodeHandle nh;
 
     // Define publishers
-    ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
+    ros::Publisher sim_ai_pub = nh.advertise<ascend_msgs::AIWorldObservation>(Config::AI_SIM_OBSERVATION_TOPIC, 1);
     
     // Define action server
-    ActionServerType server(nh, Config::CONTROL_ACTION_CHATTER, false);
+    ActionServerType server(nh, Config::CONTROL_FSM_ACTION_SERVER, false);
     server.registerGoalCallback(boost::bind(newGoalCB, &server));
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();
@@ -144,7 +142,7 @@ int main(int argc, char **argv) {
             server.setSucceeded();
         }
         observation.header.seq = 0;
-        ai_sim_pub.publish(observation);
+        sim_ai_pub.publish(observation);
         rate.sleep();
     }
     return 0;

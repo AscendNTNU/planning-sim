@@ -1,8 +1,6 @@
 {
-    time_chatter_topic: time_chatter,
-    ground_robot_topic: groundrobot_chatter,
-    drone_topic: drone_chatter,
-    control_action_server: control_action_chatter,
+    control_fsm_action_server: /control/fsm/action_server,
+    ai_sim_observation_topic: /ai/sim/observation_topic,
     total_competition_time: 600.0
 }
 

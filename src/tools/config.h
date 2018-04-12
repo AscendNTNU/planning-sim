@@ -20,11 +20,8 @@ namespace planning {
             Config() = default;
 
         public:
-
-            static std::string TIME_CHATTER;
-            static std::string GROUNDROBOT_CHATTER;
-            static std::string DRONE_CHATTER;
-            static std::string CONTROL_ACTION_CHATTER;
+            static std::string CONTROL_FSM_ACTION_SERVER;
+            static std::string AI_SIM_OBSERVATION_TOPIC;
             static double TOTAL_COMPETITION_TIME;
 
             static void loadParams();    
