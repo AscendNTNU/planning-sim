@@ -24,6 +24,7 @@ private:
     float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
     float time_last_seen;
+    float prev_pos_update;
     float speed;
     bool visible;
     bool wasInteractedWith;

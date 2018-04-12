@@ -15,6 +15,7 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
+    this->prev_pos_update = 0;
     
     //Kalman parameters
     this->F1 = (cv::Mat_<double>(3,3) << 0, 0, 0, 0, 0, 0, 0, 0, 0); //state transition matrix while spinning
@@ -107,8 +108,8 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isMoving() {
-    std::cout << "y-diff: " << this->old_Position.y - this->position.y << std::endl;
-    double threshold = 0.001;
+    std::cout << "y-diff: " << this->old_Position.y - this->position.y << " x-diff: " << this->old_Position.x - this->position.x << std::endl;
+    double threshold = 0.005;
     if (fabs(this->old_Position.y - this->position.y) < threshold &&
         fabs(this->old_Position.x - this->position.x) < threshold) {
         return false;
@@ -120,10 +121,16 @@ bool Robot::isMoving() {
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
 
+    if (elapsed_time - this->prev_pos_update > 1) { // if its 1 secs since we last updated
+        //std::cout << "pos update at elapsed_time = " << elapsed_time << " i: " << index << std::endl;
+        this->old_Position = this->position;
+        this->old_Orientation = this->orientation;
+
+        this->prev_pos_update = elapsed_time;
+    }
+
     this->position = new_Position;
     this->orientation = fmod(new_Orientation, 2*MATH_PI);
-    this->old_Position = this->position;
-    this->old_Orientation = this->orientation;
 
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);
@@ -143,7 +150,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     // kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
 
-void Robot::update(Robot robot){
+void Robot::update(Robot robot){ // might cause problems
     this->old_Position = this->position;
     this->old_Orientation = this->orientation;
     this->position = robot.getPosition();
