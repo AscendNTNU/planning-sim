@@ -23,6 +23,32 @@ enum ai_state_t{
     take_off_state
 };
 
+inline std::string stateToString(ai_state_t state) {
+    switch(state) {
+        case no_input_data:
+            return "No input data state";
+        case idle:
+            return "Idle state";
+        case positioning:
+            return "Positioning state";
+        case land_in_front:
+            return "Land in front state";
+        case land_on_top:
+            return "Land on top state";
+        case mission_complete:
+            return "Mission complete state";
+        case no_visible_robots:
+            return "No visible robots state";
+        case take_off_state:
+            return "Take off state";
+    }
+}
+
+inline std::ostream& operator<<(std::ostream &strm, const ai_state_t &state) {
+    strm << stateToString(state);
+    return strm;
+};
+
 class AIController{
 private:
     AI ai_;

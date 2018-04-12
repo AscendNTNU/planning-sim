@@ -7,7 +7,7 @@ static const float ROBOT_SPEED = 0.33;
 static const float MATH_PI = 3.141592653589793238;
 static const float SIMILARITY_THRESHOLD = 1.5;
 
-static const float MAXDIST_DRONE_TO_POINT = 0.5;
+static const float MAXDIST_DRONE_TO_POINT = 0.3;
 static const float MAXDIST_ROBOT_TO_POINT = 1.5; 
 static const float MAXDIST_ACTIONPOINTS = 10; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
