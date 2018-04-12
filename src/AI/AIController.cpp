@@ -140,8 +140,8 @@ action_t AIController::positioningState() {
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
         } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // land in front of + robot is not too close + robot is approaching drone = land in front of
-            this->planned_action_.type = land_at_point; // land
             this->transitionTo(land_in_front);
+            this->planned_action_.type = land_at_point; // land
             return this->planned_action_;
         }
         return empty_action;
@@ -215,44 +215,43 @@ action_t AIController::missionCompleteState(){
 }
 
 action_t AIController::noVisibleRobotsState(){
-    // action_t search_Action = empty_action;
+    action_t search_Action = empty_action;
 
-    // point_t next_search_point = point_zero;
+    point_t next_search_point = point_zero;
 
-    // point_t pos = this->observation.getDrone().getPosition();
-    // float x = pos.x;
-    // float y = pos.y;
+    point_t pos = this->observation.getDrone().getPosition();
+    float x = pos.x;
+    float y = pos.y;
 
-    // // These should be global values
-    // bounds_t bounds = world.getBounds();
+    // These should be global values
+    bounds_t bounds = world.getBounds();
 
-    // point_t track_center = point_zero;
-    // track_center.x = bounds.x_Max / 2.0;
-    // track_center.y = bounds.y_Max / 2.0;
-    // float padding = 5.0;
+    point_t track_center = point_zero;
+    track_center.x = bounds.x_Max / 2.0;
+    track_center.y = bounds.y_Max / 2.0;
+    float padding = 5.0;
 
-    // // The drone flies in a triangle path in a clockwise order
-    // if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
-    //     next_search_point.x = padding;
-    //     next_search_point.y = bounds.y_Max - padding;
-    // } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
-    //     next_search_point.x = track_center.x;
-    //     next_search_point.y = track_center.y;
-    // } else if (x > track_center.x && y < track_center.y) { // 2. til mid
-    //     next_search_point.x = track_center.x;
-    //     next_search_point.y = track_center.y;
-    // } else if (x <= track_center.x && y <= track_center.y) { // 3. til mid
-    //     next_search_point.x = track_center.x;
-    //     next_search_point.y = track_center.y;
-    // } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
-    //     next_search_point.x = bounds.x_Max - padding;
-    //     next_search_point.y = bounds.y_Max - padding;
-    // }
+    // The drone flies in a triangle path in a clockwise order
+    if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
+        next_search_point.x = padding;
+        next_search_point.y = bounds.y_Max - padding;
+    } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x > track_center.x && y < track_center.y) { // 2. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x <= track_center.x && y <= track_center.y) { // 3. til mid
+        next_search_point.x = track_center.x;
+        next_search_point.y = track_center.y;
+    } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
+        next_search_point.x = bounds.x_Max - padding;
+        next_search_point.y = bounds.y_Max - padding;
+    }
 
-    // search_Action.type = search;
-    // search_Action.where_To_Act = next_search_point;
-    // search_Action.reward = 0.0;
+    search_Action.type = search;
+    search_Action.where_To_Act = next_search_point;
+    search_Action.reward = 0.0;
     this->transitionTo(idle);
-    return empty_action;
-    // return search_Action;
+    return search_Action;
 }
