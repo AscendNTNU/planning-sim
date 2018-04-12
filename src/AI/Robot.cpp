@@ -38,16 +38,16 @@ Robot::Robot(int index) {
 
     double th_0 = this->index*((2*MATH_PI)/10); //initial theta
     
-    this->x_hat_k   = (cv::Mat_<double>(6,1) << 10+sin(th_0),
+    this->x_hat_k   = (cv::Mat_<double>(6,1) << 10+cos(th_0),
                                                 0, 
-                                                10+cos(th_0), 
+                                                10+sin(th_0), 
                                                 0,
                                                 th_0,
                                                 0); //TODO: Update xdot, ydot
 
-    this->x_hat_km1 = (cv::Mat_<double>(6,1) << 10+.9*sin(th_0),
+    this->x_hat_km1 = (cv::Mat_<double>(6,1) << 10+.9*cos(th_0),
                                                 0, 
-                                                10+.9*cos(th_0), 
+                                                10+.9*sin(th_0), 
                                                 0,
                                                 th_0,
                                                 0); //TODO: Update xdot, ydot
@@ -62,12 +62,12 @@ Robot::Robot(int index) {
                                            0, 0, this->thMeasCovar_sideCam);
     
     //Model covariance parms
-    double xModelCovar  = 1; //TODO: Tune!
-    double yModelCovar  = 1; //TODO: Tune!
-    double thModelCovar = 1; //TODO: Tune!
-    double xDotModelCovar  = 1; //TODO: Tune!
-    double yDotModelCovar  = 1; //TODO: Tune!
-    double thDotModelCovar = 1; //TODO: Tune!
+    double xModelCovar  = 10; //TODO: Tune!
+    double yModelCovar  = 10; //TODO: Tune!
+    double thModelCovar = 10; //TODO: Tune!
+    double xDotModelCovar  = 10; //TODO: Tune!
+    double yDotModelCovar  = 10; //TODO: Tune!
+    double thDotModelCovar = 10; //TODO: Tune!
     this->Q_k = (cv::Mat_<double>(6,6) << xModelCovar, 0, 0, 0, 0, 0, 
                                           0, xDotModelCovar, 0, 0, 0, 0, 
                                           0, 0, yModelCovar, 0, 0, 0,  
@@ -299,7 +299,7 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
     double th_km1 = this->x_hat_km1.at<double>(4,0);
     
     //spinning
-    if(time_After_Turn_Start < 2 && elapsed_time>2) { 
+    if(time_After_Turn_Start < 2.5 && elapsed_time>2.5) { 
         if(firstTimeTurning) {
             this->x_hat_k.at<double>(1,0) = 0;
             this->x_hat_k.at<double>(3,0) = 0;
@@ -319,7 +319,7 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
     //driving straight
     else {
         double xdot = this->speed*cos(th_km1);
-        double ydot = this->speed*cos(th_km1);
+        double ydot = this->speed*sin(th_km1);
 
         this->x_hat_k.at<double>(1,0) = xdot;
         this->x_hat_k.at<double>(3,0) = ydot;
@@ -384,7 +384,7 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
     if(visible) {
         // std::cout << "test7" << std::endl;
         double th_meas;
-        if(true) { //sideCamera - TODO: update to actually change between the cameras
+        if(false) { //sideCamera - TODO: update to actually change between the cameras
             // std::cout << "test8" << std::endl;
             if(yk-ykm1 < 0.001 && xk-xkm1 < 0.001) {
                 th_meas = this->x_hat_k.at<double>(4,0);
