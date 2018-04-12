@@ -34,6 +34,10 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 	target_link_libraries(perception_control ${catkin_LIBRARIES})
 	add_dependencies(perception_control planning_ros_sim_generate_messages_cpp)
 
+	add_executable(action_safety_checker src/action_safety_checker.cpp)
+	target_link_libraries(action_safety_checker ${catkin_LIBRARIES})
+	add_dependencies(action_safety_checker planning_ros_sim_generate_messages_cpp)
+
 	add_executable(benchmark_perception_control src/benchmark_perception_control.cpp)
 	target_link_libraries(benchmark_perception_control ${catkin_LIBRARIES})
 	add_dependencies(benchmark_perception_control planning_ros_sim_generate_messages_cpp)
