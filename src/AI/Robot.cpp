@@ -137,7 +137,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     } else {
         this->plank.updatePlank(this->position, this->orientation, this->time_after_turn_start, ROBOT_TURN_TIME);
     }
-    kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
+    // kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
 
 void Robot::update(Robot robot){

@@ -1,8 +1,8 @@
 #include "fuser.h"
 
-const bool USE_FUSER = false;
+const bool USE_FUSER = true;
 
-std::vector<Robot> robots_in_memory (10);
+std::vector<Robot> robots_in_memory (1);
 std::vector<std::vector<Robot>> observed_robots;
 std::vector<Robot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
@@ -12,7 +12,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 1;
+float TIMEOUT_OBSERVATION = 0.1;
 
 point_t drone_position = point_zero;
 
@@ -209,7 +209,7 @@ int main(int argc, char **argv){
     // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg;
 
-    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 100, groundRobotCallback);
+    ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
     ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
