@@ -201,8 +201,7 @@ int main(int argc, char** argv) {
 
 		visualization_msgs::MarkerArray marker_array;
 
-		for(int i=0; i<ground_robots_g.size(); i++)
-		{
+		for(int i=0; i<ground_robots_g.size(); i++){
 			//First reset the previously added markers
 			robot_marker.color.r = 0.0;
 			robot_marker.color.g = 1.0;

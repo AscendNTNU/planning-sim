@@ -60,9 +60,10 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     drone_position.y = obs->drone_position.y;
     drone_position.z = obs->drone_position.z;
 
-    int i = -1;
+    int i = 0;
     std::vector<Robot> robots_seen_in_one_message;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
+        std::cout << i << std::endl;
         if(it->visible){
             Robot robot;
 
@@ -79,7 +80,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     }
     observed_robots.push_back(robots_seen_in_one_message);
 
-    i = -1;
+    i = 0;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){
         if(it->visible){
