@@ -359,7 +359,7 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
 
 void Robot::setPositionToKalmanPosition() {
     this->position.x = this->x_hat_k.at<double>(0,0);
-    this->position.y = this->x_hat_k.at<double>(1,0);
+    this->position.y = this->x_hat_k.at<double>(2,0);
     
 }
 
@@ -438,14 +438,14 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
         y_k = (cv::Mat_<double>(3,1) << 0, 0, 0);
     }
     // std::cout << "test13" << std::endl;
-    std::cout << "----------------------" << this->index << std::endl;
+    std::cout << "----------------------" << std::endl;
     std::cout << "X_hat_km1" << std::endl;
-    std::cout << "X: " << this->x_hat_km1.at<double>(0,0) << std::endl;
-    std::cout << "X dot: " << this->x_hat_km1.at<double>(1,0)<< std::endl;
-    std::cout << "Y: " << this->x_hat_km1.at<double>(2,0) << std::endl;
-    std::cout << "Y dot: " << this->x_hat_km1.at<double>(3,0)<< std::endl;
-    std::cout << "Th: " << this->x_hat_km1.at<double>(4,0) << std::endl;
-    std::cout << "Th dot: " << this->x_hat_km1.at<double>(5,0)<< std::endl;
+    // std::cout << "X: " << this->x_hat_km1.at<double>(0,0) << std::endl;
+    // std::cout << "X dot: " << this->x_hat_km1.at<double>(1,0)<< std::endl;
+    // std::cout << "Y: " << this->x_hat_km1.at<double>(2,0) << std::endl;
+    // std::cout << "Y dot: " << this->x_hat_km1.at<double>(3,0)<< std::endl;
+    // std::cout << "Th: " << this->x_hat_km1.at<double>(4,0) << std::endl;
+    // std::cout << "Th dot: " << this->x_hat_km1.at<double>(5,0)<< std::endl;
     std::cout << "x_hat_km1 = " << std::endl << this->x_hat_km1 << std::endl; 
         
     this->x_hat_k = this->x_hat_km1 + K_k*y_k;
@@ -454,12 +454,12 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
     // std::cout << "test15" << std::endl;
     std::cout << "Index: " << this->index << std::endl;
     std::cout << "X_hat_k" << std::endl;
-    std::cout << "X: " << this->x_hat_k.at<double>(0,0) << std::endl;
-    std::cout << "X dot: " << this->x_hat_k.at<double>(1,0)<< std::endl;
-    std::cout << "Y: " << this->x_hat_k.at<double>(2,0) << std::endl;
-    std::cout << "Y dot: " << this->x_hat_k.at<double>(3,0)<< std::endl;
-    std::cout << "Th: " << this->x_hat_k.at<double>(4,0) << std::endl;
-    std::cout << "Th dot: " << this->x_hat_k.at<double>(5,0)<< std::endl;
+    // std::cout << "X: " << this->x_hat_k.at<double>(0,0) << std::endl;
+    // std::cout << "X dot: " << this->x_hat_k.at<double>(1,0)<< std::endl;
+    // std::cout << "Y: " << this->x_hat_k.at<double>(2,0) << std::endl;
+    // std::cout << "Y dot: " << this->x_hat_k.at<double>(3,0)<< std::endl;
+    // std::cout << "Th: " << this->x_hat_k.at<double>(4,0) << std::endl;
+    // std::cout << "Th dot: " << this->x_hat_k.at<double>(5,0)<< std::endl;
     std::cout << "x_hat_k = " << std::endl << this->x_hat_k << std::endl; 
         
 
