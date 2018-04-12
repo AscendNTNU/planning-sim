@@ -13,7 +13,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 0.1;
+float TIMEOUT_OBSERVATION = 65; //0.1
 
 point_t drone_position = point_zero;
 

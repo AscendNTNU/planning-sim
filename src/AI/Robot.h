@@ -30,8 +30,8 @@ private:
     cv::Mat F;//(3,3,DataType<float>::type);
     // cv::Mat F2;
     cv::Mat H;
-    cv::Mat P_k;
-    cv::Mat P_km1;
+    cv::Mat P_k_k;
+    cv::Mat P_k_km1;
     cv::Mat P_km1_km1;
     cv::Mat x_hat_km1;
     cv::Mat R_k;
