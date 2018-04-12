@@ -160,15 +160,6 @@ int main(int argc, char **argv) {
             case GoalState::ACTIVE:
                 ready_for_new_action = false;
                 break;
-            case GoalState::SUCCEEDED:
-                // The goal was successfull!
-                if (action.type == land_in_front_of) {
-                    ros::Duration(2.6).sleep();
-                } else if (action.type == land_on_top_of) {
-                    ros::Duration(2.5/4.0 + 0.1).sleep();
-                }
-                ready_for_new_action = true;
-                break;
             case GoalState::RECALLED:
                 // We, the planning node emediately canceled
             case GoalState::PREEMPTED:
