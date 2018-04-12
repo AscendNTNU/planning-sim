@@ -2,7 +2,7 @@
 
 const bool USE_FUSER = true;
 
-std::vector<Robot> robots_in_memory (1);
+std::vector<Robot> robots_in_memory (10);
 std::vector<std::vector<Robot>> observed_robots;
 std::vector<Robot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
