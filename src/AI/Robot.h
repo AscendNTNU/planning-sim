@@ -27,8 +27,8 @@ private:
     float speed;
     bool visible;
     bool wasInteractedWith;
-    cv::Mat F1;//(3,3,DataType<float>::type);
-    cv::Mat F2;
+    cv::Mat F;//(3,3,DataType<float>::type);
+    // cv::Mat F2;
     cv::Mat H;
     cv::Mat P_k;
     cv::Mat P_km1;
@@ -38,11 +38,16 @@ private:
     cv::Mat Q_k;
     float t_k;
     float t_km1;
+    float dt;
 
     double xMeasCovar;
     double yMeasCovar;
     double thMeasCovar_downCam;
     double thMeasCovar_sideCam;
+
+    bool firstTimeTurning;
+    bool firstTimeDriving;
+
     
 public:
     
@@ -107,6 +112,14 @@ public:
     bool setVisibility();
     @param visibility Boolean value representing if the robot is visible or not
     */
+
+    bool approaching(point_t point);
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    
+
     void setVisibility(bool visible);
 
     /**
@@ -157,6 +170,7 @@ public:
 
     void kalmanStepNoObservation(float elapsed_time);
 
+    void setPositionToKalmanPosition();
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
