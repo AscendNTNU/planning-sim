@@ -9,7 +9,7 @@ private:
 	std::array<Robot,10> robots;
 	std::array<Robot,4> obstacles;
 	Drone drone;
-
+	bool any_robots_visible;
 public:
 
 	Observation();
@@ -24,7 +24,10 @@ public:
 
 	float getTimeStamp();
 
+	bool anyRobotsVisible();
+
 	bool update(observation_t observation, float elapsed_time);
 	bool updateDrone(observation_t observation, float elapsed_time);
 	bool updateRobot(observation_t observation, float elapsed_time);
+	void updateInteraction(int index);
 };

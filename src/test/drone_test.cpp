@@ -22,7 +22,7 @@ TEST (DroneTest, EmptyConstructorTest) {
 
 TEST (DroneTest, DistanceToPointTest) {
 	Drone drone = Drone();
-	point_t point = point_Zero;
+	point_t point = point_zero;
 	point.x = 3;
 	point.y = 4;
 	EXPECT_EQ(drone.getDistanceToPoint(point), 5);
@@ -45,13 +45,13 @@ TEST (DroneTest, DistanceToPointTest) {
 }
 
 
-struct observation_t observer_Zero
-{
+struct observation_t observer_Zero = {
 	.elapsed_time = 0.0f,
 	.drone_x = 0.0f,
 	.drone_y = 0.0f,
+	.drone_z = 0.0f,
 	.drone_cmd_done = true,
-	.num_Targets = 1,
+	.num_targets = 1
 };
 
 TEST (DroneTest, UpdateDroneTest) {

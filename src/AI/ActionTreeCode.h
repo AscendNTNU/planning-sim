@@ -10,10 +10,10 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 	tree_action_t max
 
 	action_Top = empty_action;
-    action_Top.type = land_On_Top_Of;
+    action_Top.type = land_on_top_of;
 
 	action_Front empty_action;
-    action_Front.type = land_In_Front_Of;
+    action_Front.type = land_in_front_of;
 	
 	point_t temp_Position = robot.position;
 
@@ -38,10 +38,10 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 
 
 		//Try action land on top.
-        Plank temp_Plank = new Plank(temp_Position, orientation, time_After_Turn_Start, n);
+        Plank temp_Plank = new Plank(temp_Position, orientation, time_after_turn_start, n);
         temp.reward = findRobotValue(robot);
 		temp = currentLevel;
-		robot.setPositionOrientation(robot.getPosition(), robot.getOrientation()+0.785);
+		robot.setPositionOrientation(robot.getPosition(), robot.plank.getAngle()+0.785);
 		action_Top.when_To_Act = i;
         temp.actions.push(action_Top);
         temp = DFS(robot,temp, n);
@@ -52,7 +52,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 
         //Try action land in front
         temp = currentLevel;
-        robot.setPositionOrientation(robot.getPosition(), robot.getOrientation()-0.785 + 3.14);
+        robot.setPositionOrientation(robot.getPosition(), robot.plank.getAngle()-0.785 + 3.14);
         float rewardInFront = findRobotValue(robot);
         temp.reward = findRobotValue(robot);
         action_Front.when_To_Act = i;

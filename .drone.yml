@@ -6,7 +6,7 @@ pipeline:
     commands:
       - cppcheck src/* #--error-exitcode=1
   tests:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.4
     when:
       event: push
     environment:
@@ -15,7 +15,7 @@ pipeline:
       - cd /catkin_ws
       - /ros_entrypoint.sh catkin_make run_tests
   build-only:
-    image: ascendntnu/ros-kinetic:1.0
+    image: ascendntnu/ros-kinetic:1.4
     when:
       event: push
     environment:
@@ -38,6 +38,16 @@ pipeline:
       - docker-compose run docs
       - mkdir -p /home/ascend/docs/planning-sim
       - cp -R src/AI/Documentation/html/* /home/ascend/docs/planning-sim
+  update-ai-status:
+    image: appleboy/drone-ssh
+    host: ascendntnu.no
+    secrets: [ ssh_key ]
+    when:
+      status: success
+      event: push
+    script:
+      - /home/ascend/run-benchmark.sh ${DRONE_COMMIT_SHA} ${DRONE_COMMIT_MESSAGE}
+
 
 clone:
   clone:

@@ -1,7 +1,7 @@
 #include "Drone.h"
 
 Drone::Drone(){
-	this->position = point_Zero;
+	this->position = point_zero;
 	this->orientation = 0;
 	this->angle_Of_Motion = 0;
 	this->speed = DRONE_SPEED;
@@ -13,7 +13,7 @@ point_t Drone::getPosition(){
 
 bool Drone::update(observation_t observation){
 	
-	point_t new_Position = {observation.drone_x, observation.drone_y, 1};
+	point_t new_Position = {observation.drone_x, observation.drone_y, observation.drone_z};
 	this->prev_Position = this->position;
 
 	this->position = new_Position;
@@ -39,7 +39,7 @@ point_t Drone::getInterceptPoint(Robot robot) {
 	
 	//Drone* drone = new Drone(); 
 	float time_Until_Turn = 20 - robot.getTimeAfterTurn();
-	float robot_Ori = robot.getOrientation();
+	float robot_Ori = robot.plank.getAngle();
 	point_t robot_Pos = robot.getPosition();
 	float x_d = this->position.x;
 	float y_d = this->position.y;
