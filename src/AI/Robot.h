@@ -25,6 +25,7 @@ private:
                                  ///< Remember that the robot turns for about 2 seconds.
     float time_last_seen;
     float prev_pos_update;
+    float time_between_updates;
     float speed;
     bool visible;
     bool wasInteractedWith;

@@ -17,7 +17,6 @@ float similarity(action_t action1 ,action_t action2) {
     return 0;
 }
 
-
 bool too_close(point_t current_Where_To_Act, point_t target) {
     double land_time = 2; // after checking once
     double robot_speed = 0.3333; 

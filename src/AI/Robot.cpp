@@ -16,6 +16,7 @@ Robot::Robot(int index) {
     this->wasInteractedWith = false;
     this->visible = false;
     this->prev_pos_update = 0;
+    this->time_between_updates = 1;
     
     //Kalman parameters
     this->F1 = (cv::Mat_<double>(3,3) << 0, 0, 0, 0, 0, 0, 0, 0, 0); //state transition matrix while spinning
@@ -108,12 +109,16 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isMoving() {
-    std::cout << "y-diff: " << this->old_Position.y - this->position.y << " x-diff: " << this->old_Position.x - this->position.x << std::endl;
-    double threshold = 0.005;
-    if (fabs(this->old_Position.y - this->position.y) < threshold &&
-        fabs(this->old_Position.x - this->position.x) < threshold) {
+    double dist_threshold = this->speed * this->time_between_updates - 0.1; // distance normally driven in 1sec
+    double dist = pow(pow(this->position.x - this->old_Position.x,2) + pow(this->position.y - this->old_Position.y,2), 0.5);
+    
+    std::cout << "dist_threshold: " << dist_threshold << std::endl;
+    std::cout << "dist: " << dist << std::endl;
+
+    if (dist < dist_threshold) {
         return false;
-    } else {
+    }
+    else {
         return true;
     }
 }
@@ -121,7 +126,7 @@ bool Robot::isMoving() {
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
 
-    if (elapsed_time - this->prev_pos_update > 1) { // if its 1 secs since we last updated
+    if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if its 1 secs since we last updated
         //std::cout << "pos update at elapsed_time = " << elapsed_time << " i: " << index << std::endl;
         this->old_Position = this->position;
         this->old_Orientation = this->orientation;
