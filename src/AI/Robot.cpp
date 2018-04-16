@@ -23,13 +23,6 @@ Robot::Robot(int index) {
                                         0, 0, 0, 0, 1, 0,
                                         0, 0, 0, 0, 0, 1); //state transition matrix while spinning
     
-    // this->F2 = (cv::Mat_<double>(6,6) << 1, 0, 0, 0, 0, 0,
-    //                                      0, 0, 0, 0, 0, 0,
-    //                                      0, 0, 1, 0, 0, 0,
-    //                                      0, 0, 0, 0, 0, 0,
-    //                                      0, 0, 0, 0, 1, 0,
-    //                                      0, 0, 0, 0, 0, 1); //state transition matrix while driving (initialized to 0)
-    
     this->H = (cv::Mat_<double>(3,6) << 1, 0, 0, 0, 0, 0,
                                         0, 0, 1, 0, 0, 0,
                                         0, 0, 0, 0, 1, 0
@@ -107,7 +100,6 @@ Robot::Robot(int index) {
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
     float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
-    //std::cout << "timedrift: " << time_drift << std::endl;
     float rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
@@ -232,27 +224,11 @@ void Robot::kalmanStep(point_t new_Position, float new_Orientation, float elapse
     this->t_k = elapsed_time;
     this->dt = this->t_k-this->t_km1;
     
-    std::cout << "Index: " << this->index << std::endl;
+    // std::cout << "Index: " << this->index << std::endl;
 
     //get updated system matrices
     //do model prediction
     kalmanPredict(new_Position, new_Orientation, elapsed_time, visible);
-
-
-    //if robot visible
-        //put x, y into state measurment
-        //if in side camera
-            //set theta measurement equal to atan2(y_k-y_k-1, x_k-x_k-1)
-            //adjust noise to theta measurement in R matrix accordingly
-        //else
-            //set theta measurement equal to the actual measurement
-            //adjust noise to theta measurement in R matrix accordingly
-
-        //do measurement updates
-        //calculate kalman gain
-
-    //else
-        //kalman gain equals 0
 
     //update state estimate
     //update covariance update
@@ -266,32 +242,7 @@ void Robot::kalmanStep(point_t new_Position, float new_Orientation, float elapse
 void Robot::kalmanStepNoObservation(float elapsed_time) {
     //get updated system matrices
     //do model prediction
-    std::cout << "Kalman Step with no observation" << std::endl;
     kalmanStep(point_zero, 0,  elapsed_time, false);
-
-
-    //if robot visible
-        //put x, y into state measurment
-        //if in side camera
-            //set theta measurement equal to atan2(y_k-y_k-1, x_k-x_k-1)
-            //adjust noise to theta measurement in R matrix accordingly
-        //else
-            //set theta measurement equal to the actual measurement
-            //adjust noise to theta measurement in R matrix accordingly
-
-        //do measurement updates
-        //calculate kalman gain
-
-    //else
-        //kalman gain equals 0
-
-    //update state estimate
-    //update covariance update
-    // kalmanMeasurementUpdate(point_zero, 0,  elapsed_time, false);
-
-    //get state estimate and covariance to the state ready for the next update
-    // this->P_km1_km1 = this->P_km1;
-    // this->x_hat_km1 = this->x_hat_k;
 }
 
 void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
@@ -307,14 +258,7 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
             this->firstTimeTurning=false;
             this->firstTimeDriving=true;
         }
-        //print x_hat
-        std::cout << "x_hat_km1_km1 = " << std::endl << this->x_hat_k << std::endl; 
-        // for(int i=0; i <= 5; i++) {
-        //     std::cout << "i: " << i << std::endl;
-        //     std::cout << "x_hat_km1_km1 (" << i << ", 0): " << this->x_hat_k.at<double>(i,0) << std::endl;
-        // }
-        // std::cout << "test1" << std::endl;
-        // std::cout << "test4" << std::endl;        
+        // std::cout << "x_hat_km1_km1 = " << std::endl << this->x_hat_k << std::endl; 
     }
     //driving straight
     else {
@@ -331,14 +275,7 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
         }
         
         //print x_hat
-        std::cout << "x_hat_km1_km1 = " << std::endl << this->x_hat_k << std::endl; 
-        // for(int i=0; i <= 5; i++) {
-        //     std::cout << "i: " << i << std::endl;
-        //     std::cout << "x_hat_km1_km1 (" << i << ", 0): " << this->x_hat_k.at<double>(i,0) << std::endl;
-        // }
-
-
-         // TODO This is odd that F is just 0, so P_k = Q_k
+        // std::cout << "x_hat_km1_km1 = " << std::endl << this->x_hat_k << std::endl; 
     }
 
     this->F = (cv::Mat_<double>(6,6) << 1, this->dt, 0, 0, 0, 0,
@@ -347,12 +284,10 @@ void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float ela
                                         0, 0, 0,     1, 0, 0,
                                         0, 0, 0,     0, 1, this->dt,
                                         0, 0, 0,     0, 0, 1);
-    std::cout << "F = " << std::endl << this->F << std::endl; 
+    // std::cout << "F = " << std::endl << this->F << std::endl; 
     
     this->x_hat_km1 = this->F*this->x_hat_k;
 
-    // cv::Mat_<double> dx_hat = cv::Mat_<double>(3,1) << (0, 0, (MATH_PI/2)*(this->t_k-this->t_km1));
-    // this->x_hat_km1=this->x_hat_k+dx_hat;
     this->P_k_km1 = this->F*this->P_km1_km1*this->F.t() + this->Q_k;
 
 }
@@ -375,17 +310,14 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
                                           0, 0, 0, 0, 1, 0,
                                           0, 0, 0, 0, 0, 1
                                                     );
-    // std::cout << "test5" << std::endl;
     double xk   = this->x_hat_km1.at<double>(0,0);
     double xkm1 = this->x_hat_k.at<double>(0,0);
     double yk   = this->x_hat_km1.at<double>(2,0);
     double ykm1 = this->x_hat_k.at<double>(2,0);
-    // std::cout << "test6" << std::endl;
+
     if(visible) {
-        // std::cout << "test7" << std::endl;
         double th_meas;
         if(false) { //sideCamera - TODO: update to actually change between the cameras
-            // std::cout << "test8" << std::endl;
             if(fabs(yk-ykm1) < 0.001 && fabs(xk-xkm1) < 0.001) {
                 th_meas = this->x_hat_k.at<double>(4,0);
             }
@@ -395,29 +327,19 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
             this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                    0, this->yMeasCovar, 0, 
                                                    0, 0, this->thMeasCovar_sideCam);
-            std::cout << "R_k = " << std::endl << this->R_k << std::endl;
+            // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
         }
         else { //downCamera
-            // std::cout << "test9" << std::endl;
             th_meas = new_Orientation;
             this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                    0, this->yMeasCovar, 0, 
                                                    0, 0, this->thMeasCovar_downCam);
-            std::cout << "R_k = " << std::endl << this->R_k << std::endl;
+            // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
         }
-        // std::cout << "test10" << std::endl;
         z_k = (cv::Mat_<double>(3,1) << double(new_Position.x), double(new_Position.y), th_meas);   
         
-        std::cout << "Measurements: " << std::endl;
-        std::cout << "Z_k = " << std::endl << z_k << std::endl; 
-
-        // std::cout << "test11" << std::endl;
-        // std::cout << "X Meas direct: " << new_Position.x << std::endl;
-        // std::cout << "X meas: " << z_k.at<double>(0,0) << std::endl;
-        // std::cout << "Y Meas direct: " << new_Position.y << std::endl;
-        // std::cout << "Y meas: " << z_k.at<double>(1,0) << std::endl;
-        // std::cout << "TH Meas direct: " << th_meas << std::endl;
-        // std::cout << "TH meas: " << z_k.at<double>(2,0) << std::endl;
+        // std::cout << "Measurements: " << std::endl;
+        // std::cout << "Z_k = " << std::endl << z_k << std::endl; 
 
         y_k = z_k-this->H*this->x_hat_km1; //calculate residual
 
@@ -431,7 +353,6 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
     }
     else {
         //Set Kalman gain (K_k) and residual (y_k) to 0
-        // std::cout << "test12" << std::endl;
         K_k = (cv::Mat_<double>(6,3) << 0, 0, 0, 
                                          0, 0, 0, 
                                          0, 0, 0,
@@ -440,30 +361,13 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
                                          0, 0, 0);
         y_k = (cv::Mat_<double>(3,1) << 0, 0, 0);
     }
-    // std::cout << "test13" << std::endl;
-    // std::cout << "----------------------" << std::endl;
-    // std::cout << "X_hat_km1" << std::endl;
-    // std::cout << "X: " << this->x_hat_km1.at<double>(0,0) << std::endl;
-    // std::cout << "X dot: " << this->x_hat_km1.at<double>(1,0)<< std::endl;
-    // std::cout << "Y: " << this->x_hat_km1.at<double>(2,0) << std::endl;
-    // std::cout << "Y dot: " << this->x_hat_km1.at<double>(3,0)<< std::endl;
-    // std::cout << "Th: " << this->x_hat_km1.at<double>(4,0) << std::endl;
-    // std::cout << "Th dot: " << this->x_hat_km1.at<double>(5,0)<< std::endl;
-    std::cout << "x_hat_km1 = " << std::endl << this->x_hat_km1 << std::endl; 
+
+    // std::cout << "x_hat_km1 = " << std::endl << this->x_hat_km1 << std::endl; 
         
     this->x_hat_k = this->x_hat_km1 + K_k*y_k;
-    // std::cout << "test14" << std::endl;
     this->P_k_k = (I - K_k*this->H)*this->P_k_km1*(I - K_k*this->H).t() + K_k*this->R_k*K_k.t();
-    // std::cout << "test15" << std::endl;
-    // std::cout << "Index: " << this->index << std::endl;
-    // std::cout << "X_hat_k" << std::endl;
-    // std::cout << "X: " << this->x_hat_k.at<double>(0,0) << std::endl;
-    // std::cout << "X dot: " << this->x_hat_k.at<double>(1,0)<< std::endl;
-    // std::cout << "Y: " << this->x_hat_k.at<double>(2,0) << std::endl;
-    // std::cout << "Y dot: " << this->x_hat_k.at<double>(3,0)<< std::endl;
-    // std::cout << "Th: " << this->x_hat_k.at<double>(4,0) << std::endl;
-    // std::cout << "Th dot: " << this->x_hat_k.at<double>(5,0)<< std::endl;
-    std::cout << "x_hat_k = " << std::endl << this->x_hat_k << std::endl; 
+
+    // std::cout << "x_hat_k = " << std::endl << this->x_hat_k << std::endl; 
         
 
 }
