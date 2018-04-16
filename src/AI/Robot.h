@@ -28,7 +28,6 @@ private:
     bool visible;
     bool wasInteractedWith;
     cv::Mat F;//(3,3,DataType<float>::type);
-    // cv::Mat F2;
     cv::Mat H;
     cv::Mat P_k_k;
     cv::Mat P_k_km1;
