@@ -348,7 +348,7 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation,
         S_k = this->H*this->P_k_km1*this->H.t() + this->R_k; //residual covariance
         K_k = this->P_k_km1*this->H.t()*S_k.inv();
 
-        std::cout << "K_k: " << K_k << std::endl;
+        // std::cout << "K_k: " << K_k << std::endl;
 
     }
     else {
