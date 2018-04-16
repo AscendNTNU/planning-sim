@@ -26,15 +26,14 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 
 float calcCurrentTime(float seconds);
 
-void initializeRobotsInMemory();
-int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_indices);
+void initializeFuser();
 void updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
 
-int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_indices) {
+int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_indices) {
 
     double min_distance = 40;
     int index = -1;
@@ -45,7 +44,7 @@ int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> used_i
     for(auto it = memory.begin(); it != memory.end(); it++){
 
         //If we already have updated this robot in memory, skip
-        if(used_indices.find(counter) != used_indices.end()){
+        if(free_indices.find(counter) == free_indices.end()){
             counter++;
             continue;
         }

@@ -1,8 +1,11 @@
 #include "fuser.h"
 
-const bool USE_FUSER = false;
+const bool USE_FUSER = true;
+const int NUMBER_OF_ROBOTS = 10;
 
-std::vector<Robot> robots_in_memory (10);
+std::set<int> set_of_indices;
+
+std::vector<Robot> robots_in_memory;
 std::vector<std::vector<Robot>> observed_robots;
 std::vector<Robot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
@@ -12,7 +15,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 0.1;
+float TIMEOUT_OBSERVATION = 65; //0.1
 
 point_t drone_position = point_zero;
 
@@ -60,7 +63,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     drone_position.y = obs->drone_position.y;
     drone_position.z = obs->drone_position.z;
 
-    int i = -1;
+    int i = 0;
     std::vector<Robot> robots_seen_in_one_message;
     for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
         if(it->visible){
@@ -79,7 +82,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
     }
     observed_robots.push_back(robots_seen_in_one_message);
 
-    i = -1;
+    i = 0;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){
         if(it->visible){
@@ -100,11 +103,16 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
 
 
 //Helper functions
-void initializeRobotsInMemory(){
-    for(int i=0;i<robots_in_memory.size();i++){
+void initializeFuser(){
+    for(int i=0; i<NUMBER_OF_ROBOTS; i++){
+        set_of_indices.emplace(i);
+    }
 
+    for(int i=0;i<NUMBER_OF_ROBOTS;i++){
         // The robots spawn in a circle,
         // but at an initial radius of 1 meters.
+        robots_in_memory.push_back(Robot(i));
+
         float t = 3.14*2.0 * i / (float)robots_in_memory.size();
         point_t point;
         point.x = 10.0 + cosf(t);
@@ -127,20 +135,33 @@ void initializeRobotsInMemory(){
 }
 
 void updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
-    std::set<int> used_indices;
+
+    std::set<int> free_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, used_indices);
-
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
         if(nearest_robot_index >= 0){
             memory.at(nearest_robot_index).update(new_robot_observation);
-            used_indices.insert(nearest_robot_index);
+            free_indices.erase(nearest_robot_index);
         }
     }
 
-    // for(auto it = used_indices.begin(); it != used_indices.end(); it++){
-    //     memory.at(*it).kalmanStepNoObservation(current_time);
-    // }
+    for(auto it = free_indices.begin(); it != free_indices.end(); it++){
+        memory.at(*it).kalmanStepNoObservation(current_time);
+    }
+}
+
+void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
+
+    std::set<int> free_indices = set_of_indices;
+    for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
+        Robot new_robot_observation = *it;
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
+        if(nearest_robot_index >= 0){
+            memory.at(nearest_robot_index).update(new_robot_observation);
+            free_indices.erase(nearest_robot_index);
+        }
+    }
 }
 
 float calcCurrentTime(float seconds){
@@ -156,7 +177,7 @@ int main(int argc, char **argv){
     // Initialize ros-messages
     ros::init(argc, argv, "fuser");
 
-    initializeRobotsInMemory();
+    initializeFuser();
 
     ros::NodeHandle node;
     // geometry_msgs::Pose2D drone_msg;
@@ -189,7 +210,8 @@ int main(int argc, char **argv){
                 updateRobots(*it, robots_in_memory, current_time);
             }
             for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-                updateRobots(*it, obstacle_robots_in_memory, current_time);
+                updateObstacleRobots(*it, obstacle_robots_in_memory, current_time);
+
             }
         }
 
@@ -211,17 +233,17 @@ int main(int argc, char **argv){
 
         observed_robots.clear();
         observed_obstacle_robots.clear();
-
         for(int i=0; i<robots_in_memory.size(); i++){
             ascend_msgs::GRState robot;
 
-            // robot.x = robots_in_memory.at(i).x_hat_k.at<double>(1,1);
-            // robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,1);
-            // robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(3,1);
-            robot.x = robots_in_memory.at(i).getPosition().x;
-            robot.y = robots_in_memory.at(i).getPosition().y;
-            robot.theta = robots_in_memory.at(i).getOrientation();
+            robot.x = robots_in_memory.at(i).x_hat_k.at<double>(0,0);
+            robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,0);
+            robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(4,0);
+            // robot.x = robots_in_memory.at(i).getPosition().x;
+            // robot.y = robots_in_memory.at(i).getPosition().y;
+            // robot.theta = robots_in_memory.at(i).getOrientation();
 
+            robots_in_memory.at(i).setPositionToKalmanPosition();
             if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
                 robots_in_memory.at(i).setVisible(false);
             }
