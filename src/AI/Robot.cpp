@@ -116,6 +116,7 @@ bool Robot::isMoving() {
     std::cout << "dist: " << dist << std::endl;
 
     if (dist < dist_threshold) {
+        std::cout << "ROBOT " << index << " TURNING" << std::endl;
         return false;
     }
     else {
@@ -126,16 +127,16 @@ bool Robot::isMoving() {
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
 
-    if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if its 1 secs since we last updated
+    if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if it's 1 secs since we last updated
         //std::cout << "pos update at elapsed_time = " << elapsed_time << " i: " << index << std::endl;
         this->old_Position = this->position;
         this->old_Orientation = this->orientation;
 
         this->prev_pos_update = elapsed_time;
-    }
 
-    this->position = new_Position;
-    this->orientation = fmod(new_Orientation, 2*MATH_PI);
+        this->position = new_Position;
+        this->orientation = fmod(new_Orientation, 2*MATH_PI);
+    }
 
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);
