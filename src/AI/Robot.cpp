@@ -112,8 +112,8 @@ bool Robot::isMoving() {
     double dist_threshold = this->speed * this->time_between_updates - 0.1; // distance normally driven in 1sec
     double dist = pow(pow(this->position.x - this->old_Position.x,2) + pow(this->position.y - this->old_Position.y,2), 0.5);
     
-    std::cout << "dist_threshold: " << dist_threshold << std::endl;
-    std::cout << "dist: " << dist << std::endl;
+    //std::cout << "dist_threshold: " << dist_threshold << std::endl;
+    //std::cout << "dist: " << dist << std::endl;
 
     if (dist < dist_threshold) {
         std::cout << "ROBOT " << index << " TURNING" << std::endl;
@@ -126,17 +126,31 @@ bool Robot::isMoving() {
 
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
-
-    if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if it's 1 secs since we last updated
+    //if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if it's 1 secs since we last updated
         //std::cout << "pos update at elapsed_time = " << elapsed_time << " i: " << index << std::endl;
-        this->old_Position = this->position;
-        this->old_Orientation = this->orientation;
+        //this->old_Position = this->position;
+        //this->old_Orientation = this->orientation;
 
-        this->prev_pos_update = elapsed_time;
+        //this->prev_pos_update = elapsed_time;
 
-        this->position = new_Position;
-        this->orientation = fmod(new_Orientation, 2*MATH_PI);
+        //this->position = new_Position;
+        //this->orientation = fmod(new_Orientation, 2*MATH_PI);
+    //}
+    //will work for ros_rate = 10
+
+    this->pos_queue.push(new_Position); // push_back
+    this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+
+    if (pos_queue.size() >= 10) {
+        this->old_Position = pos_queue.front();
+        this->pos_queue.pop(); // pop_front
+
+        this->old_Orientation = orientation_queue.front();
+        this->orientation_queue.pop(); // pop_front
     }
+    this->position = pos_queue.back();
+    this->orientation = orientation_queue.back();
+
 
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);
@@ -156,7 +170,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     // kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
 
-void Robot::update(Robot robot){ // might cause problems
+void Robot::update(Robot robot){
     this->old_Position = this->position;
     this->old_Orientation = this->orientation;
     this->position = robot.getPosition();

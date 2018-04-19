@@ -10,6 +10,7 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include <cmath>
 #include "structs.h"
 #include "Plank.h"
+#include <queue>
 #include <opencv2/opencv.hpp>
 
 const float ROBOT_TURN_TIME = 2.5;
@@ -26,6 +27,9 @@ private:
     float time_last_seen;
     float prev_pos_update;
     float time_between_updates;
+    std::queue<point_t> pos_queue;
+    std::queue<float> orientation_queue;
+
     float speed;
     bool visible;
     bool wasInteractedWith;
