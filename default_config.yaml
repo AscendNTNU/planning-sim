@@ -17,7 +17,7 @@
     robot_time_drift: 3.0,
     # Drone
     land_time: 2.0, # after checking once
-    max_ground_time: 30, ###########################################################
+    max_ground_time: 30.0, ###########################################################
     drone_speed: 1.0,
     action_edge_buffer: 0.5,
     reliable_data_height: 1.0,
@@ -32,7 +32,6 @@
     num_plank_points: 10, #Points between endpoints
     plank_point_shrinkage: 2, # Number of point to be excluded on both ends of plank
     num_plank_iterations: 5, # Number of iterations when summing along a plank
-    point_outside_of_plank_tolerance: 0.1,
-
+    point_outside_of_plank_tolerance: 0.1
 }
 
