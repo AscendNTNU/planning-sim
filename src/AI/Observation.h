@@ -6,8 +6,8 @@
 class Observation{
 private:
 	float time_Stamp;
-	std::array<Robot,10> robots;
-	std::array<Robot,4> obstacles;
+	std::array<Robot,Config::NUMBER_OF_TARGETS> robots;
+	std::array<Robot,Config::NUMBER_OF_OBSTACLES> obstacles;
 	Drone drone;
 	bool any_robots_visible;
 public:
@@ -17,10 +17,10 @@ public:
 	Drone getDrone();
 
 	Robot getRobot(int index);
-	std::array<Robot,10> getRobots();
+	std::array<Robot,Config::NUMBER_OF_TARGETS> getRobots();
 
 	Robot getObstacle(int index);
-	std::array<Robot,4> getObstacles();
+	std::array<Robot,Config::NUMBER_OF_OBSTACLES> getObstacles();
 
 	float getTimeStamp();
 

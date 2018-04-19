@@ -11,6 +11,9 @@ std::set<std::string> Config::missing_param_set_;
 
 std::string Config::CONTROL_FSM_ACTION_SERVER;
 std::string Config::AI_SIM_OBSERVATION_TOPIC;
+double TOTAL_COMPETITION_TIME;
+double Config::ROS_RATE_PERCEPTION_CONTROL;
+double Config::ROS_RATE_PLANNING;
 
 //------------------  World variables  -------------------
 
@@ -76,4 +79,5 @@ void Config::loadParams() {
     getStringParam("control_fsm_action_server",  CONTROL_FSM_ACTION_SERVER);
     getStringParam("ai_sim_observation_topic", AI_SIM_OBSERVATION_TOPIC);
     getDoubleParam("total_competition_time", TOTAL_COMPETITION_TIME, 0.0, 610.0);
+    getDoubleParam("ros_rate_perception_control", ROS_RATE_PERCEPTION_CONTROL, 1.0, 400.0);
 }

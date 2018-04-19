@@ -9,7 +9,7 @@ Robot::Robot(int index) {
     this->position = point_zero;
     this->old_Position = point_zero;
     this->orientation = 0;
-    this->speed = 0.33;
+    this->speed = Config::ROBOT_SPEED;
     this->plank = Plank();
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
@@ -47,10 +47,10 @@ Robot::Robot(int index) {
 
 // Static function
 bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
+    float time_drift = Config::ROBOT_TIME_DRIFT;//(elapsed_time * Config::ROBOT_TIME_DRIFT)/600.0;
     //std::cout << "timedrift: " << time_drift << std::endl;
-    float rest = fmod(elapsed_time, 20); 
-    if (rest < ROBOT_TURN_TIME + time_drift) {
+    float rest = fmod(elapsed_time, Config::ROBOT_REVERSE_INTERVAL); 
+    if (rest < Config::ROBOT_TURN_TIME + time_drift) {
         return true;
     }
     return false;
@@ -123,7 +123,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->index = index;
     this->position = new_Position;
     this->orientation = fmod(new_Orientation, 2*MATH_PI);
-    this->time_after_turn_start = fmod(elapsed_time, 20);
+    this->time_after_turn_start = fmod(elapsed_time, Config::ROBOT_REVERSE_INTERVAL);
     this->time_last_seen = elapsed_time;
     this->visible = visible;
 
@@ -131,11 +131,15 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->t_km1 = this->t_k;
     this->t_k = elapsed_time;
 
-    if (this->time_after_turn_start < ROBOT_TURN_TIME) {
+    if (this->time_after_turn_start < Config::ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
-        this->plank.updatePlank(this->position, estimated_orientation, this->time_after_turn_start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
+        this->plank.updatePlank(this->position, estimated_orientation, 
+                                this->time_after_turn_start, 
+                                Config::ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
     } else {
-        this->plank.updatePlank(this->position, this->orientation, this->time_after_turn_start, ROBOT_TURN_TIME);
+        this->plank.updatePlank(this->position, this->orientation, 
+                                this->time_after_turn_start, 
+                                Config::ROBOT_TURN_TIME);
     }
     // kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
@@ -152,12 +156,6 @@ void Robot::update(Robot robot){
     // kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }
 
-Robot Robot::getRobotPositionAtTime(float elapsed_time){
-    point_t point = this->plank.getRobotPositionAtTime(elapsed_time);
-    Robot robot;
-    robot.update(this->index, point, this->orientation, elapsed_time, true);
-    return robot;
-}
 
 void Robot::setPositionOrientation(point_t position, float q) {
     this->position = position;

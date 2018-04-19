@@ -23,7 +23,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot chooseTarget(std::array<Robot,10> robots, float elapsed_time);
+    Robot chooseTarget(std::array<Robot,Config::NUMBER_OF_TARGETS> robots, float elapsed_time);
 
     /**
     @brief Returns best action along the plank of a target robot
@@ -44,6 +44,8 @@ public:
 
 
     action_t triangleSearch(Drone drone);
+
+    bool pointIsWithinEdgeBuffer(point_t point);
 
     action_t getBestActionAtPosition(float target_orientation, plank_point_t position);
 

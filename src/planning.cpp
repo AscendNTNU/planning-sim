@@ -113,18 +113,20 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(10);
+    ros::Rate rate(Config::ROS_RATE_PERCEPTION_CONTROL);
     while (ros::ok()) {
         ros::spinOnce();
 
         float elapsed_time = ai_controller.observation.getTimeStamp();
         // printf("%f\n", elapsed_time);
-        if(elapsed_time > 600 && elapsed_time != 0.0) {
+        if(elapsed_time > Config::TOTAL_COMPETITION_TIME && elapsed_time != 0.0) {
           break;
         }
 
         if(ready_for_new_action) {
-            if(ai_controller.observation.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
+            if(ai_controller.observation.anyRobotsVisible() 
+                && (!Robot::robotsAtTurnTime(elapsed_time) 
+                || elapsed_time < Config::ROBOT_TURN_TIME )){
                 // Right after start, robots are not turning while at turn time.
                 action = ai_controller.stateHandler();
 
@@ -147,7 +149,9 @@ int main(int argc, char **argv) {
 
         GoalState action_state = client.getState();
 
-        if (action.type != current_action_type || action_state.toString() != current_action_state){
+        if (action.type != current_action_type 
+            || action_state.toString() 
+            != current_action_state){
             // std::cout << std::endl << "Action type: " << actionTypeToString(action.type) << std::endl;
             // std::cout << "-----------" << action_state.toString() << "-------" << std::endl;
             current_action_type = action.type;
@@ -178,7 +182,7 @@ int main(int argc, char **argv) {
                 if (action.type == land_at_point) { // land in front of
                     ros::Duration(0.5).sleep();
                 } else if (action.type == land_on_top_of) {
-                    ros::Duration(ROBOT_TURN_TIME/4.0 + 0.1).sleep();
+                    ros::Duration(Config::TURN_TIME/4.0 + 0.1).sleep();
                 }
                 // The goal was successfull!
             case GoalState::LOST:
@@ -193,10 +197,14 @@ int main(int argc, char **argv) {
     printf("Sim finished \n");
     int numOut = 0;
     for(int i = 0; i < 10; i++) {
-        printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
-        printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
+        printf("Robot %d: (%f, %f)\n", 
+            i, ai_controller.observation.getRobot(i).getPosition().x, 
+            ai_controller.observation.getRobot(i).getPosition().y);
+        printf("Robot %d: was interacted with? %d \n", 
+            i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
         // printf(ai_controller.observation.getRobot(i));
-        if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
+        if(ai_controller.observation.getRobot(i).getPosition().y>20 
+            && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
             numOut += 1;
         }
     }

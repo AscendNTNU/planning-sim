@@ -4,7 +4,7 @@ Drone::Drone(){
 	this->position = point_zero;
 	this->orientation = 0;
 	this->angle_Of_Motion = 0;
-	this->speed = DRONE_SPEED;
+	this->speed = Config::DRONE_SPEED;
 }
 
 point_t Drone::getPosition(){

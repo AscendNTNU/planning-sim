@@ -12,8 +12,6 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include "Plank.h"
 #include <opencv2/opencv.hpp>
 
-const float ROBOT_TURN_TIME = 2.5;
-
 class Robot{
 private:
     int index;

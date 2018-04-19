@@ -75,7 +75,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
             robot.setPositionOrientation(temp_Position, start_Orientation);
             i += 1;
         }
-        time_after_intersection = time_after_intersection + (step_size)/Robot_Speed;
+        time_after_intersection = time_after_intersection + (step_size)/Config::Robot_Speed;
 	}
     return max;
 }
@@ -175,7 +175,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 //             y = y+step_y;
 //             i += 1;
 //         }
-//         time_after_intersection = time_after_intersection + (step_size)/Robot_Speed;
+//         time_after_intersection = time_after_intersection + (step_size)/Config::Robot_Speed;
 
 //     }
 //     best_action.time_until_intersection = temp;

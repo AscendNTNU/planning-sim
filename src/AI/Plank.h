@@ -19,7 +19,7 @@ class Plank{
 	private:
 	    plank_point_t end_point; //First endpoint robot meets
 	    plank_point_t start_point; //Second endpoint robot meets
-	    plank_point_t plank_points[10]; //Points between endpoints
+	    plank_point_t plank_points[Config::NUM_PLANK_POINTS]; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;
@@ -28,7 +28,7 @@ class Plank{
 		Plank();
 
 		///Plank constructor for a robot at a given position/time
-		Plank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
+		Plank(point_t position, float angle, float time_after_turn_start);
 
 		///Get reward of current plank
 		float getReward();
@@ -40,7 +40,7 @@ class Plank{
 		float getLength();
 
 		///Get number of plank points
-		float getNumPlankPoints();
+		float getTotalNumPlankPoints();
 
 		///@brief Get a point on the plank
 		///There are 12 points on the plank. The start point 0, the end point 11 and 10 points between
@@ -90,7 +90,7 @@ class Plank{
 		@param angle Robot angle in radians
 		@param time_after_turn_start Seconds passed since the robot started turning
 		*/
-		void updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
+		void updatePlank(point_t position, float angle, float time_after_turn_start);
 		
 		///Check if a point is outside of the plank
 		/**

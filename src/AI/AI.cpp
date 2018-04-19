@@ -16,9 +16,9 @@ action_t AI::getBestAction(Robot target) {
     return best_Action;
 }
 
-Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
+Robot AI::chooseTarget(std::array<Robot,Config::NUMBER_OF_TARGETS> robots, float elapsed_time) {
     Robot robot;
-    float best_reward = -1000000;
+    float best_reward = Config::INITIAL_PLANK_REWARD;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
@@ -43,10 +43,10 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 }
 
 //Alternative method for choosing target, this one uses the best drone position at intersection instead of the best plank.
-// Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
+// Robot AI::chooseTarget(std::array<Robot,Config::NUMBER_OF_TARGETS> robots, Drone drone) {
 //     Robot robot;
 //     point_t best_pos = point_zero;
-//     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+//     float best_reward = Plank().getReward();//world.getGridValue(best_pos);
 
 //     // Return an invalid robot if none was assigned
 //     Robot target = Robot(-1);
@@ -56,9 +56,9 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 //         if (robot.getIndex() != -1 && robot.getVisible() && robot.isMoving()) {
 
 //             // std::cout << "index" << robot.getIndex();
-//             if(world.getGridValue(best_pos.x, best_pos.y) > best_reward && !robot.plank.willExitGreen()){
+//             if(world.getGridValue(best_pos.x) > best_reward && !robot.plank.willExitGreen()){
 //                 best_pos = drone.getInterceptPoint(robot);
-//                 best_reward = world.getGridValue(best_pos.x, best_pos.y);
+//                 best_reward = world.getGridValue(best_pos);
 //                 target = robot;
 //             }
 //         }
@@ -66,8 +66,20 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 //     return target;
 // }
 
+bool AI::pointIsWithinEdgeBuffer(point_t point) {
+    if (   step_point.point.y < Config::GRID_BOUNDS_Y - Config::ACTION_EDGE_BUFFER
+        && step_point.point.x < Config::GRID_BOUNDS_X - Config::ACTION_EDGE_BUFFER
+        && step_point.point.y > Config::ACTION_EDGE_BUFFER
+        && step_point.point.x > Config::ACTION_EDGE_BUFFER) 
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 action_t AI::chooseAction(Robot target) {
-    // // Temporary max rewarded action
+    // Temporary max rewarded action
     action_t best_Action = empty_action;
 
     // Check if current plank is good enough?
@@ -78,11 +90,11 @@ action_t AI::chooseAction(Robot target) {
 
         action_t step_Action;
 
-        for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
+        for (int i = Config::PLANK_POINT_SHRINKAGE; i < target.plank.getTotalNumPlankPoints() - Config::PLANK_POINT_SHRINKAGE; i++) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
             plank_point_t step_point = target.plank.getPoint(i);
-            if (step_point.point.y < 19.5) { // not outside of green
+            if (pointIsWithinEdgeBuffer(step_point)) {
                 step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 
                 if (step_Action.reward > best_Action.reward) {
@@ -100,14 +112,14 @@ action_t AI::chooseAction(Robot target) {
 }
 
 action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t position) {
-    int num_Iterations = 5; // Number of iterations when summing along a plank
+    int num_Iterations = Config::NUM_PLANK_ITERATIONS; // Number of iterations when summing along a plank
     action_t action;
     action.where_To_Act = position.point;
 
     Plank plank_On_Top = Plank(position.point, fmod(target_orientation + 2*MATH_PI - (MATH_PI/4), 2*MATH_PI), 
-                                    position.time_since_start_turn, ROBOT_TURN_TIME);
+                                    position.time_since_start_turn, Config::ROBOT_TURN_TIME);
     Plank plank_In_Front = Plank(position.point, fmod(target_orientation + MATH_PI, 2*MATH_PI), 
-                                    position.time_since_start_turn, ROBOT_TURN_TIME);
+                                    position.time_since_start_turn, Config::ROBOT_TURN_TIME);
 
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }

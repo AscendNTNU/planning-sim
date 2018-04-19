@@ -103,7 +103,7 @@ int main(int argc, char **argv) {
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();
 
-    ros::Rate rate(20.0);
+    ros::Rate rate(Config::ROS_RATE_PERCEPTION_CONTROL);
     while (ros::ok()){
         ros::spinOnce();
         // Collect new observation
@@ -122,8 +122,10 @@ int main(int argc, char **argv) {
             robot.x = state.target_x[i];
             robot.y = state.target_y[i];
             robot.theta = state.target_q[i];
-            robot.visible = true;
-            // robot.visible = state.target_in_view[i];
+            robot.visible = state.target_in_view[i];
+            if (Config::PARTIAL_OBSERVABILITY == false) {
+                robot.visible = true;
+            }
             observation.ground_robots[i] = robot;
         }
 
