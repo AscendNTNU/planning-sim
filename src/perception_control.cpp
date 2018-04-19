@@ -22,8 +22,29 @@ using ActionServerType = actionlib::SimpleActionServer<ascend_msgs::ControlFSMAc
 using GoalType = ascend_msgs::ControlFSMGoal;
 sim_Observed_State state;
 
+int mapAIIndexToSimIndex(sim_Command command){
+    float nearest_distance = 10000;
+    float target = 0;
+    point_t command_position = point_zero;
+
+    for(int i=0; i<Num_Targets; i++){
+        float x_Distance = command.x - state.target_x[i];
+        float y_Distance = command.y - state.target_y[i];
+        float distance = sqrt(pow(x_Distance,2) + pow(y_Distance,2));
+        if(distance < nearest_distance){
+            nearest_distance = distance;
+            target = i;
+        }
+    }
+    return target;
+}
+
 sim_Command action_ROS2Sim(GoalType goal) {
   sim_Command command;
+  command.x = goal.dx + state.drone_x;
+  command.y = goal.dy + state.drone_y;
+  command.i = mapAIIndexToSimIndex(command);
+  command.reward = goal.reward;
 
     switch(goal.cmd){
 
@@ -32,6 +53,7 @@ sim_Command action_ROS2Sim(GoalType goal) {
       break;
     case ascend_msgs::ControlFSMGoal::LAND_ON_TOP_OF:
       command.type = sim_CommandType_LandOnTopOf;
+      
       break;
     case ascend_msgs::ControlFSMGoal::LAND_AT_POINT:
       command.type = sim_CommandType_Land;
@@ -47,10 +69,6 @@ sim_Command action_ROS2Sim(GoalType goal) {
       break;
   }
 
-  command.x = goal.dx + state.drone_x;
-  command.y = goal.dy + state.drone_y;
-  command.i = goal.target_id;
-  command.reward = goal.reward;
   return command;
 }
 
