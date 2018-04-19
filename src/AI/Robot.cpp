@@ -15,7 +15,7 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
-    this->prev_pos_update = 0;
+    //this->prev_pos_update = 0;
     this->time_between_updates = 1;
     
     //Kalman parameters
@@ -116,7 +116,7 @@ bool Robot::isMoving() {
     //std::cout << "dist: " << dist << std::endl;
 
     if (dist < dist_threshold) {
-        std::cout << "ROBOT " << index << " TURNING" << std::endl;
+        //std::cout << "ROBOT " << index << " TURNING" << std::endl;
         return false;
     }
     else {
@@ -126,22 +126,12 @@ bool Robot::isMoving() {
 
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
-    //if ((elapsed_time - this->prev_pos_update) > time_between_updates) { // if it's 1 secs since we last updated
-        //std::cout << "pos update at elapsed_time = " << elapsed_time << " i: " << index << std::endl;
-        //this->old_Position = this->position;
-        //this->old_Orientation = this->orientation;
-
-        //this->prev_pos_update = elapsed_time;
-
-        //this->position = new_Position;
-        //this->orientation = fmod(new_Orientation, 2*MATH_PI);
-    //}
-    //will work for ros_rate = 10
+    int planning_ros_rate = 20;
 
     this->pos_queue.push(new_Position); // push_back
     this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
 
-    if (pos_queue.size() >= 10) {
+    if (pos_queue.size() >= planning_ros_rate * time_between_updates) {
         this->old_Position = pos_queue.front();
         this->pos_queue.pop(); // pop_front
 
