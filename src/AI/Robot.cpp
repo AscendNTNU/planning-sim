@@ -156,6 +156,16 @@ void Robot::setVisible(bool set_value){
     this->visible = set_value;
 }
 
+bool Robot::isInArena(){
+    if(this->position.x < 0 || this->position.x > 20){
+        return false;
+    }
+    else if(this->position.y > 20 || this->position.y < 0){
+        return false;
+    }
+    return true;
+}
+
 bool Robot::isMoving() {
     if (this->old_Position.x == this->position.x &&
         this->old_Position.y == this->position.y) {

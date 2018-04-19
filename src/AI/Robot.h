@@ -106,19 +106,21 @@ public:
 
     void setIndex(int index);
 
+
+    
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    bool approaching(point_t point);
+    
+    bool isInArena();
+    
     /**
     @brief Set the visibility of the Robot
     bool setVisibility();
     @param visibility Boolean value representing if the robot is visible or not
     */
-
-    bool approaching(point_t point);
-    /**
-    @brief check if robot is approaching a point
-    @param a point_t point
-    */
-    
-
     void setVisibility(bool visible);
 
     /**

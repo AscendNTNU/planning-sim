@@ -35,12 +35,14 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
+        robots_seen_in_one_message.push_back(robot);
         if(msg->robot_color.at(i)!=3){
-            robots_seen_in_one_message.push_back(robot);
+                robots_seen_in_one_message.push_back(robot);
         }else{
-            obstacle_robots_seen_in_one_message.push_back(robot);
-        }        
+                obstacle_robots_seen_in_one_message.push_back(robot);
+        }
     }
+    
     observed_robots.push_back(robots_seen_in_one_message);
     observed_obstacle_robots.push_back(obstacle_robots_seen_in_one_message);
 }
@@ -244,7 +246,8 @@ int main(int argc, char **argv){
             // robot.theta = robots_in_memory.at(i).getOrientation();
 
             robots_in_memory.at(i).setPositionToKalmanPosition();
-            if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
+            if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION ||
+                !robots_in_memory.at(i).isInArena()){
                 robots_in_memory.at(i).setVisible(false);
             }
 
