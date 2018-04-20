@@ -1,7 +1,7 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 1;
+const int NUMBER_OF_ROBOTS = 10;
 
 std::set<int> set_of_indices;
 
@@ -15,7 +15,7 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 65; //0.1
+float TIMEOUT_OBSERVATION = 20; //0.1
 
 point_t drone_position = point_zero;
 
