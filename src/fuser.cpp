@@ -21,6 +21,11 @@ point_t drone_position = point_zero;
 
 // Callbacks
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+    
+    if(drone_position.z < 0.8){
+       return; 
+    }
+
     std::vector<Robot> robots_seen_in_one_message;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
