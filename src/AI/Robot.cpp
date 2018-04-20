@@ -159,6 +159,16 @@ void Robot::setVisible(bool set_value){
     this->visible = set_value;
 }
 
+bool Robot::isInArena(){
+    if(this->position.x < 0 || this->position.x > 20){
+        return false;
+    }
+    else if(this->position.y > 20 || this->position.y < 0){
+        return false;
+    }
+    return true;
+}
+
 bool Robot::isMoving() {
     double dist_threshold = this->speed * this->time_between_updates - 0.1; // distance normally driven in 1sec
     double dist = pow(pow(this->position.x - this->old_Position.x,2) + pow(this->position.y - this->old_Position.y,2), 0.5);
