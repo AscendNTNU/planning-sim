@@ -219,17 +219,21 @@ int main(int argc, char **argv){
 
         else{
             int i = 0;
-            std::vector<Robot> last_observation = *observed_robots.begin();
-            for(auto it = last_observation.begin(); it != last_observation.end(); it++){
-                robots_in_memory.at(i).update(*it);
-                i++;
+            if(observed_robots.size() != 0){
+                std::vector<Robot> last_observation = *observed_robots.begin();
+                for(auto it = last_observation.begin(); it != last_observation.end(); it++){
+                    robots_in_memory.at(i).update(*it);
+                    i++;
+                }
             }
 
             i = 0;
-            std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
-            for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
-                obstacle_robots_in_memory.at(i).update(*it);
-                i++;
+            if(observed_obstacle_robots.size() != 0){
+                std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
+                for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
+                    obstacle_robots_in_memory.at(i).update(*it);
+                    i++;
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include <cmath>
 
 // Redundant as you can call Robot(-1)
 Robot::Robot():Robot(-1) {
@@ -14,6 +15,8 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
+    //this->prev_pos_update = 0;
+    this->time_between_updates = 1;
     
     //Kalman parameters
     this->F = (cv::Mat_<double>(6,6) << 1, 0, 0, 0, 0, 0,
@@ -167,26 +170,43 @@ bool Robot::isInArena(){
 }
 
 bool Robot::isMoving() {
-    if (this->old_Position.x == this->position.x &&
-        this->old_Position.y == this->position.y) {
+    double dist_threshold = this->speed * this->time_between_updates - 0.1; // distance normally driven in 1sec
+    double dist = pow(pow(this->position.x - this->old_Position.x,2) + pow(this->position.y - this->old_Position.y,2), 0.5);
+    
+    //std::cout << "dist_threshold: " << dist_threshold << std::endl;
+    //std::cout << "dist: " << dist << std::endl;
+
+    if (dist < dist_threshold) {
+        //std::cout << "ROBOT " << index << " TURNING" << std::endl;
         return false;
-    } else {
+    }
+    else {
         return true;
     }
 }
 
 void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     float estimated_orientation = 0;
+    int planning_ros_rate = 20;
 
-    this->old_Position = this->position;
-    this->old_Orientation = this->orientation;
+    this->pos_queue.push(new_Position); // push_back
+    this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+
+    if (pos_queue.size() >= planning_ros_rate * time_between_updates) {
+        this->old_Position = pos_queue.front();
+        this->pos_queue.pop(); // pop_front
+
+        this->old_Orientation = orientation_queue.front();
+        this->orientation_queue.pop(); // pop_front
+    }
+    this->position = pos_queue.back();
+    this->orientation = orientation_queue.back();
+
 
     this->index = index;
-    this->position = new_Position;
-    this->orientation = fmod(new_Orientation, 2*MATH_PI);
     this->time_after_turn_start = fmod(elapsed_time, 20);
     this->time_last_seen = elapsed_time;
-    this->visible = visible;
+    this->visible = visible;   
 
     if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
@@ -202,6 +222,7 @@ void Robot::update(Robot robot){
     this->old_Orientation = this->orientation;
     this->position = robot.getPosition();
     this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
+
     this->time_after_turn_start = robot.getTimeAfterTurn();
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();
