@@ -46,7 +46,7 @@ float Plank::getNumPlankPoints() {
 }
 
 bool Plank::willExitGreen(){
-    float out_limit = 0.5;
+    float out_limit = 0.3;
     if(this->end_point.point.y > 20 + out_limit || this->start_point.point.y > 20 + out_limit){
         return true;
     }
@@ -115,7 +115,7 @@ float Plank::calculateReward(){
 void Plank::updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME){
     this->end_point.is_ahead   = true;
     this->start_point.is_ahead = false;
-    this->end_point.time_since_start_turn   = 20;
+    this->end_point.time_since_start_turn = 20;
     this->start_point.time_since_start_turn = 0;
 
     this->angle = angle;
