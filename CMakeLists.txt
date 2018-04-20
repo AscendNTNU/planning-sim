@@ -27,7 +27,7 @@ catkin_package(
 add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
-<!-- set(CMAKE_BUILD_TYPE Debug) -->
+## set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
