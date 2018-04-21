@@ -24,6 +24,11 @@ point_t drone_position = point_zero;
 
 // Callbacks
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
+    
+    if(drone_position.z < 0.8){
+       return; 
+    }
+
     std::vector<Robot> robots_seen_in_one_message;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
@@ -38,12 +43,14 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
+        robots_seen_in_one_message.push_back(robot);
         if(msg->robot_color.at(i)!=3){
-            robots_seen_in_one_message.push_back(robot);
+                robots_seen_in_one_message.push_back(robot);
         }else{
-            obstacle_robots_seen_in_one_message.push_back(robot);
-        }        
+                obstacle_robots_seen_in_one_message.push_back(robot);
+        }
     }
+    
     observed_robots.push_back(robots_seen_in_one_message);
     observed_obstacle_robots.push_back(obstacle_robots_seen_in_one_message);
 }
