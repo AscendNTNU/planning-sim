@@ -2,6 +2,10 @@
 
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
+const float MAX_VISIBILITY_RADIUS = 2;
+const float TIMEOUT_ROBOT_NOT_VISIBLE = 30;
+const float TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
+
 
 std::set<int> set_of_indices;
 
@@ -15,7 +19,6 @@ World world = World(0);
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 
-float TIMEOUT_OBSERVATION = 65; //0.1
 
 point_t drone_position = point_zero;
 
@@ -164,6 +167,68 @@ void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vect
     }
 }
 
+bool isModelStillReliable(Robot robot, point_t drone_position, float elapsed_time){
+
+    //Different timeouts depending on if our model says the robot should be visible or not
+
+    float timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
+
+    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
+        timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
+    }
+
+    if(elapsed_time - robot.getTimeLastSeen() > timeout){
+        return false;
+    }
+    return true;
+}
+
+ascend_msgs::AIWorldObservation createObservation(float elapsed_time){
+    ascend_msgs::AIWorldObservation observation;
+    // Ground robots
+    for(int i=0; i<robots_in_memory.size(); i++){
+        ascend_msgs::GRState robot;
+
+        robot.x = robots_in_memory.at(i).x_hat_k.at<double>(0,0);
+        robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,0);
+        robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(4,0);
+
+        robots_in_memory.at(i).setPositionToKalmanPosition();
+
+        bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
+        robots_in_memory.at(i).setVisible(is_reliable);
+
+        robot.visible = robots_in_memory.at(i).getVisible();
+        observation.ground_robots.at(i) = robot;
+    }
+
+    // Obstacle robots
+    for(int i=0; i<obstacle_robots_in_memory.size(); i++){
+        ascend_msgs::GRState robot;
+
+        robot.x = obstacle_robots_in_memory.at(i).getPosition().x;
+        robot.y = obstacle_robots_in_memory.at(i).getPosition().y;
+        robot.theta = obstacle_robots_in_memory.at(i).getOrientation();
+
+        bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
+        obstacle_robots_in_memory.at(i).setVisible(is_reliable);
+
+        robot.visible = obstacle_robots_in_memory.at(i).getVisible();
+        observation.obstacle_robots.at(i) = robot;
+    }
+
+    geometry_msgs::Point32 drone;
+    drone.x = drone_position.x;
+    drone.y = drone_position.y;
+    drone.z = drone_position.z;
+    observation.drone_position = drone;
+    observation.header.seq = 1;
+
+    observation.elapsed_time = elapsed_time;
+
+    return observation;
+}
+
 float calcCurrentTime(float seconds){
     if(elapsed_time == 0.0){
         return seconds-start_time.sec; 
@@ -199,11 +264,7 @@ int main(int argc, char **argv){
             continue;
         }
         
-        ascend_msgs::AIWorldObservation observation;
-
         float current_time = calcCurrentTime(ros::Time::now().sec);
-        observation.elapsed_time = current_time;
-
 
         if(USE_FUSER){
             for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
@@ -237,47 +298,10 @@ int main(int argc, char **argv){
 
         observed_robots.clear();
         observed_obstacle_robots.clear();
-        for(int i=0; i<robots_in_memory.size(); i++){
-            ascend_msgs::GRState robot;
-
-            robot.x = robots_in_memory.at(i).x_hat_k.at<double>(0,0);
-            robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,0);
-            robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(4,0);
-            // robot.x = robots_in_memory.at(i).getPosition().x;
-            // robot.y = robots_in_memory.at(i).getPosition().y;
-            // robot.theta = robots_in_memory.at(i).getOrientation();
-
-            robots_in_memory.at(i).setPositionToKalmanPosition();
-            if(observation.elapsed_time - robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
-                robots_in_memory.at(i).setVisible(false);
-            }
-
-            robot.visible = robots_in_memory.at(i).getVisible();
-            observation.ground_robots.at(i) = robot;
-        }
-
-        for(int i=0; i<obstacle_robots_in_memory.size(); i++){
-            ascend_msgs::GRState robot;
-
-            robot.x = obstacle_robots_in_memory.at(i).getPosition().x;
-            robot.y = obstacle_robots_in_memory.at(i).getPosition().y;
-            robot.theta = obstacle_robots_in_memory.at(i).getOrientation();
-
-            if(observation.elapsed_time - obstacle_robots_in_memory.at(i).getTimeLastSeen() > TIMEOUT_OBSERVATION){
-                obstacle_robots_in_memory.at(i).setVisible(false);
-            }
-
-            robot.visible = obstacle_robots_in_memory.at(i).getVisible();
-            observation.obstacle_robots.at(i) = robot;
-        }
-
-        geometry_msgs::Point32 drone;
-        drone.x = drone_position.x;
-        drone.y = drone_position.y;
-        drone.z = drone_position.z;
-        observation.drone_position = drone;
-        observation.header.seq = 1;
+        std::cout << current_time << std::endl;
+        ascend_msgs::AIWorldObservation observation = createObservation(current_time);
         observation_pub.publish(observation);
+
         rate.sleep();
     }
 
