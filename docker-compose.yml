@@ -59,6 +59,18 @@ services:
       - 8080:80
     volumes:
       - ./src/AI/Documentation/html:/usr/share/nginx/html:ro
+  rviz:
+    image: osrf/ros:kinetic-desktop-full-xenial
+    tty: true
+    command: rqt
+    environment:
+      DISPLAY:
+      QT_X11_NO_MITSHM: 1
+    devices:
+      - /dev/dri
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    network_mode: "host"
   gui:
     image: ascendntnu/ai-sim:1.0
     tty: true

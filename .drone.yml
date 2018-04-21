@@ -46,7 +46,7 @@ pipeline:
       status: success
       event: push
     script:
-      - /home/ascend/run-benchmark.sh ${DRONE_COMMIT_SHA} ${DRONE_COMMIT_MESSAGE}
+      - /home/ascend/run-benchmark.sh ${DRONE_COMMIT_SHA} "${DRONE_COMMIT_MESSAGE}"
 
 
 clone:
