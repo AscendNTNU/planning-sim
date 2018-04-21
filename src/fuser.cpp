@@ -87,7 +87,9 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             bool visible = true;
 
             robot.update(i, position, q , time, visible);
-            robots_seen_in_one_message.push_back(robot);
+            if(robot.isInArena()){
+                robots_seen_in_one_message.push_back(robot);
+            }
         }
     }
     observed_robots.push_back(robots_seen_in_one_message);
@@ -305,7 +307,6 @@ int main(int argc, char **argv){
 
         observed_robots.clear();
         observed_obstacle_robots.clear();
-        std::cout << current_time << std::endl;
         ascend_msgs::AIWorldObservation observation = createObservation(current_time);
         observation_pub.publish(observation);
 
