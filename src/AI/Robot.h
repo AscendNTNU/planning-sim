@@ -30,6 +30,8 @@ private:
     std::queue<point_t> pos_queue;
     std::queue<float> orientation_queue;
 
+    bool side_camera;
+
     float speed;
     bool visible;
     bool wasInteractedWith;
@@ -112,7 +114,9 @@ public:
 
     void setIndex(int index);
 
+    bool getSideCamera();
 
+    void setSideCamera(bool value);
     
     /**
     @brief check if robot is approaching a point
