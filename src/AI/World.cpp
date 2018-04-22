@@ -1,5 +1,6 @@
 #include "World.h"
 
+using planning::Config;
 
 //Constructors
 /*
@@ -8,9 +9,12 @@
     @param orientation - float value describing the orientation of the field.
 */
 World::World(float orientation){
-	this->origin = point_Zero;
+	this->origin = point_zero;
 	this->orientation = orientation;
-	this->bounds = (bounds_t){.x_Max = 20, .y_Max = 20}; 
+	this->bounds = (bounds_t){
+        .x_Max = Config::GRID_BOUNDS_X, 
+        .y_Max = Config::GRID_BOUNDS_Y
+    }; 
 }
 
 //Get
@@ -31,7 +35,9 @@ bounds_t World::getBounds(){
     @param y - The y position on the field
     @return the points value at the (x, y) position given
 */
-float World::getGridValue(float X, float Y){
+float World::getGridValue(point_t point){
+    float X = point.x;
+    float Y = point.y;
     float value = (-9.995004e+02)+(9.976812e+01)*X+(-1.004701e+02)*Y
         +(-5.785388e+01)*pow(X,2)+(1.161562e+01)*X*Y+(5.477725e+01)*pow(Y,2)
         +(1.260229e+01)*pow(X,3)+(1.299816e+01)*pow(X,2)*Y+(-1.438667e+01)*X*pow(Y,2)+(-1.158062e+01)*pow(Y,3)

@@ -11,13 +11,17 @@ movement. It is responisble for setting value on a ground robots position.
 #include "structs.h"
 #include "World.h"
 
+using planning::Config;
+
 extern World world;
+
+class Robot;
 
 class Plank{
 	private:
 	    plank_point_t end_point; //First endpoint robot meets
 	    plank_point_t start_point; //Second endpoint robot meets
-	    plank_point_t plank_points[10]; //Points between endpoints
+	    std::vector<plank_point_t> plank_points; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;
@@ -26,7 +30,7 @@ class Plank{
 		Plank();
 
 		///Plank constructor for a robot at a given position/time
-		Plank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME);
+		Plank(point_t position, float angle, float time_after_turn_start);
 
 		///Get reward of current plank
 		float getReward();
@@ -38,7 +42,7 @@ class Plank{
 		float getLength();
 
 		///Get number of plank points
-		float getNumPlankPoints();
+		float getTotalNumPlankPoints();
 
 		///@brief Get a point on the plank
 		///There are 12 points on the plank. The start point 0, the end point 11 and 10 points between
@@ -86,9 +90,9 @@ class Plank{
 		@brief Updates the plank given the ground robots state.
 		@param position Robot position
 		@param angle Robot angle in radians
-		@param time_After_Turn_Start Seconds passed since the robot started turning
+		@param time_after_turn_start Seconds passed since the robot started turning
 		*/
-		void updatePlank(point_t position, float angle, float time_After_Turn_Start, float ROBOT_TURN_TIME);
+		void updatePlank(point_t position, float angle, float time_after_turn_start);
 		
 		///Check if a point is outside of the plank
 		/**
@@ -97,6 +101,8 @@ class Plank{
 		@return Boolean
 		*/
 		bool pointIsOutsideOfPlank(point_t point);
+
+		point_t getRobotPositionAtTime(float elapsed_time);
 
 	    friend std::ostream& operator<<(std::ostream &strm, const Plank &plank);
 };

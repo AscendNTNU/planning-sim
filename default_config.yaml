@@ -1,7 +1,37 @@
 {
-    time_chatter_topic: time_chatter,
-    ground_robot_topic: groundrobot_chatter,
-    drone_topic: drone_chatter,
-    control_action_server: control_action_server
-  }
+    # ROS
+    control_fsm_action_server: /control/fsm/action_server,
+    ai_sim_observation_topic: /ai/sim/observation_topic,
+    ros_rate_perception_control: 20.0,
+    ros_rate_planning: 10.0,
+    # Competition
+    total_competition_time: 600.0,
+    number_of_robots: 10,   # Sets array length in AI
+    number_of_obstacles: 4, # Sets array length in AI
+    grid_bounds_x: 20,
+    grid_bounds_y: 20,
+    # Robot
+    robot_turn_time: 2.5,
+    robot_speed: 0.3333,
+    robot_reverse_interval: 20.0,
+    robot_time_drift: 3.0,
+    # Drone
+    land_time: 2.0, # after checking once
+    max_ground_time: 30.0, ###########################################################
+    drone_speed: 1.0,
+    action_edge_buffer: 0.5,
+    reliable_data_height: 1.0,
+    # AI
+    partial_observability: true,
+    similarity_threshold: 1.5,
+    maxdist_drone_to_point: 0.3,
+    maxdist_robot_to_point: 1.5, 
+    maxdist_actionpoints: 10, # essentially how much the AI will change its mind (high number = frequent action reconsiderations)
+    # Plank
+    initial_plank_reward: -1000000,
+    num_plank_points: 10, #Points between endpoints
+    plank_point_shrinkage: 2, # Number of point to be excluded on both ends of plank
+    num_plank_iterations: 5, # Number of iterations when summing along a plank
+    point_outside_of_plank_tolerance: 0.1
+}
 

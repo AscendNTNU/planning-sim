@@ -12,6 +12,8 @@ It is responsible for creating acoordinate system and appropriate reward values 
 #include <time.h>
 #include <cmath>
 
+using planning::Config;
+
 class World{
 private:
 	point_t origin;
@@ -43,5 +45,5 @@ public:
     @param y - The y position on the field
     @return the points value at the (x, y) position given
 	*/
-	float getGridValue(float X, float Y);
+	float getGridValue(point_t point);
 };

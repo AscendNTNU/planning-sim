@@ -10,8 +10,9 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include <cmath>
 #include "structs.h"
 #include "Plank.h"
+#include <opencv2/opencv.hpp>
 
-const float ROBOT_TURN_TIME = 2.5;
+using planning::Config;
 
 class Robot{
 private:
@@ -20,16 +21,37 @@ private:
     float orientation;
     point_t old_Position;
     float old_Orientation;
-    float time_After_Turn_Start; ///< Is the elapsed time passed since the start of the last rotation/turn.
+    float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
+    float time_last_seen;
     float speed;
     bool visible;
     bool wasInteractedWith;
+    cv::Mat F1;//(3,3,DataType<float>::type);
+    cv::Mat F2;
+    cv::Mat H;
+    cv::Mat P_k;
+    cv::Mat P_km1;
+    cv::Mat P_km1_km1;
+    cv::Mat x_hat_km1;
+    cv::Mat R_k;
+    cv::Mat Q_k;
+    float t_k;
+    float t_km1;
+
+    double xMeasCovar;
+    double yMeasCovar;
+    double thMeasCovar_downCam;
+    double thMeasCovar_sideCam;
+    
 public:
+    
+    cv::Mat x_hat_k;
     ///Robot constructors
     Robot();
     Robot(int index);
-    Plank current_Plank;
+    
+    Plank plank;
 
     static bool robotsAtTurnTime(float elapsed_time);
 
@@ -38,6 +60,8 @@ public:
     @return The robot index
     */
     int getIndex();
+
+    float getTimeLastSeen();
 
     /**
     @brief Get the current position for the robot.
@@ -72,7 +96,26 @@ public:
     @brief Get the visibility of the Robot
     @return If it is visible
     */
-    bool getVisibility();
+    bool getVisible();
+
+    void setVisible(bool set_value);
+
+    void setIndex(int index);
+
+    /**
+    @brief Set the visibility of the Robot
+    bool setVisibility();
+    @param visibility Boolean value representing if the robot is visible or not
+    */
+
+    bool approaching(point_t point);
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    
+
+    void setVisibility(bool visible);
 
     /**
     @brief Set the position and orientation of the Robot
@@ -86,8 +129,12 @@ public:
     @param time Time to add to robots elapsed time since the last turn started
     */
     void addToTimer(float time);
+
+    /**
+    The kalman filter assumes that this is updated frequently (at least once a second, but preferably more often)
+    */
     void update(int index, point_t position,float q, float elapsed_time, bool visible);
-    
+    void update(Robot robot);
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
     */
@@ -103,6 +150,21 @@ public:
     @brief sets the wasInteractedWith variable to true. Only sets to true, since it should never be reset to false after it is first set to true.
     */
     void setInteractedWithTrue();
+
+
+    /**
+     * @brief      Gets the robot position at a time_stamp given no random movement, drone interactions or collisions.
+     * @param[in]  elapsed_time  The elapsed time
+     * @return     The robot position at time.
+     */
+    Robot getRobotPositionAtTime(float elapsed_time);
+
+    void kalmanStep(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanMeasurementUpdate(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+
+    void kalmanStepNoObservation(float elapsed_time);
+
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
