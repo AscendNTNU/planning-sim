@@ -236,7 +236,7 @@ ascend_msgs::AIWorldObservation createObservation(float elapsed_time){
         robot.y = obstacle_robots_in_memory.at(i).getPosition().y;
         robot.theta = obstacle_robots_in_memory.at(i).getOrientation();
 
-        bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
+        bool is_reliable = isModelStillReliable(obstacle_robots_in_memory.at(i), drone_position, elapsed_time);
         obstacle_robots_in_memory.at(i).setVisible(is_reliable);
 
         robot.visible = obstacle_robots_in_memory.at(i).getVisible();
