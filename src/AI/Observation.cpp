@@ -1,9 +1,13 @@
 #include "Observation.h"
 
-Observation::Observation(){
-	this->drone = Drone();
-	
-	for(int i = 0; i<Config::NUMBER_OF_TARGETS; i++){
+using planning::Config;
+
+Observation::Observation(): drone(Drone()), 
+							robots(Config::NUMBER_OF_ROBOTS), 
+							obstacles(Config::NUMBER_OF_OBSTACLES)  
+{
+
+	for(int i = 0; i<Config::NUMBER_OF_ROBOTS; i++){
 		this->robots[i] = Robot();
 	}
 	
@@ -20,13 +24,13 @@ Drone Observation::getDrone(){
 }
 
 Robot Observation::getRobot(int index){
-	if(index < 0 || index > Config::NUMBER_OF_TARGETS){
+	if(index < 0 || index > Config::NUMBER_OF_ROBOTS){
 		return Robot(-1);
 	}
 	return this->robots[index];
 }
 
-std::array<Robot,Config::NUMBER_OF_TARGETS> Observation::getRobots(){
+std::vector<Robot> Observation::getRobots(){
 	return this->robots;
 }
 
@@ -38,7 +42,7 @@ Robot Observation::getObstacle(int index){
 	return this->obstacles[index];
 }
 
-std::array<Robot,Config::NUMBER_OF_OBSTACLES> Observation::getObstacles(){
+std::vector<Robot> Observation::getObstacles(){
 	return this->obstacles;
 }
 
@@ -71,7 +75,7 @@ bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	bool any_robots_visible = false;
 	point_t position = point_zero;
 	this->time_Stamp = elapsed_time;
-	for(int i = 0; i < Config::NUMBER_OF_TARGETS; i++){ // should loop through lenght of observed robots not 10.
+	for(int i = 0; i < Config::NUMBER_OF_ROBOTS; i++){ // should loop through lenght of observed robots not 10.
 		position = (point_t){.x = observation.robot_x[i], .y = observation.robot_y[i]};
 		this->robots[i].update(i, position, observation.robot_q[i], this->time_Stamp, observation.robot_visible[i]);
 		if (observation.robot_visible[i] == true) {

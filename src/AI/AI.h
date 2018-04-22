@@ -12,6 +12,8 @@ This class handles all AI functions. This includes the choice of target and the 
 #include "Plank.h"
 #include <stack>
 
+using planning::Config;
+
 class AI{
 
 public:
@@ -23,7 +25,7 @@ public:
     Loops through the robots in current state to find the robot with the highest
     value plank. Returns this robot if found, otherwise returns an empty Robot.
     */
-    Robot chooseTarget(std::array<Robot,Config::NUMBER_OF_TARGETS> robots, float elapsed_time);
+    Robot chooseTarget(std::vector<Robot> robots, float elapsed_time);
 
     /**
     @brief Returns best action along the plank of a target robot
@@ -45,7 +47,7 @@ public:
 
     action_t triangleSearch(Drone drone);
 
-    bool pointIsWithinEdgeBuffer(point_t point);
+    bool pointIsWithinEdgeBuffer(plank_point_t point);
 
     action_t getBestActionAtPosition(float target_orientation, plank_point_t position);
 

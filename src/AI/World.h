@@ -12,6 +12,8 @@ It is responsible for creating acoordinate system and appropriate reward values 
 #include <time.h>
 #include <cmath>
 
+using planning::Config;
+
 class World{
 private:
 	point_t origin;

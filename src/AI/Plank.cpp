@@ -2,7 +2,9 @@
 
 #include <cmath>
 
-Plank::Plank(){
+using planning::Config;
+
+Plank::Plank(): plank_points(Config::NUM_PLANK_POINTS){
 	this->end_point.point = point_zero;
 	this->start_point.point = point_zero;
     for(int i = 0; i < sizeof(this->plank_points)/sizeof(this->plank_points[0]); i++) {

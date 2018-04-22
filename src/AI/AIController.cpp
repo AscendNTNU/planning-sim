@@ -1,5 +1,7 @@
 #include "AIController.h"
 
+using planning::Config;
+
 bool is_nearby(point_t current_Where_To_Act, point_t target) {
       double x1 = current_Where_To_Act.x;
       double y1 = current_Where_To_Act.y;

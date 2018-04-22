@@ -63,6 +63,8 @@ target_link_libraries(libAI planning_tools_lib)
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 include_directories(include ${catkin_INCLUDE_DIRS})
 
+set(CMAKE_BUILD_TYPE Debug)
+
 if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
 	# ============= Perception / Control ===============
 	add_executable(

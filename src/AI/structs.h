@@ -4,6 +4,8 @@
 #include <iostream>
 #include "../tools/config.h"
 static const float MATH_PI = 3.141592653589793238;
+
+using planning::Config;
 /**
 @brief Struct describing a point on the course.
 @param x X coordinate

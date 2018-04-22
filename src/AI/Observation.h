@@ -3,11 +3,13 @@
 #include "Drone.h"
 #include <array>
 
+using planning::Config;
+
 class Observation{
 private:
 	float time_Stamp;
-	std::array<Robot,Config::NUMBER_OF_TARGETS> robots;
-	std::array<Robot,Config::NUMBER_OF_OBSTACLES> obstacles;
+	std::vector<Robot> robots;
+	std::vector<Robot> obstacles;
 	Drone drone;
 	bool any_robots_visible;
 public:
@@ -17,10 +19,10 @@ public:
 	Drone getDrone();
 
 	Robot getRobot(int index);
-	std::array<Robot,Config::NUMBER_OF_TARGETS> getRobots();
+	std::vector<Robot> getRobots();
 
 	Robot getObstacle(int index);
-	std::array<Robot,Config::NUMBER_OF_OBSTACLES> getObstacles();
+	std::vector<Robot> getObstacles();
 
 	float getTimeStamp();
 

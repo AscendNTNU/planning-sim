@@ -1,5 +1,7 @@
 #include "Drone.h"
 
+using planning::Config;
+
 Drone::Drone(){
 	this->position = point_zero;
 	this->orientation = 0;

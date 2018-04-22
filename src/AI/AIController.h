@@ -10,6 +10,8 @@ This class handles the AI state machine.
 
 extern World world;
 
+using planning::Config;
+
 
 ///The different AI states.
 enum ai_state_t{

@@ -11,6 +11,8 @@ movement. It is responisble for setting value on a ground robots position.
 #include "structs.h"
 #include "World.h"
 
+using planning::Config;
+
 extern World world;
 
 class Robot;
@@ -19,7 +21,7 @@ class Plank{
 	private:
 	    plank_point_t end_point; //First endpoint robot meets
 	    plank_point_t start_point; //Second endpoint robot meets
-	    plank_point_t plank_points[Config::NUM_PLANK_POINTS]; //Points between endpoints
+	    std::vector<plank_point_t> plank_points; //Points between endpoints
 	    float length;
 	    float reward;
 	    float angle;

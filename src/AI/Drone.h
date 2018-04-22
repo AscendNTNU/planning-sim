@@ -12,6 +12,8 @@ It also includes functions for determining the drones relation to other parts of
 #include "structs.h"
 #include "Robot.h"
 
+using planning::Config;
+
 class Drone{
 private:
 	point_t position;

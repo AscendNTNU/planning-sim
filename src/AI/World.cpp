@@ -1,5 +1,6 @@
 #include "World.h"
 
+using planning::Config;
 
 //Constructors
 /*
