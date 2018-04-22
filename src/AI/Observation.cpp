@@ -7,13 +7,13 @@ Observation::Observation(): drone(Drone()),
 							obstacles(Config::NUMBER_OF_OBSTACLES)  
 {
 
-	for(int i = 0; i<Config::NUMBER_OF_ROBOTS; i++){
-		this->robots[i] = Robot();
-	}
+	// for(int i = 0; i<Config::NUMBER_OF_ROBOTS; i++){
+	// 	this->robots.at(i) = Robot();
+	// }
 	
-	for(int i = 0; i<Config::NUMBER_OF_OBSTACLES; i++){
-		this->obstacles[i] = Robot();
-	}
+	// for(int i = 0; i<Config::NUMBER_OF_OBSTACLES; i++){
+	// 	this->obstacles.at(i) = Robot();
+	// }
 	this->time_Stamp = 0;
 
 	this->any_robots_visible = false;
@@ -23,11 +23,11 @@ Drone Observation::getDrone(){
 	return this->drone;
 }
 
-Robot Observation::getRobot(int index){
-	if(index < 0 || index > Config::NUMBER_OF_ROBOTS){
+Robot Observation::getRobot(int i){
+	if(i < 0 || i > Config::NUMBER_OF_ROBOTS){
 		return Robot(-1);
 	}
-	return this->robots[index];
+	return this->robots.at(i);
 }
 
 std::vector<Robot> Observation::getRobots(){
@@ -35,11 +35,11 @@ std::vector<Robot> Observation::getRobots(){
 }
 
 
-Robot Observation::getObstacle(int index){
-	if(index < 0 || index > Config::NUMBER_OF_OBSTACLES){
+Robot Observation::getObstacle(int i){
+	if(i < 0 || i > Config::NUMBER_OF_OBSTACLES){
 		return  Robot(-1);
 	}
-	return this->obstacles[index];
+	return this->obstacles.at(i);
 }
 
 std::vector<Robot> Observation::getObstacles(){
@@ -67,8 +67,8 @@ bool Observation::updateDrone(observation_t observation, float elapsed_time){
 	return true;
 }
 
-void Observation::updateInteraction(int index) {
-	this->robots[index].setInteractedWithTrue();
+void Observation::updateInteraction(int i) {
+	this->robots.at(i).setInteractedWithTrue();
 }
 
 bool Observation::updateRobot(observation_t observation, float elapsed_time){
@@ -77,14 +77,14 @@ bool Observation::updateRobot(observation_t observation, float elapsed_time){
 	this->time_Stamp = elapsed_time;
 	for(int i = 0; i < Config::NUMBER_OF_ROBOTS; i++){ // should loop through lenght of observed robots not 10.
 		position = (point_t){.x = observation.robot_x[i], .y = observation.robot_y[i]};
-		this->robots[i].update(i, position, observation.robot_q[i], this->time_Stamp, observation.robot_visible[i]);
+		this->robots.at(i).update(i, position, observation.robot_q[i], this->time_Stamp, observation.robot_visible[i]);
 		if (observation.robot_visible[i] == true) {
 			any_robots_visible = true;
 		}
 	}
 	for(int i = 0; i < Config::NUMBER_OF_OBSTACLES; i++){
 		position = (point_t){.x = 0, .y = 0};
-		this->obstacles[i].update(i, position, 0, this->time_Stamp, true);
+		this->obstacles.at(i).update(i, position, 0, this->time_Stamp, true);
 	}
 	this->any_robots_visible = any_robots_visible;
 	return true;
