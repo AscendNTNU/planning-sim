@@ -3,7 +3,7 @@
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
 const float MAX_VISIBILITY_RADIUS = 2;
-const float TIMEOUT_ROBOT_NOT_VISIBLE = 30;
+const float TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const float TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
 
@@ -178,17 +178,23 @@ void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vect
 
 bool isModelStillReliable(Robot robot, point_t drone_position, float elapsed_time){
 
-    //Different timeouts depending on if our model says the robot should be visible or not
+    //Different timeouts depending on if our model says the robot should be in sight or not
 
     float timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
     if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
         timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
     }
-
     if(elapsed_time - robot.getTimeLastSeen() > timeout){
         return false;
     }
+
+    // If a robot is out of the  arena, it should be removed
+    
+    if(!robot.isInArena()){
+        return false;
+    }
+
     return true;
 }
 
@@ -204,9 +210,11 @@ ascend_msgs::AIWorldObservation createObservation(float elapsed_time){
 
         robots_in_memory.at(i).setPositionToKalmanPosition();
 
-        bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
-        robots_in_memory.at(i).setVisible(is_reliable);
-
+        if(robots_in_memory.at(i).getVisible()){
+            bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
+            robots_in_memory.at(i).setVisible(is_reliable);
+        }
+        
         robot.visible = robots_in_memory.at(i).getVisible();
         observation.ground_robots.at(i) = robot;
     }
