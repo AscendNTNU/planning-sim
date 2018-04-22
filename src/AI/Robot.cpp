@@ -160,10 +160,11 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isInArena(){
-    if(this->position.x < 0 || this->position.x > 20){
+    float out_limit = 0.3;
+    if(this->position.x < 0 - out_limit  || this->position.x > 20 + out_limit){
         return false;
     }
-    else if(this->position.y > 20 || this->position.y < 0){
+    else if(this->position.y > 20 + out_limit || this->position.y < 0 - out_limit){
         return false;
     }
     return true;
@@ -206,7 +207,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);
     this->time_last_seen = elapsed_time;
-    this->visible = visible;   
+    this->visible = visible;
 
     if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);

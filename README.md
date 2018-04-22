@@ -82,18 +82,16 @@ $ rosrun planning_ros_sim planning
 Be sure to have `docker` and `docker-compose` (which should come with the docker installation).
 
 ```bash
+# GUI
+$ xhost +local:root
+$ docker-compose up -d gui rviz # Daemon mode
+
+# Run ROSCore while running the launch setup
 $ docker-compose up nodes
 
-# Or with GUI
-
-$ xhost +local:root
-$ docker-compose up nodes gui
-
-# Or with GUI in the background
-
-$ xhost +local:root
-$ docker-compose up -d gui # Daemon mode
-$ docker-compose up nodes
+# Develop with cache (aka faster builds)
+$ docker-compose run nodes bash
+> catkin_make ... # Inside container
 ```
 
 ## Add and run tests
