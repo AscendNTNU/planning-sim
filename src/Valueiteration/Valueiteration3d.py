@@ -20,11 +20,9 @@ planksize = t_plank*v_robot
 disc_thetas = [i*pi/6 for i in range(12)] #from 0 to 11pi/6 (aka 12 discrete angles for robots, i + Pi/6)
 gamma = 0.9
 
-def oldValuegrid(): #performs valuiteration, prints and shows grid
-	numiter = 1000
+def oldValuegrid(): #performs valuiteration, shows grid
+	numiter = 10000
 	valuegrid = createGrid2d()
-	showGrid(valuegrid)
-	# printGrid(valuegrid)
 	print()
 
 	print("loading...")
@@ -34,14 +32,12 @@ def oldValuegrid(): #performs valuiteration, prints and shows grid
 			for j in range(0,len(valuegrid[i])-2): #y
 				valuegrid[i+1, j+1] = (valuegrid[i,j+1] + valuegrid[i+1, j] + valuegrid[i+1, j+2] + valuegrid[i+2, j+1])/4		
 	
-	#printGrid(valuegrid)
 	showGrid(valuegrid)
 	return valuegrid
 
 def valuegridWithObst():
 	numiter = 1000
 	valuegrid = createGrid2d()
-	# valuegrid = placeObstacleRing(valuegrid)
 	valuegrid = placeObstacleRing(valuegrid)
 	showGrid(valuegrid)
 	# printGrid(valuegrid)
@@ -70,10 +66,10 @@ def printGrid(grid): #prints 2d grid
 		print()
 
 def printAngle(theta_i):
-	print("angle:", theta_i*pi / 6)
+	print("Angle:", theta_i*pi / 6)
 
-def placeObstacleRing(valuegrid):
-	r = 5 # radius of circle from mid, mid = ()
+def placeObstacleRing(valuegrid): #places values in a circle with sentrum in the middle of the grid
+	r = 5 # radius of circle from the middle of grid
 	iterations = 25 # should likely be set to 30
 	for i in range(iterations):
 		x = 5*cos(i*2*pi / iterations) + 11
@@ -81,7 +77,7 @@ def placeObstacleRing(valuegrid):
 		valuegrid[int(y)][int(x)] = -1500
 	return valuegrid
 
-def createGrid(): # initializing 3d grid (x,y, theta)
+def createGrid3d(): # initializing 3d grid (x,y, theta)
 	grid = np.zeros((22,22,12))
 	grid[:,0,:] = -1000
 	grid[:,len(grid)-1,:] = -1000
@@ -124,13 +120,9 @@ def posAfterPlank(y, x, theta):
 	next_x = int(x + lenx)
 	#print('next_x:', next_x, 'next_y:', next_y)
 
-	if next_x < 1 or next_x > 20 or next_y > 20:
-		#print("RED! :(")
-		#print()
+	if next_x < 1 or next_x > 20 or next_y > 20: # out red  
 		return -1000 , -1000, theta
-	elif next_y < 1:
-		#print("GREEN! :D")
-		#print()
+	elif next_y < 1: # out green
 		return 2000, 2000, theta
 	else:
 		return next_y , next_x, theta
@@ -164,7 +156,7 @@ def nextStateReward(next_y, next_x, t):
 	elif next_x == 2000:
 		return 0
 
-def indexClosestTheta(actual_theta):
+def indexClosestTheta(actual_theta): # creates discrete theta values
 	thetamod = actual_theta % 2*pi
 	closest = min(disc_thetas, key=lambda x:abs(x-thetamod))
 	index = disc_thetas.index(closest)
@@ -208,8 +200,11 @@ def valueiteration(): # valueiterates for (x,y,theta)
 	print('grid complete!')
 
 
-actiongrid = createGrid()
-valuegrid = createGrid()
+# 	   -- MAIN -- 
+actiongrid = createGrid3d()
+valuegrid = createGrid3d()
+# 	   ----------
+
 
 
 #valueiteration()
