@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
     
     // Define action server
-    ActionServerType server(nh, "control_action_server", false);
+    ActionServerType server(nh, "/control/fsm/action_server", false);
     server.registerGoalCallback(boost::bind(newGoalCB, &server));
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();

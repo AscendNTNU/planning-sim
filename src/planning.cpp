@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
     //ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
-    ClientType client("control_action_server", true);
+    ClientType client("/control/fsm/action_server", true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;

@@ -25,7 +25,7 @@ point_t drone_position = point_zero;
 // Callbacks
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     
-    if(drone_position.z < 0.8){
+    if(drone_position.z < 0.4){
        return; 
     }
 
