@@ -33,18 +33,16 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(planning src/planning.cpp)
 target_link_libraries(planning libAI ${catkin_LIBRARIES})
-add_dependencies(planning planning_ros_sim_generate_messages_cpp
+add_dependencies(planning pl    anning_ros_sim_generate_messages_cpp
 	ascend_msgs_generate_messages_cpp)
 
-#if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$")) 
-#  add_executable(perception_control src/perception_control.cpp) 
-#  target_link_libraries(perception_control ${catkin_LIBRARIES}) 
-#  add_dependencies(perception_control planning_ros_sim_generate_messages_cpp) 
-# 
-#  add_executable(benchmark_perception_control src/benchmark_perception_control.cpp) 
-#  target_link_libraries(benchmark_perception_control ${catkin_LIBRARIES}) 
-#  add_dependencies(benchmark_perception_control planning_ros_sim_generate_messages_cpp) 
-#endif()
+add_executable(perception_control src/perception_control.cpp) 
+target_link_libraries(perception_control ${catkin_LIBRARIES}) 
+add_dependencies(perception_control planning_ros_sim_generate_messages_cpp) 
+
+add_executable(benchmark_perception_control src/benchmark_perception_control.cpp) 
+target_link_libraries(benchmark_perception_control ${catkin_LIBRARIES}) 
+add_dependencies(benchmark_perception_control planning_ros_sim_generate_messages_cpp) 
 
 #include <opencv2/opencv.hpp>
 add_executable(fuser src/fuser.cpp)

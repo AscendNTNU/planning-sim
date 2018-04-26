@@ -103,16 +103,16 @@ Robot::Robot(int index) {
 }
 
 // Static function
-bool Robot::robotsAtTurnTime(float elapsed_time) {
-    float time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
-    float rest = fmod(elapsed_time, 20); 
+bool Robot::robotsAtTurnTime(double elapsed_time) {
+    double time_drift = 3.0;//(elapsed_time * 3.0)/600.0;
+    double rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
     }
     return false;
 }
 
-float Robot::getTimeLastSeen(){
+double Robot::getTimeLastSeen(){
     return this->time_last_seen;
 }
 
@@ -122,13 +122,13 @@ int Robot::getIndex() {
 point_t Robot::getPosition() {
     return this->position;
 }
-float Robot::getOrientation() {
+double Robot::getOrientation() {
     return this->orientation;
 }
-float Robot::getTimeAfterTurn() {
+double Robot::getTimeAfterTurn() {
     return this->time_after_turn_start;
 }
-float Robot::getSpeed() {
+double Robot::getSpeed() {
     return this->speed;
 }
 Plank Robot::getCurrentPlank() {
@@ -147,8 +147,8 @@ void Robot::setSideCamera(bool value){
 }
 
 bool Robot::approaching(point_t point) {
-    float old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
-    float new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
+    double old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
+    double new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
 
     return (new_dist < old_dist);
 }
@@ -170,7 +170,7 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isInArena(){
-    float out_limit = 0.3;
+    double out_limit = 0.3;
     if(this->position.x < 0 - out_limit  || this->position.x > 20 + out_limit){
         return false;
     }
@@ -196,8 +196,8 @@ bool Robot::isMoving() {
     }
 }
 
-void Robot::update(int index, point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
-    float estimated_orientation = 0;
+void Robot::update(int index, point_t new_Position, double new_Orientation, double elapsed_time, bool visible) {
+    double estimated_orientation = 0;
     int planning_ros_rate = 20;
 
     this->pos_queue.push(new_Position); // push_back
@@ -249,14 +249,14 @@ void Robot::update(Robot robot){
     kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }
 
-Robot Robot::getRobotPositionAtTime(float elapsed_time){
+Robot Robot::getRobotPositionAtTime(double elapsed_time){
     point_t point = this->plank.getRobotPositionAtTime(elapsed_time);
     Robot robot;
     robot.update(this->index, point, this->orientation, elapsed_time, true);
     return robot;
 }
 
-void Robot::setPositionOrientation(point_t position, float q) {
+void Robot::setPositionOrientation(point_t position, double q) {
     this->position = position;
     this->orientation = q;
 }
@@ -264,11 +264,11 @@ void Robot::setPositionOrientation(point_t position, float q) {
 // When is this used? Double check that it is used the way we want.
 // Adding time to time_after_turn_start makes the variable name be
 // misleading, except when correcting for drift.
-void Robot::addToTimer(float time) {
+void Robot::addToTimer(double time) {
     this->time_after_turn_start += time;
 }
 
-void Robot::kalmanStep(point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
+void Robot::kalmanStep(point_t new_Position, double new_Orientation, double elapsed_time, bool visible) {
     // Kalman filter stuff
     this->t_km1 = this->t_k;
     this->t_k = elapsed_time;
@@ -289,13 +289,13 @@ void Robot::kalmanStep(point_t new_Position, float new_Orientation, float elapse
     // this->x_hat_km1 = this->x_hat_k;
 }
 
-void Robot::kalmanStepNoObservation(float elapsed_time) {
+void Robot::kalmanStepNoObservation(double elapsed_time) {
     //get updated system matrices
     //do model prediction
     kalmanStep(point_zero, 0,  elapsed_time, false);
 }
 
-void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
+void Robot::kalmanPredict(point_t new_Position, double new_Orientation, double elapsed_time, bool visible) {
     double time_After_Turn_Start = fmod(elapsed_time, 20);
     double th_km1 = this->x_hat_k.at<double>(4,0);
     
@@ -348,7 +348,7 @@ void Robot::setPositionToKalmanPosition() {
     
 }
 
-void Robot::kalmanMeasurementUpdate(point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
+void Robot::kalmanMeasurementUpdate(point_t new_Position, double new_Orientation, double elapsed_time, bool visible) {
     cv::Mat z_k; //state measurement
     cv::Mat K_k; //Kalman gain
     cv::Mat y_k; //residual (measurement-model prediction)

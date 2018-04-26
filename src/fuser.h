@@ -25,11 +25,11 @@ void startTimeCallback(std_msgs::Time::ConstPtr msg);
 void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg);
 void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 
-float calcCurrentTime(float seconds);
+double calcCurrentTime(double seconds);
 
 void initializeFuser();
-std::set<int> updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
-void fuser_tick(std::vector<Robot>& memory, float current_time);
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, double current_time);
+void fuser_tick(std::vector<Robot>& memory, double current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));

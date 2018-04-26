@@ -16,9 +16,9 @@ action_t AI::getBestAction(Robot target) {
     return best_Action;
 }
 
-Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
+Robot AI::chooseTarget(std::array<Robot,10> robots, double elapsed_time) {
     Robot robot;
-    float best_reward = -1000000;
+    double best_reward = -1000000;
 
     // Return an invalid robot if none was assigned
     Robot target = Robot(-1);
@@ -46,7 +46,7 @@ Robot AI::chooseTarget(std::array<Robot,10> robots, float elapsed_time) {
 // Robot AI::chooseTarget(std::array<Robot,10> robots, Drone drone) {
 //     Robot robot;
 //     point_t best_pos = point_zero;
-//     float best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
+//     double best_reward = Plank().getReward();//world.getGridValue(best_pos.x, best_pos.y);
 
 //     // Return an invalid robot if none was assigned
 //     Robot target = Robot(-1);
@@ -99,7 +99,7 @@ action_t AI::chooseAction(Robot target) {
     return best_Action;
 }
 
-action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t position) {
+action_t AI::getBestActionAtPosition(double target_orientation, plank_point_t position) {
     int num_Iterations = 5; // Number of iterations when summing along a plank
     action_t action;
     action.where_To_Act = position.point;
@@ -112,7 +112,7 @@ action_t AI::getBestActionAtPosition(float target_orientation, plank_point_t pos
     return actionWithMaxReward(plank_On_Top.getReward(), plank_In_Front.getReward(), action);
 }
 
-action_t AI::actionWithMaxReward(float reward_On_Top, float reward_In_Front, action_t action) {
+action_t AI::actionWithMaxReward(double reward_On_Top, double reward_In_Front, action_t action) {
 
     // if (reward_On_Top > reward_In_Front) {
     //     action.type = land_on_top_of;

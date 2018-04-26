@@ -3,13 +3,13 @@
 #include <queue>
 #include <iostream>
 static const int DRONE_SPEED = 1;
-static const float ROBOT_SPEED = 0.33;
-static const float MATH_PI = 3.141592653589793238;
-static const float SIMILARITY_THRESHOLD = 1.5;
+static const double ROBOT_SPEED = 0.33;
+static const double MATH_PI = 3.141592653589793238;
+static const double SIMILARITY_THRESHOLD = 1.5;
 
-static const float MAXDIST_DRONE_TO_POINT = 0.3;
-static const float MAXDIST_ROBOT_TO_POINT = 1.5; 
-static const float MAXDIST_ACTIONPOINTS = 6; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
+static const double MAXDIST_DRONE_TO_POINT = 0.3;
+static const double MAXDIST_ROBOT_TO_POINT = 1.5; 
+static const double MAXDIST_ACTIONPOINTS = 6; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
 /**
 @brief Struct describing a point on the course.
@@ -19,10 +19,10 @@ static const float MAXDIST_ACTIONPOINTS = 6; // essentially how much the AI will
 @param travel_Time Travel time to the point
 */
 struct point_t{
-	float x;
-	float y;
-	float z;
-	float travel_Time;
+	double x;
+	double y;
+	double z;
+	double travel_Time;
 };
 
 /**
@@ -34,8 +34,8 @@ struct point_t{
 struct plank_point_t{
     point_t point;
     bool is_ahead;  
-    float time_till_first_arrival;
-    float time_since_start_turn;
+    double time_till_first_arrival;
+    double time_since_start_turn;
 };
 
 static point_t point_zero = {
@@ -76,21 +76,21 @@ struct bounds_t{
 */
 struct observation_t
 {
-    float elapsed_time;
-    float drone_x;
-    float drone_y;
-    float drone_z;
+    double elapsed_time;
+    double drone_x;
+    double drone_y;
+    double drone_z;
     bool  drone_cmd_done;
     int num_targets;
 
-    float robot_x[10];
-    float robot_y[10];
-    float robot_q[10];
-    float robot_visible[10];
+    double robot_x[10];
+    double robot_y[10];
+    double robot_q[10];
+    double robot_visible[10];
 
-    float obstacle_x[4];
-    float obstacle_y[4];
-    float obstacle_q[4];
+    double obstacle_x[4];
+    double obstacle_y[4];
+    double obstacle_q[4];
 };
 
 static observation_t observation_Empty = {
@@ -134,8 +134,8 @@ inline std::string actionTypeToString(action_Type_t type) {
 struct action_t{
     int target;
     action_Type_t type;
-    float reward;
-    float when_To_Act;
+    double reward;
+    double when_To_Act;
     point_t where_To_Act;
 };
 
@@ -158,13 +158,13 @@ inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
 
 struct tree_action_t{
     std::queue<action_t> actions;
-    float reward;
+    double reward;
 };
 
-static float getDistanceBetweenPoints(point_t point1, point_t point2){
+static double getDistanceBetweenPoints(point_t point1, point_t point2){
 
-    float x_Distance = point1.x - point2.x;
-    float y_Distance = point1.y - point2.y;
+    double x_Distance = point1.x - point2.x;
+    double y_Distance = point1.y - point2.y;
 
     return sqrt(pow(x_Distance,2) + pow(y_Distance,2));
 }

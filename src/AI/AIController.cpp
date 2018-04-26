@@ -10,7 +10,7 @@ bool is_nearby(point_t current_Where_To_Act, point_t target) {
       return dist < SIMILARITY_THRESHOLD;
 }
 
-float similarity(action_t action1 ,action_t action2) {
+double similarity(action_t action1 ,action_t action2) {
     if(is_nearby(action1.where_To_Act, action2.where_To_Act)) {
         return 1;
     }
@@ -134,8 +134,8 @@ action_t AIController::positioningState() {
     }
 
     point_t drone_pos = this->observation.getDrone().getPosition();
-    float drone_to_point_dist = getDistanceBetweenPoints(drone_pos, this->planned_action_.where_To_Act); 
-    float robot_to_point_dist = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
+    double drone_to_point_dist = getDistanceBetweenPoints(drone_pos, this->planned_action_.where_To_Act); 
+    double robot_to_point_dist = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
  
     // Is the drone and the robot at the rendezvous point
     if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && robot_to_point_dist < MAXDIST_ROBOT_TO_POINT) {
@@ -192,7 +192,7 @@ action_t AIController::landOnTopState(){
 action_t AIController::landInFrontState(){
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
-    float time_landed = 3.5;
+    double time_landed = 3.5;
 
     if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
@@ -231,8 +231,8 @@ action_t AIController::noVisibleRobotsState(){
     // point_t next_search_point = point_zero;
 
     // point_t pos = this->observation.getDrone().getPosition();
-    // float x = pos.x;
-    // float y = pos.y;
+    // double x = pos.x;
+    // double y = pos.y;
 
     // // These should be global values
     // bounds_t bounds = world.getBounds();
@@ -240,7 +240,7 @@ action_t AIController::noVisibleRobotsState(){
     // point_t track_center = point_zero;
     // track_center.x = bounds.x_Max / 2.0;
     // track_center.y = bounds.y_Max / 2.0;
-    // float padding = 5.0;
+    // double padding = 5.0;
 
     // // The drone flies in a triangle path in a clockwise order
     // if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {

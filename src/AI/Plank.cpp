@@ -16,18 +16,18 @@ Plank::Plank(){
     this->reward = -200000;
 }
 
-Plank::Plank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME){
+Plank::Plank(point_t position, double angle, double time_after_turn_start, double ROBOT_TURN_TIME){
 	Plank();
 	this->updatePlank(position, angle, time_after_turn_start, ROBOT_TURN_TIME);
 }
 
-float Plank::getReward(){
+double Plank::getReward(){
 	return this->reward;
 }
-float Plank::getAngle(){
+double Plank::getAngle(){
 	return this->angle;
 }
-float Plank::getLength(){
+double Plank::getLength(){
 	return this->length;
 }
 
@@ -41,12 +41,12 @@ plank_point_t Plank::getPoint(int i){
     return this->plank_points[i-1];
 }
 
-float Plank::getNumPlankPoints() {
+double Plank::getNumPlankPoints() {
     return sizeof(this->plank_points)/sizeof(this->plank_points[0]) + 2;
 }
 
 bool Plank::willExitGreen(){
-    float out_limit = 0.3;
+    double out_limit = 0.3;
     if(this->end_point.point.y > 20 + out_limit || this->start_point.point.y > 20 + out_limit){
         return true;
     }
@@ -64,9 +64,9 @@ bool Plank::willExitRed(){
 }
 
 void Plank::calculateAllPlankPoints(point_t robot_position){
-    float step_length = this->length/10;
-    float step_x = step_length*cosf(this->angle);
-    float step_y = step_length*sinf(this->angle);
+    double step_length = this->length/10;
+    double step_x = step_length*cosf(this->angle);
+    double step_y = step_length*sinf(this->angle);
 
     this->end_point.time_till_first_arrival = getDistanceBetweenPoints(this->end_point.point, robot_position) / ROBOT_SPEED;
     this->start_point.time_till_first_arrival = (getDistanceBetweenPoints(this->start_point.point, robot_position) +  
@@ -91,19 +91,19 @@ void Plank::calculateAllPlankPoints(point_t robot_position){
 }
 
 bool Plank::isPointAheadOfRobot(point_t point_in_question, point_t robot_position) {
-    float x1 = std::min(this->start_point.point.x, point_in_question.x);
-    float x2 = std::max(this->start_point.point.x, point_in_question.x);
-    float y1 = std::min(this->start_point.point.y, point_in_question.y);
-    float y2 = std::max(this->start_point.point.y, point_in_question.y);
+    double x1 = std::min(this->start_point.point.x, point_in_question.x);
+    double x2 = std::max(this->start_point.point.x, point_in_question.x);
+    double y1 = std::min(this->start_point.point.y, point_in_question.y);
+    double y2 = std::max(this->start_point.point.y, point_in_question.y);
 
     return (x1 < robot_position.x && robot_position.x < x2 &&
             y1 < robot_position.y && robot_position.y < y2);
 }
 
-float Plank::calculateReward(){
-    float step_length = this->length/10;
-    float reward = 0.0;
-    float value = 0.0;
+double Plank::calculateReward(){
+    double step_length = this->length/10;
+    double reward = 0.0;
+    double value = 0.0;
 
     for (int i = 0; i < 10; i++) {
         value = world.getGridValue(this->plank_points[i].point.x, this->plank_points[i].point.y);
@@ -112,7 +112,7 @@ float Plank::calculateReward(){
     return reward;
 }
 
-void Plank::updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME){
+void Plank::updatePlank(point_t position, double angle, double time_after_turn_start, double ROBOT_TURN_TIME){
     this->end_point.is_ahead   = true;
     this->start_point.is_ahead = false;
     this->end_point.time_since_start_turn = 20;
@@ -131,8 +131,8 @@ void Plank::updatePlank(point_t position, float angle, float time_after_turn_sta
     this->start_point.point.y = this->end_point.point.y - (20-ROBOT_TURN_TIME)*ROBOT_SPEED*sinf(this->angle);
     
 
-    float dx = this->start_point.point.x - this->end_point.point.x;
-    float dy = this->start_point.point.y - this->end_point.point.y;
+    double dx = this->start_point.point.x - this->end_point.point.x;
+    double dy = this->start_point.point.y - this->end_point.point.y;
     
     this->length = sqrt(dx*dx + dy*dy);
     this->calculateAllPlankPoints(position);
@@ -141,7 +141,7 @@ void Plank::updatePlank(point_t position, float angle, float time_after_turn_sta
 
 bool Plank::pointIsOutsideOfPlank(point_t point){
 
-    float tol = 0.1;
+    double tol = 0.1;
 	if ((point.x > (this->end_point.point.x + tol) && point.x > (this->start_point.point.x + tol)) || 
 		(point.x < (this->end_point.point.x - tol) && point.x < (this->start_point.point.x - tol)) ||
 	    (point.y > (this->end_point.point.y + tol) && point.y > (this->start_point.point.y + tol)) || 
@@ -152,9 +152,9 @@ bool Plank::pointIsOutsideOfPlank(point_t point){
 	}
 }
 
-point_t Plank::getRobotPositionAtTime(float elapsed_time){
-    float no_of_turns = elapsed_time/20;
-    float driving_time = elapsed_time - 20*floor(no_of_turns);
+point_t Plank::getRobotPositionAtTime(double elapsed_time){
+    double no_of_turns = elapsed_time/20;
+    double driving_time = elapsed_time - 20*floor(no_of_turns);
     point_t point;
     if(driving_time > 0){
         point.x = driving_time*ROBOT_SPEED*cosf(this->angle)+this->start_point.point.x;

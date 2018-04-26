@@ -15,7 +15,7 @@ It is responsible for creating acoordinate system and appropriate reward values 
 class World{
 private:
 	point_t origin;
-	float orientation;
+	double orientation;
 	bounds_t bounds;
 
 public:
@@ -23,15 +23,15 @@ public:
 	/**
     @brief Contructor for the grid world.
 
-    @param orientation - float value describing the orientation of the field.
+    @param orientation - double value describing the orientation of the field.
 	*/
-	World(float orientation);
+	World(double orientation);
 
 	///returns the point defined as the origin of the world
 	point_t getOrigin();
 
 	///returns the orientation of the field (deg or rad?)
-	float getOrientation();
+	double getOrientation();
 	
 	///returns the bounds of the field
 	bounds_t getBounds();
@@ -43,5 +43,5 @@ public:
     @param y - The y position on the field
     @return the points value at the (x, y) position given
 	*/
-	float getGridValue(float X, float Y);
+	double getGridValue(double X, double Y);
 };

@@ -1,10 +1,10 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 1;
-const float MAX_VISIBILITY_RADIUS = 2;
-const float TIMEOUT_ROBOT_NOT_VISIBLE = 40;
-const float TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
+const int NUMBER_OF_ROBOTS = 10;
+const double MAX_VISIBILITY_RADIUS = 2;
+const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
+const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
 
 std::set<int> set_of_indices;
@@ -17,7 +17,7 @@ std::vector<std::vector<Robot>> observed_obstacle_robots;
 World world = World(0);
 
 ros::Time start_time(0.0);
-float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
+double elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
 point_t drone_position = point_zero;
 
 // Callbacks
@@ -36,8 +36,8 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.x = msg->global_robot_position.at(i).x;
         position.y = msg->global_robot_position.at(i).y;
 
-        float q = msg->direction.at(i);
-        float time = msg->header.stamp.sec-start_time.sec;
+        double q = msg->direction.at(i);
+        double time = msg->header.stamp.sec-start_time.sec;
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
@@ -87,8 +87,8 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             point_t position;
             position.x = it->x;
             position.y = it->y;
-            float q = it->theta;
-            float time = elapsed_time;
+            double q = it->theta;
+            double time = elapsed_time;
             bool visible = true;
 
             robot.update(i, position, q , time, visible);
@@ -109,8 +109,8 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             point_t position;
             position.x = it->x;
             position.y = it->y;
-            float q = it->theta;
-            float time = elapsed_time;
+            double q = it->theta;
+            double time = elapsed_time;
             bool visible = true;
 
             robot.update(i, position, q , time, visible);
@@ -132,28 +132,28 @@ void initializeFuser(){
         // but at an initial radius of 1 meters.
         robots_in_memory.push_back(Robot(i));
 
-        float t = 3.14*2.0 * i / (float)robots_in_memory.size();
+        double t = 3.14*2.0 * i / (double)robots_in_memory.size();
         point_t point;
         point.x = 10.0 + cosf(t);
         point.y = 10.0 + sinf(t);
-        float orientation = t;
+        double orientation = t;
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
     }
 
     for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
-        float t =3.14*2.0 * i / (float)obstacle_robots_in_memory.size();
+        double t =3.14*2.0 * i / (double)obstacle_robots_in_memory.size();
 
         // The obstacles are also spawned in a circle,
         // but at an initial radius of 5 meters.
         point_t point;
         point.x = 10.0f + 5 * cosf(t);
         point.y = 10.0f + 5 * sinf(t);
-        float orientation = t;
+        double orientation = t;
         obstacle_robots_in_memory.at(i).update(i, point, orientation, 0, false);
     }
 }
 
-std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, double current_time){
     std::set<int> not_updated_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
@@ -166,7 +166,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     return not_updated_indices;
 }
 
-void fuser_tick(std::vector<Robot>& memory, float current_time){
+void fuser_tick(std::vector<Robot>& memory, double current_time){
     std::set<int> not_observed_indices = set_of_indices;
     for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
             std::set<int> updated_indices;
@@ -176,14 +176,14 @@ void fuser_tick(std::vector<Robot>& memory, float current_time){
                                  std::inserter(updated_indices, updated_indices.begin()));
             not_observed_indices = updated_indices;
     }
-
-    for(auto it = not_observed_indices.begin(); it != not_observed_indices.end(); it++){
-        memory.at(*it).kalmanStepNoObservation(current_time);
+    if(not_observed_indices.size() > 0){
+        for(auto it = not_observed_indices.begin(); it != not_observed_indices.end(); it++){
+            memory.at(*it).kalmanStepNoObservation(current_time);
+        }
     }
-
 }
 
-// void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
+// void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, double current_time){
 
 //     std::set<int> free_indices = set_of_indices;
 //     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
@@ -196,11 +196,11 @@ void fuser_tick(std::vector<Robot>& memory, float current_time){
 //     }
 // }
 
-bool isModelStillReliable(Robot robot, point_t drone_position, float elapsed_time){
+bool isModelStillReliable(Robot robot, point_t drone_position, double elapsed_time){
 
     //Different timeouts depending on if our model says the robot should be in sight or not
 
-    float timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
+    double timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
     if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
         timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
@@ -218,7 +218,7 @@ bool isModelStillReliable(Robot robot, point_t drone_position, float elapsed_tim
     return true;
 }
 
-ascend_msgs::AIWorldObservation createObservation(float elapsed_time){
+ascend_msgs::AIWorldObservation createObservation(double elapsed_time){
     ascend_msgs::AIWorldObservation observation;
     // Ground robots
     for(int i=0; i<robots_in_memory.size(); i++){
@@ -266,8 +266,9 @@ ascend_msgs::AIWorldObservation createObservation(float elapsed_time){
     return observation;
 }
 
-float calcCurrentTime(float seconds){
+double calcCurrentTime(double seconds){
     if(elapsed_time == 0.0){
+        std::cout << "Elapsed time is " << elapsed_time << std::endl;
         return seconds-start_time.sec; 
     }
     return elapsed_time;
@@ -300,7 +301,7 @@ int main(int argc, char **argv){
             continue;
         }
         
-        float current_time = calcCurrentTime(ros::Time::now().sec);
+        double current_time = calcCurrentTime(ros::Time::now().sec);
 
 
 

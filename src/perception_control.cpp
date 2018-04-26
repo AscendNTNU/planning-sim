@@ -23,14 +23,14 @@ using GoalType = ascend_msgs::ControlFSMGoal;
 sim_Observed_State state;
 
 int mapAIIndexToSimIndex(sim_Command command){
-    float nearest_distance = 10000;
-    float target = 0;
+    double nearest_distance = 10000;
+    double target = 0;
     point_t command_position = point_zero;
 
     for(int i=0; i<Num_Targets; i++){
-        float x_Distance = command.x - state.target_x[i];
-        float y_Distance = command.y - state.target_y[i];
-        float distance = sqrt(pow(x_Distance,2) + pow(y_Distance,2));
+        double x_Distance = command.x - state.target_x[i];
+        double y_Distance = command.y - state.target_y[i];
+        double distance = sqrt(pow(x_Distance,2) + pow(y_Distance,2));
         if(distance < nearest_distance){
             nearest_distance = distance;
             target = i;
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();
 
-    ros::Rate rate(20.0);
+    ros::Rate rate(60.0);
     while (ros::ok()){
         ros::spinOnce();
         // Collect new observation
