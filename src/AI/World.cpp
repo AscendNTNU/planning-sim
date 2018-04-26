@@ -27,9 +27,8 @@ bounds_t World::getBounds(){
 void World::readGrids(std::string value_file, std::string action_file) {
     std::ifstream valuefile(value_file); // declears and opens file
     std::ifstream actionfile(action_file);
-
-    std::string word;
-    std::string word2;
+    std::string state_value;
+    std::string action;
 
     int x = 0;
     int y = 0;
@@ -40,33 +39,36 @@ void World::readGrids(std::string value_file, std::string action_file) {
         throw "Failed to open file\n";
     }
 
-    while(valuefile >> word && actionfile >> word2) {
-        std::cout << word << std::endl;
-        if (word == "}") {
+    while(valuefile >> state_value && actionfile >> action) {
+        //std::cout << state_value << std::endl;
+        if (state_value == "}") {
             x = 0;
         }
-        if (word == ")") {
+        if (state_value == ")") {
             x++;
             y = 0;
         }
-        else if (word == "]") {
+        else if (state_value == "]") {
             y++;
             t = 0;
         }
-        else if (word == ",") {
+        else if (state_value == ",") {
             t++;
         }
 
-        else if (word.size() > 1) {
-            std::cout << "Placing value: " << word;
+        else if (state_value.size() > 1) {
+            std::cout << "Placing value " << state_value;
             std::cout << " at (x,y,t) = (" << x << "," << y << "," << t << ")" << std::endl;
-            valuegrid3d[x][y][t] = std::stod(word);
-            actiongrid3d[x][y][t] = std::stod(word2);
+            std::cout << "Where the best action is " << action << std::endl;
+            valuegrid3d[x][y][t] = std::stod(state_value);
+            actiongrid3d[x][y][t] = std::stod(action);
         }
     }
 
+    actionfile.close();
+    valuefile.close();
 
-    // printing out grid
+        // printing out grid
 /*    for (int x = 0; x < 20; x++) {
         for (int y = 0; y < 20; y++) {
             for (int t = 0; t < 12; t++) {
@@ -74,15 +76,23 @@ void World::readGrids(std::string value_file, std::string action_file) {
             }
         }
     }*/
-
-    actionfile.close();
-    valuefile.close();
 }
 
-double World::getGridValue(double X, double Y, double T) {
-
+double World::getGridValue(int X, int Y, double T) { // T is the angle given in radians
+    return valuegrid3d[X][Y][static_cast<int>(T)];
 }
 
+action_Type_t World::getAction(int X, int Y, double T) {
+    int action = static_cast<int>(actiongrid3d[X][Y][static_cast<int>(T)]); // will output values where 1:landontop, 2:donothing, 3:landinfront
+    switch(action) {
+        case 1:
+            return land_on_top_of;
+        case 2:
+            return land_in_front_of;
+        case 3:
+            return no_command;
+    }
+}
 
 
 /*

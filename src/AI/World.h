@@ -52,5 +52,7 @@ public:
 	*/
 	float getGridValue(float X, float Y);
 
-	double getGridValue(double X, double Y, double T);
+	double getGridValue(int X, int Y, int T);
+
+	action_Type_t getAction(int X, int Y, int T);
 };
