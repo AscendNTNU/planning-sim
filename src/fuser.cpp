@@ -37,7 +37,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.y = msg->global_robot_position.at(i).y;
 
         double q = msg->direction.at(i);
-        double time = msg->header.stamp.sec-start_time.sec;
+        double time = (msg->header.stamp-start_time).toSec();
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
@@ -266,10 +266,9 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     return observation;
 }
 
-double calcCurrentTime(double seconds){
+double calcCurrentTime(ros::Time seconds){
     if(elapsed_time == 0.0){
-        std::cout << "Elapsed time is " << seconds-start_time.sec << std::endl;
-        return seconds-start_time.sec; 
+        return (seconds-start_time).toSec(); 
     }
     return elapsed_time;
 }
@@ -297,11 +296,11 @@ int main(int argc, char **argv){
     while (ros::ok()) {
         ros::spinOnce();
 
-        if(elapsed_time == 0.0 && start_time.sec == 0.0){
+        if(elapsed_time == 0.0 && start_time.toSec() == 0.0){
             continue;
         }
         
-        double current_time = calcCurrentTime(ros::Time::now().sec);
+        double current_time = calcCurrentTime(ros::Time::now());
 
         if(USE_FUSER){
             fuser_tick(robots_in_memory, current_time);
