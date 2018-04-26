@@ -18,8 +18,6 @@ World world = World(0);
 
 ros::Time start_time(0.0);
 float elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
-
-
 point_t drone_position = point_zero;
 
 // Callbacks
@@ -155,35 +153,48 @@ void initializeFuser(){
     }
 }
 
-void updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
-
-    std::set<int> free_indices = set_of_indices;
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
+    std::set<int> not_updated_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices);
         if(nearest_robot_index >= 0){
             memory.at(nearest_robot_index).update(new_robot_observation);
-            free_indices.erase(nearest_robot_index);
+            not_updated_indices.erase(nearest_robot_index);
         }
     }
+    return not_updated_indices;
+}
 
-    for(auto it = free_indices.begin(); it != free_indices.end(); it++){
+void fuser_tick(std::vector<Robot>& memory, float current_time){
+    std::set<int> not_observed_indices = set_of_indices;
+    for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
+            std::set<int> updated_indices;
+            std::set<int> not_updated_indices = updateRobots(*it, robots_in_memory, current_time);
+            std:set_intersection(not_observed_indices.begin(), not_observed_indices.end(),
+                                 not_updated_indices.begin(), not_updated_indices.end(),
+                                 std::inserter(updated_indices, updated_indices.begin()));
+            not_observed_indices = updated_indices;
+    }
+
+    for(auto it = not_observed_indices.begin(); it != not_observed_indices.end(); it++){
         memory.at(*it).kalmanStepNoObservation(current_time);
     }
+
 }
 
-void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
+// void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, float current_time){
 
-    std::set<int> free_indices = set_of_indices;
-    for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
-        Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
-        if(nearest_robot_index >= 0){
-            memory.at(nearest_robot_index).update(new_robot_observation);
-            free_indices.erase(nearest_robot_index);
-        }
-    }
-}
+//     std::set<int> free_indices = set_of_indices;
+//     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
+//         Robot new_robot_observation = *it;
+//         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
+//         if(nearest_robot_index >= 0){
+//             memory.at(nearest_robot_index).update(new_robot_observation);
+//             free_indices.erase(nearest_robot_index);
+//         }
+//     }
+// }
 
 bool isModelStillReliable(Robot robot, point_t drone_position, float elapsed_time){
 
@@ -271,7 +282,6 @@ int main(int argc, char **argv){
     initializeFuser();
 
     ros::NodeHandle node;
-    // geometry_msgs::Pose2D drone_msg;
     std_msgs::Float32 time_msg;
 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
@@ -292,14 +302,14 @@ int main(int argc, char **argv){
         
         float current_time = calcCurrentTime(ros::Time::now().sec);
 
-        if(USE_FUSER){
-            for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
-                updateRobots(*it, robots_in_memory, current_time);
-            }
-            for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-                updateObstacleRobots(*it, obstacle_robots_in_memory, current_time);
 
-            }
+
+        if(USE_FUSER){
+            fuser_tick(robots_in_memory, current_time);
+
+            // for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
+            //     updateObstacleRobots(*it, obstacle_robots_in_memory, current_time);
+            // }
         }
 
         else{

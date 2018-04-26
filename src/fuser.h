@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include <stdio.h>
+#include <set>
 
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
@@ -27,7 +28,8 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 float calcCurrentTime(float seconds);
 
 void initializeFuser();
-void updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, float current_time);
+void fuser_tick(std::vector<Robot>& memory, float current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
