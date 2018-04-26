@@ -41,7 +41,7 @@ public:
 	///returns the bounds of the field
 	bounds_t getBounds();
 
-	void readFileGrid(std::string filename);
+	void readGrids(std::string value_file, std::string action_file);
 
 	/**
     @brief 2D function of grid value. Determined using value iteration.

@@ -10,7 +10,7 @@ World::World(float orientation){
 	this->origin = point_Zero;
 	this->orientation = orientation;
 	this->bounds = (bounds_t){.x_Max = 20, .y_Max = 20};
-    readFileGrid("/catkin_ws/src/planning-sim/src/Valueiteration/Valuegrid.txt"); // this will update valuegrid3d
+    readGrids("/catkin_ws/src/planning-sim/src/Valueiteration/Valuegrid.txt", "/catkin_ws/src/planning-sim/src/Valueiteration/Actiongrid.txt"); // this will update valuegrid3d
 }
 
 //Get
@@ -24,22 +24,24 @@ bounds_t World::getBounds(){
 	return this->bounds;
 }
 
-void World::readFileGrid(std::string filename) {
-    std::ifstream infile(filename); // declears and opens file
+void World::readGrids(std::string value_file, std::string action_file) {
+    std::ifstream valuefile(value_file); // declears and opens file
+    std::ifstream actionfile(action_file);
+
     std::string word;
+    std::string word2;
 
     int x = 0;
     int y = 0;
     int t = 0;
 
-    if (infile.fail()) { // will be thrown if filename doesnt exsist
-        std::cout << "Opening file " << filename << " failed" << std::endl;
+    if (valuefile.fail()) { // will be thrown if filename doesnt exsist
+        std::cout << "Opening file " << value_file << " failed" << std::endl;
         throw "Failed to open file\n";
     }
 
-    while(infile >> word) {
+    while(valuefile >> word && actionfile >> word2) {
         std::cout << word << std::endl;
-
         if (word == "}") {
             x = 0;
         }
@@ -55,10 +57,11 @@ void World::readFileGrid(std::string filename) {
             t++;
         }
 
-        else if (word.size() > 2) {
+        else if (word.size() > 1) {
             std::cout << "Placing value: " << word;
             std::cout << " at (x,y,t) = (" << x << "," << y << "," << t << ")" << std::endl;
-            this->valuegrid3d[x][y][t] = std::stod(word);
+            valuegrid3d[x][y][t] = std::stod(word);
+            actiongrid3d[x][y][t] = std::stod(word2);
         }
     }
 
@@ -67,12 +70,13 @@ void World::readFileGrid(std::string filename) {
 /*    for (int x = 0; x < 20; x++) {
         for (int y = 0; y < 20; y++) {
             for (int t = 0; t < 12; t++) {
-                std::cout << valuegrid3d[x][y][t] << std::endl;
+                std::cout << actiongrid3d[x][y][t] << std::endl;
             }
         }
     }*/
 
-    infile.close();
+    actionfile.close();
+    valuefile.close();
 }
 
 double World::getGridValue(double X, double Y, double T) {

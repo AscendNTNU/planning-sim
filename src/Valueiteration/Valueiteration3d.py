@@ -168,8 +168,8 @@ def indexClosestTheta(actual_theta): # creates discrete theta values
 	return index
 
 
-def writeToFile(grid): # will print actiongrid and valuegrid
-	myfile = open("Valuegrid.txt", "w")
+def writeToFile(grid, filename): # will print actiongrid and valuegrid
+	myfile = open(filename, "w")
 	# array_str = np.array2string(grid)
 	# myfile.write(array_str)
 	myfile.write(" { ")
@@ -184,7 +184,7 @@ def writeToFile(grid): # will print actiongrid and valuegrid
 		myfile.write(" ) ")
 	myfile.write(" } ")
 
-
+	print("Done writing to file:", filename)
 	myfile.close()
 
 
@@ -232,7 +232,8 @@ valuegrid = createGrid3d()
 
 valueiteration()
 
-writeToFile(valuegrid)
+writeToFile(valuegrid, "Valuegrid.txt")
+writeToFile(actiongrid, "Actiongrid.txt")
 
 
 # 	   ----------
