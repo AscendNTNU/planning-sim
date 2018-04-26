@@ -3,8 +3,6 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Point32.h"
-#include "planning_ros_sim/groundRobotList.h"
-#include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
@@ -18,7 +16,6 @@
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
-planning_ros_sim::groundRobotList GroundRobots;
 //geometry_msgs::Pose2D Drone;
 
 World world = World(0);

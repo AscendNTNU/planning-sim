@@ -4,9 +4,6 @@
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
 #include "geometry_msgs/Point32.h"
-#include "planning_ros_sim/groundRobotList.h"
-#include "planning_ros_sim/groundRobot.h"
-#include "planning_ros_sim/droneCmd.h"
 #include "ascend_msgs/AIWorldObservation.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
