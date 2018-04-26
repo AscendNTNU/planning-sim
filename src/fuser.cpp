@@ -196,7 +196,7 @@ void fuser_tick(std::vector<Robot>& memory, double current_time){
 //     }
 // }
 
-bool isModelStillReliable(Robot robot, point_t drone_position, double elapsed_time){
+bool isModelStillReliable(Robot robot, point_t drone_position, double current_time){
 
     //Different timeouts depending on if our model says the robot should be in sight or not
 
@@ -205,7 +205,7 @@ bool isModelStillReliable(Robot robot, point_t drone_position, double elapsed_ti
     if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
         timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
     }
-    if(elapsed_time - robot.getTimeLastSeen() > timeout){
+    if(current_time - robot.getTimeLastSeen() > timeout){
         return false;
     }
 
@@ -218,7 +218,7 @@ bool isModelStillReliable(Robot robot, point_t drone_position, double elapsed_ti
     return true;
 }
 
-ascend_msgs::AIWorldObservation createObservation(double elapsed_time){
+ascend_msgs::AIWorldObservation createObservation(double current_time){
     ascend_msgs::AIWorldObservation observation;
     // Ground robots
     for(int i=0; i<robots_in_memory.size(); i++){
@@ -231,7 +231,7 @@ ascend_msgs::AIWorldObservation createObservation(double elapsed_time){
         robots_in_memory.at(i).setPositionToKalmanPosition();
 
         if(robots_in_memory.at(i).getVisible()){
-            bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, elapsed_time);
+            bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
             robots_in_memory.at(i).setVisible(is_reliable);
         }
         
@@ -261,14 +261,14 @@ ascend_msgs::AIWorldObservation createObservation(double elapsed_time){
     observation.drone_position = drone;
     observation.header.seq = 1;
 
-    observation.elapsed_time = elapsed_time;
+    observation.elapsed_time = current_time;
 
     return observation;
 }
 
 double calcCurrentTime(double seconds){
     if(elapsed_time == 0.0){
-        std::cout << "Elapsed time is " << elapsed_time << std::endl;
+        std::cout << "Elapsed time is " << seconds-start_time.sec << std::endl;
         return seconds-start_time.sec; 
     }
     return elapsed_time;
@@ -302,8 +302,6 @@ int main(int argc, char **argv){
         }
         
         double current_time = calcCurrentTime(ros::Time::now().sec);
-
-
 
         if(USE_FUSER){
             fuser_tick(robots_in_memory, current_time);
