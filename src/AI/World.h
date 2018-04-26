@@ -11,12 +11,17 @@ It is responsible for creating acoordinate system and appropriate reward values 
 #include "structs.h"
 #include <time.h>
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 class World{
 private:
 	point_t origin;
 	float orientation;
 	bounds_t bounds;
+	double valuegrid3d[20][20][12]; // due to 3 inputs
+	double actiongrid3d[20][20][12];
 
 public:
 	//Constructors
@@ -36,6 +41,8 @@ public:
 	///returns the bounds of the field
 	bounds_t getBounds();
 
+	void readFileGrid(std::string filename);
+
 	/**
     @brief 2D function of grid value. Determined using value iteration.
 
@@ -44,4 +51,6 @@ public:
     @return the points value at the (x, y) position given
 	*/
 	float getGridValue(float X, float Y);
+
+	double getGridValue(double X, double Y, double T);
 };

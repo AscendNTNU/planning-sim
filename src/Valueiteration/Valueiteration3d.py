@@ -66,7 +66,12 @@ def printGrid(grid): #prints 2d grid
 		print()
 
 def printAngle(theta_i):
-	print("Angle:", theta_i*pi / 6)
+	angle_radians = (2*theta_i*pi) / 12
+	angle_degrees = (angle_radians*180) / pi
+	print("---- Angle ----")
+	print("Radians: ", round(angle_radians,2))
+	print("Degrees: ", round(angle_degrees,2))
+	print("---------------")
 
 def placeObstacleRing(valuegrid): #places values in a circle with sentrum in the middle of the grid
 	r = 5 # radius of circle from the middle of grid
@@ -148,7 +153,7 @@ def imediateReward(next_y, next_x):
 		return 2000
 
 
-def nextStateReward(next_y, next_x, t):
+def nextStateReward(next_y, next_x, t): # t is a theta index
 	if (1 <= next_x <= 20) and (1 <= next_y <= 20):
 		return valuegrid[next_y][next_x][t]
 	elif next_x == -1000:
@@ -163,7 +168,27 @@ def indexClosestTheta(actual_theta): # creates discrete theta values
 	return index
 
 
-def valueiteration(): # valueiterates for (x,y,theta)
+def writeToFile(grid): # will print actiongrid and valuegrid
+	myfile = open("Valuegrid.txt", "w")
+	# array_str = np.array2string(grid)
+	# myfile.write(array_str)
+	myfile.write(" { ")
+	for x in range(1, len(grid) - 1):
+		myfile.write(" ( ")
+		for y in range(1, len(grid) - 1):
+			myfile.write(" [ ")
+			for t in range(12):
+				myfile.write(str(grid[x][y][t]))
+				myfile.write(" , ")
+			myfile.write(" ] ")
+		myfile.write(" ) ")
+	myfile.write(" } ")
+
+
+	myfile.close()
+
+
+def valueiteration(): # valueiteration for robots and drone actions (valueiteration for (x,y,theta))
 	numiter = 1000
 	for i in range(numiter): # number of iterations
 		print("Iteration " + str(i+1) + " out of " + str(numiter), end="\r")
@@ -179,17 +204,18 @@ def valueiteration(): # valueiterates for (x,y,theta)
 					t1 = indexClosestTheta(theta2)
 					t2 = indexClosestTheta(theta3)
 
-					value0 = imediateReward(y0, x0) + gamma*nextStateReward(y0, x0, t0)
-					value1 = imediateReward(y1, x1) + gamma*nextStateReward(y1, x1, t1)
-					value2 = imediateReward(y2, x2) + gamma*nextStateReward(y2, x2, t2)
+
+					value0 = imediateReward(y0, x0) + gamma*nextStateReward(y0, x0, t0) # expected value for action 0 (doNothing)
+					value1 = imediateReward(y1, x1) + gamma*nextStateReward(y1, x1, t1) # expected value for action 1 (landOnTop)
+					value2 = imediateReward(y2, x2) + gamma*nextStateReward(y2, x2, t2) # expected value for action 2 (landInFront)
 
 
 					maxvalue = max(value0, value1, value2)
-					valuegrid[y][x][t] = maxvalue
+					valuegrid[y][x][t] = maxvalue # current x,y, theta will be set to the max future value
 
 					if i == (numiter - 1):
 						if maxvalue == value0:
-							actiongrid[y][x][t] = 1 #donothing
+							actiongrid[y][x][t] = 1 #donothing (shows gray)
 						elif maxvalue == value1:
 							actiongrid[y][x][t] = 2 #landontop 45degrees (shows blue in jupyter)
 						elif maxvalue == value2:
@@ -203,7 +229,16 @@ def valueiteration(): # valueiterates for (x,y,theta)
 # 	   -- MAIN -- 
 actiongrid = createGrid3d()
 valuegrid = createGrid3d()
+
+valueiteration()
+
+writeToFile(valuegrid)
+
+
 # 	   ----------
+
+# 3d (4d) grid can be shown using showGrid(valuegrid[:,:,2])
+
 
 
 
