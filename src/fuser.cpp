@@ -1,7 +1,7 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 10;
+const int NUMBER_OF_ROBOTS = 1;
 const double MAX_VISIBILITY_RADIUS = 2;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
@@ -17,7 +17,7 @@ std::vector<std::vector<Robot>> observed_obstacle_robots;
 World world = World(0);
 
 ros::Time start_time(0.0);
-double elapsed_time = 0.0; // This is set by a callback if we are using ai-sim
+double simulation_time = 0.0; // This is set by a callback if we are using ai-sim
 point_t drone_position = point_zero;
 
 // Callbacks
@@ -38,6 +38,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
 
         double q = msg->direction.at(i);
         double time = (msg->header.stamp-start_time).toSec();
+        std::cout << "Robot time is: " << time << std::endl;
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
@@ -69,57 +70,6 @@ void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
     drone_position.y = msg->pose.position.y;
     drone_position.z = msg->pose.position.z;
 }
-
-void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
-
-    elapsed_time = obs->elapsed_time;
-
-    drone_position.x = obs->drone_position.x;
-    drone_position.y = obs->drone_position.y;
-    drone_position.z = obs->drone_position.z;
-
-    int i = 0;
-    std::vector<Robot> robots_seen_in_one_message;
-    for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) {
-        if(it->visible){
-            Robot robot;
-
-            point_t position;
-            position.x = it->x;
-            position.y = it->y;
-            double q = it->theta;
-            double time = elapsed_time;
-            bool visible = true;
-
-            robot.update(i, position, q , time, visible);
-            if(robot.isInArena()){
-                robots_seen_in_one_message.push_back(robot);
-            }
-
-            robot.setSideCamera(true);
-        }
-    }
-    observed_robots.push_back(robots_seen_in_one_message);
-
-    i = 0;
-    std::vector<Robot> obstacle_robots_seen_in_one_message;
-    for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){
-        if(it->visible){
-            Robot robot;
-            point_t position;
-            position.x = it->x;
-            position.y = it->y;
-            double q = it->theta;
-            double time = elapsed_time;
-            bool visible = true;
-
-            robot.update(i, position, q , time, visible);
-            obstacle_robots_seen_in_one_message.push_back(robot);
-        }
-    }
-    observed_obstacle_robots.push_back(obstacle_robots_seen_in_one_message);
-}
-
 
 //Helper functions
 void initializeFuser(){
@@ -183,19 +133,6 @@ void fuser_tick(std::vector<Robot>& memory, double current_time){
     }
 }
 
-// void updateObstacleRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, double current_time){
-
-//     std::set<int> free_indices = set_of_indices;
-//     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
-//         Robot new_robot_observation = *it;
-//         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, free_indices);
-//         if(nearest_robot_index >= 0){
-//             memory.at(nearest_robot_index).update(new_robot_observation);
-//             free_indices.erase(nearest_robot_index);
-//         }
-//     }
-// }
-
 bool isModelStillReliable(Robot robot, point_t drone_position, double current_time){
 
     //Different timeouts depending on if our model says the robot should be in sight or not
@@ -239,21 +176,6 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
         observation.ground_robots.at(i) = robot;
     }
 
-    // Obstacle robots
-    for(int i=0; i<obstacle_robots_in_memory.size(); i++){
-        ascend_msgs::GRState robot;
-
-        robot.x = obstacle_robots_in_memory.at(i).getPosition().x;
-        robot.y = obstacle_robots_in_memory.at(i).getPosition().y;
-        robot.theta = obstacle_robots_in_memory.at(i).getOrientation();
-
-        bool is_reliable = isModelStillReliable(obstacle_robots_in_memory.at(i), drone_position, elapsed_time);
-        obstacle_robots_in_memory.at(i).setVisible(is_reliable);
-
-        robot.visible = obstacle_robots_in_memory.at(i).getVisible();
-        observation.obstacle_robots.at(i) = robot;
-    }
-
     geometry_msgs::Point32 drone;
     drone.x = drone_position.x;
     drone.y = drone_position.y;
@@ -267,10 +189,10 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
 }
 
 double calcCurrentTime(ros::Time seconds){
-    if(elapsed_time == 0.0){
+    if(simulation_time == 0.0){
         return (seconds-start_time).toSec(); 
     }
-    return elapsed_time;
+    return simulation_time;
 }
 
 int main(int argc, char **argv){
@@ -287,16 +209,15 @@ int main(int argc, char **argv){
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
-    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
 
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
     ros::Rate rate(20);
-
+    start_time = ros::Time::now();
     while (ros::ok()) {
         ros::spinOnce();
 
-        if(elapsed_time == 0.0 && start_time.toSec() == 0.0){
+        if(simulation_time == 0.0 && start_time.toSec() == 0.0){
             continue;
         }
         
@@ -305,11 +226,7 @@ int main(int argc, char **argv){
         if(USE_FUSER){
             fuser_tick(robots_in_memory, current_time);
 
-            // for(auto it = observed_obstacle_robots.begin(); it != observed_obstacle_robots.end(); it++){
-            //     updateObstacleRobots(*it, obstacle_robots_in_memory, current_time);
-            // }
         }
-
         else{
             int i = 0;
             if(observed_robots.size() != 0){

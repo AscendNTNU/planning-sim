@@ -1,5 +1,5 @@
 <launch>
-    <node name="fuser" pkg="planning_ros_sim" type="fuser"/>
+    <node name="fuser" pkg="planning_ros_sim" type="fuser" output="screen/ >
     <node name="visualizer" pkg="planning_ros_sim" type="visualizer"/>
-	<node pkg="ascend_utilities" type="time_chatter" name="time_chatter" output="screen"/>
+	<node pkg="ascend_utilities" type="time_chatter" name="time_chatter"/>
 </launch>
