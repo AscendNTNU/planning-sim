@@ -40,7 +40,11 @@ private:
     cv::Mat P_k_k;
     cv::Mat P_k_km1;
     cv::Mat P_km1_km1;
-    cv::Mat x_hat_km1;
+    
+    cv::Mat x_hat_k_k;
+    cv::Mat x_hat_km1_km1;
+    cv::Mat x_hat_k_km1;
+
     cv::Mat R_k;
     cv::Mat Q_k;
     double t_k;

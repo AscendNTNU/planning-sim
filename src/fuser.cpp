@@ -206,12 +206,12 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     // Ground robots
     for(int i=0; i<robots_in_memory.size(); i++){
         ascend_msgs::GRState robot;
-
-        robot.x = robots_in_memory.at(i).x_hat_k.at<double>(0,0);
-        robot.y = robots_in_memory.at(i).x_hat_k.at<double>(2,0);
-        robot.theta = robots_in_memory.at(i).x_hat_k.at<double>(4,0);
-
         robots_in_memory.at(i).setPositionToKalmanPosition();
+        robot.x = robots_in_memory.at(i).getPosition().x;
+        robot.y = robots_in_memory.at(i).getPosition().y;
+        robot.theta = robots_in_memory.at(i).getOrientation();
+
+        
 
         if(robots_in_memory.at(i).getVisible()){
             bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
