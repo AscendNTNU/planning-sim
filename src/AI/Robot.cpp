@@ -51,21 +51,21 @@ Robot::Robot(int index) {
                                                 0); //TODO: Update xdot, ydot
     
     //Measurement covariance parms
-    this->xMeasCovar          = 1; //TODO: Tune!
-    this->yMeasCovar          = 1; //TODO: Tune!
-    this->thMeasCovar_downCam = 1;  //TODO: Tune!
-    this->thMeasCovar_sideCam = 1; //TODO: Tune!
+    this->xMeasCovar          = 10; //TODO: Tune!
+    this->yMeasCovar          = 10; //TODO: Tune!
+    this->thMeasCovar_downCam = 10;  //TODO: Tune!
+    this->thMeasCovar_sideCam = 10; //TODO: Tune!
     this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                            0, this->yMeasCovar, 0, 
                                            0, 0, this->thMeasCovar_sideCam);
     
     //Model covariance parms
-    double xModelCovar  = 10; //TODO: Tune!
-    double yModelCovar  = 10; //TODO: Tune!
-    double thModelCovar = 10; //TODO: Tune!
-    double xDotModelCovar  = 10; //TODO: Tune!
-    double yDotModelCovar  = 10; //TODO: Tune!
-    double thDotModelCovar = 10; //TODO: Tune!
+    double xModelCovar  = 0.1; //TODO: Tune!
+    double yModelCovar  = 0.1; //TODO: Tune!
+    double thModelCovar = 0.1; //TODO: Tune!
+    double xDotModelCovar  = 0.1; //TODO: Tune!
+    double yDotModelCovar  = 0.1; //TODO: Tune!
+    double thDotModelCovar = 0.1; //TODO: Tune!
     this->Q_k = (cv::Mat_<double>(6,6) << xModelCovar, 0, 0, 0, 0, 0, 
                                           0, xDotModelCovar, 0, 0, 0, 0, 
                                           0, 0, yModelCovar, 0, 0, 0,  
@@ -367,7 +367,7 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, double new_Orientation
 
     if(visible) {
         double th_meas;
-        if(false) { //sideCamera - TODO: update to actually change between the cameras
+        if(this->side_camera) { //sideCamera - TODO: update to actually change between the cameras
             if(fabs(yk-ykm1) < 0.001 && fabs(xk-xkm1) < 0.001) {
                 th_meas = this->x_hat_k.at<double>(4,0);
             }

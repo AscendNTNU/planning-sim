@@ -1,7 +1,7 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 1;
+const int NUMBER_OF_ROBOTS = 10;
 const double MAX_VISIBILITY_RADIUS = 2;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
@@ -23,7 +23,7 @@ point_t drone_position = point_zero;
 // Callbacks
 void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){ 
    
-    elapsed_time = obs->elapsed_time;  
+    simulation_time = obs->elapsed_time;  
    
     drone_position.x = obs->drone_position.x;  
     drone_position.y = obs->drone_position.y;  
@@ -39,9 +39,9 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             position.x = it->x;    
             position.y = it->y;    
             float q = it->theta;   
-            float time = elapsed_time; 
+            float time = simulation_time; 
             bool visible = true;   
-   
+            robot.setSideCamera(false);
             robot.update(i, position, q , time, visible);  
             robots_seen_in_one_message.push_back(robot);   
         }  
@@ -57,7 +57,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             position.x = it->x;    
             position.y = it->y;    
             float q = it->theta;   
-            float time = elapsed_time; 
+            float time = simulation_time; 
             bool visible = true;   
    
             robot.update(i, position, q , time, visible);  
