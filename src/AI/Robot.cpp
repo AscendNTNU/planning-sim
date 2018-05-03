@@ -317,9 +317,9 @@ void Robot::kalmanPredict(point_t new_Position, double new_Orientation, double e
 
         this->x_hat_k.at<double>(1,0) = xdot;
         this->x_hat_k.at<double>(3,0) = ydot;
+        this->x_hat_k.at<double>(5,0) = 0;
 
         if(firstTimeDriving) {
-            this->x_hat_k.at<double>(5,0) = 0;
             this->firstTimeTurning=true;
             this->firstTimeDriving=false;
         }
@@ -372,7 +372,7 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, double new_Orientation
                 th_meas = this->x_hat_k.at<double>(4,0);
             }
             else {
-                th_meas   = atan2(yk-ykm1,xk-xkm1); //TODO: this should probably be the measurements, right?
+                th_meas = atan2(yk-ykm1,xk-xkm1); //TODO: this should probably be the measurements, right?
             }
             this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                    0, this->yMeasCovar, 0, 

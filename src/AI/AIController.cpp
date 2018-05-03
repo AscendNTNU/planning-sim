@@ -157,6 +157,7 @@ action_t AIController::positioningState() {
         return empty_action;
 
     } else { // The drone or robot is too far from rendezvous point
+        //TODO: Check update action before checking robot position
         action_t updated_action = this->ai_.getBestAction(target);
 
         if(updated_action.type == no_command){
