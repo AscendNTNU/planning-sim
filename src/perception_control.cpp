@@ -4,9 +4,6 @@
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Pose2D.h"
 #include "geometry_msgs/Point32.h"
-#include "planning_ros_sim/groundRobotList.h"
-#include "planning_ros_sim/groundRobot.h"
-#include "planning_ros_sim/droneCmd.h"
 #include "ascend_msgs/AIWorldObservation.h"
 #define SIM_IMPLEMENTATION
 #define SIM_CLIENT_CODE
@@ -23,14 +20,14 @@ using GoalType = ascend_msgs::ControlFSMGoal;
 sim_Observed_State state;
 
 int mapAIIndexToSimIndex(sim_Command command){
-    float nearest_distance = 10000;
-    float target = 0;
+    double nearest_distance = 10000;
+    double target = 0;
     point_t command_position = point_zero;
 
     for(int i=0; i<Num_Targets; i++){
-        float x_Distance = command.x - state.target_x[i];
-        float y_Distance = command.y - state.target_y[i];
-        float distance = sqrt(pow(x_Distance,2) + pow(y_Distance,2));
+        double x_Distance = command.x - state.target_x[i];
+        double y_Distance = command.y - state.target_y[i];
+        double distance = sqrt(pow(x_Distance,2) + pow(y_Distance,2));
         if(distance < nearest_distance){
             nearest_distance = distance;
             target = i;
@@ -115,7 +112,7 @@ int main(int argc, char **argv)
     ros::Publisher ai_sim_pub = nh.advertise<ascend_msgs::AIWorldObservation>("/ai/sim", 1);
     
     // Define action server
-    ActionServerType server(nh, "control_action_server", false);
+    ActionServerType server(nh, "/control/fsm/action_server", false);
     server.registerGoalCallback(boost::bind(newGoalCB, &server));
     server.registerPreemptCallback(boost::bind(preemptCB, &server));
     server.start();

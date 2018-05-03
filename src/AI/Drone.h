@@ -15,14 +15,14 @@ It also includes functions for determining the drones relation to other parts of
 class Drone{
 private:
 	point_t position;
-	float orientation;
-	float angle_Of_Motion;
-	float speed;
+	double orientation;
+	double angle_Of_Motion;
+	double speed;
 
 	bool command_Done;
 
 	point_t prev_Position;
-	float prev_Orientation;
+	double prev_Orientation;
 
 public:
 	Drone();
@@ -34,16 +34,16 @@ public:
 
 
 	//actions
-	void wait(float time);
+	void wait(double time);
 
 	/**
 	@brief Calculates and returns the straight line distance between the drones current position and the input point
 	@param point - point struct to calculate distance to
-	@return float representing distance in meters between the drone and the given point
+	@return double representing distance in meters between the drone and the given point
 	*/
-	float getDistanceToPoint(point_t point);
+	double getDistanceToPoint(point_t point);
 	
-	// float getTravelTimeToPoint(point_t point);
+	// double getTravelTimeToPoint(point_t point);
 	
 	/**
 	@brief Finds the earliest point where the drone and the robot can intercept

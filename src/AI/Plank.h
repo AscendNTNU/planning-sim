@@ -20,27 +20,27 @@ class Plank{
 	    plank_point_t end_point; //First endpoint robot meets
 	    plank_point_t start_point; //Second endpoint robot meets
 	    plank_point_t plank_points[10]; //Points between endpoints
-	    float length;
-	    float reward;
-	    float angle;
+	    double length;
+	    double reward;
+	    double angle;
 	public:
 		///Plank constructor for a robot at (0,0)
 		Plank();
 
 		///Plank constructor for a robot at a given position/time
-		Plank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
+		Plank(point_t position, double angle, double time_after_turn_start, double ROBOT_TURN_TIME);
 
 		///Get reward of current plank
-		float getReward();
+		double getReward();
 
 		///Get angle of current plank
-		float getAngle();
+		double getAngle();
 
 		///Get length of current plank
-		float getLength();
+		double getLength();
 
 		///Get number of plank points
-		float getNumPlankPoints();
+		double getNumPlankPoints();
 
 		///@brief Get a point on the plank
 		///There are 12 points on the plank. The start point 0, the end point 11 and 10 points between
@@ -82,7 +82,7 @@ class Plank{
 	    Calculates the value of a plank by integrating the plank over the world value
 	    grid.
 		*/
-		float calculateReward();
+		double calculateReward();
 
 		/**
 		@brief Updates the plank given the ground robots state.
@@ -90,7 +90,7 @@ class Plank{
 		@param angle Robot angle in radians
 		@param time_after_turn_start Seconds passed since the robot started turning
 		*/
-		void updatePlank(point_t position, float angle, float time_after_turn_start, float ROBOT_TURN_TIME);
+		void updatePlank(point_t position, double angle, double time_after_turn_start, double ROBOT_TURN_TIME);
 		
 		///Check if a point is outside of the plank
 		/**
@@ -100,7 +100,7 @@ class Plank{
 		*/
 		bool pointIsOutsideOfPlank(point_t point);
 
-		point_t getRobotPositionAtTime(float elapsed_time);
+		point_t getRobotPositionAtTime(double elapsed_time);
 
 	    friend std::ostream& operator<<(std::ostream &strm, const Plank &plank);
 };

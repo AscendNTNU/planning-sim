@@ -17,7 +17,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 	
 	point_t temp_Position = robot.position;
 
-	float orientation = robot.orientation;
+	double orientation = robot.orientation;
 
 	int i = 0;
 	
@@ -53,7 +53,7 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
         //Try action land in front
         temp = currentLevel;
         robot.setPositionOrientation(robot.getPosition(), robot.plank.getAngle()-0.785 + 3.14);
-        float rewardInFront = findRobotValue(robot);
+        double rewardInFront = findRobotValue(robot);
         temp.reward = findRobotValue(robot);
         action_Front.when_To_Act = i;
         temp.actions.push(action_Top);
@@ -112,25 +112,25 @@ tree_action_t DFS(Robot robot,tree_action_t currentLevel, int n){
 // 	action_Type type;
 // 	Robot target;
 // 	point_t waypoints[10];
-// 	float reward;
-// 	float when_To_Act;
+// 	double reward;
+// 	double when_To_Act;
 // }
 
 //     int index = target.index;
-//     float angle = wrap_angle(state.target_q[index]);
+//     double angle = wrap_angle(state.target_q[index]);
     
 //     target.intersection = calculateInterceptionPoint(state, target);
-//     float temp = target.intersection.travel_time;
+//     double temp = target.intersection.travel_time;
 //     //target.intersection.travel_time = 0;
 
-//     float n = 10;
-//     float step_size = target.plank.length/n;
-//     float step_x = step_size*cos(angle);
-//     float step_y = step_size*sin(angle);
+//     double n = 10;
+//     double step_size = target.plank.length/n;
+//     double step_x = step_size*cos(angle);
+//     double step_y = step_size*sin(angle);
 
-//     float x = target.intersection.x;
-//     float y = target.intersection.y;
-//     float time_after_intersection = 0;
+//     double x = target.intersection.x;
+//     double y = target.intersection.y;
+//     double time_after_intersection = 0;
 
 //     // Temporary max rewarded action
 //     ActionReward best_action;

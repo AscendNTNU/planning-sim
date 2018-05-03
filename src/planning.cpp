@@ -3,8 +3,6 @@
 #include "std_msgs/Float32.h"
 #include "std_msgs/Bool.h"
 #include "geometry_msgs/Point32.h"
-#include "planning_ros_sim/groundRobotList.h"
-#include "planning_ros_sim/groundRobot.h"
 #include "planning_ros_sim/droneCmd.h"
 #include <actionlib/client/simple_action_client.h>
 #include <stdio.h>
@@ -18,7 +16,6 @@
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
-planning_ros_sim::groundRobotList GroundRobots;
 //geometry_msgs::Pose2D Drone;
 
 World world = World(0);
@@ -98,7 +95,7 @@ int main(int argc, char **argv) {
     ros::Subscriber fuser_sub = nh.subscribe("AIWorldObservation", 1, fuser_chatterCallback);
     //ros::Subscriber fuser_sub = nh.subscribe("/ai/sim", 1, fuser_chatterCallback);
 
-    ClientType client("control_action_server", true);
+    ClientType client("/control/fsm/action_server", true);
     client.waitForServer(); //Waits until server is ready
 
     ascend_msgs::ControlFSMGoal drone_action;
@@ -115,14 +112,14 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         ros::spinOnce();
 
-        float elapsed_time = ai_controller.observation.getTimeStamp();
+        double elapsed_time = ai_controller.observation.getTimeStamp();
         // printf("%f\n", elapsed_time);
         if(elapsed_time > 600 && elapsed_time != 0.0) {
           break;
         }
 
         if(ready_for_new_action) {
-            if(ai_controller.observation.anyRobotsVisible() && (!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
+            if((!Robot::robotsAtTurnTime(elapsed_time) || elapsed_time < ROBOT_TURN_TIME )){
                 // Right after start, robots are not turning while at turn time.
                 action = ai_controller.stateHandler();
 

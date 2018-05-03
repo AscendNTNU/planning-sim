@@ -5,9 +5,9 @@
 /*
     Contructor for the grid world.
 
-    @param orientation - float value describing the orientation of the field.
+    @param orientation - double value describing the orientation of the field.
 */
-World::World(float orientation){
+World::World(double orientation){
 	this->origin = point_zero;
 	this->orientation = orientation;
 	this->bounds = (bounds_t){.x_Max = 20, .y_Max = 20}; 
@@ -17,7 +17,7 @@ World::World(float orientation){
 point_t World::getOrigin(){
 	return this->origin;
 }
-float World::getOrientation(){
+double World::getOrientation(){
 	return this->orientation;
 }
 bounds_t World::getBounds(){
@@ -31,8 +31,8 @@ bounds_t World::getBounds(){
     @param y - The y position on the field
     @return the points value at the (x, y) position given
 */
-float World::getGridValue(float X, float Y){
-    float value = (-9.995004e+02)+(9.976812e+01)*X+(-1.004701e+02)*Y
+double World::getGridValue(double X, double Y){
+    double value = (-9.995004e+02)+(9.976812e+01)*X+(-1.004701e+02)*Y
         +(-5.785388e+01)*pow(X,2)+(1.161562e+01)*X*Y+(5.477725e+01)*pow(Y,2)
         +(1.260229e+01)*pow(X,3)+(1.299816e+01)*pow(X,2)*Y+(-1.438667e+01)*X*pow(Y,2)+(-1.158062e+01)*pow(Y,3)
         +(-1.404096e+00)*pow(X,4)+(-3.106303e+00)*pow(X,3)*Y+(4.263504e-01)*pow(X,2)*pow(Y,2)

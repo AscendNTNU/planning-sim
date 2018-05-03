@@ -13,27 +13,29 @@ This class handles all Robot functions. This includes getters and setters and ch
 #include <queue>
 #include <opencv2/opencv.hpp>
 
-const float ROBOT_TURN_TIME = 2.5;
+const double ROBOT_TURN_TIME = 2.5;
 
 class Robot{
 private:
     int index;
     point_t position;
-    float orientation;
+    double orientation;
     point_t old_Position;
-    float old_Orientation;
-    float time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
+    double old_Orientation;
+    double time_after_turn_start; ///< Is the elapsed time passed since the start of the last rotation/turn.
                                  ///< Remember that the robot turns for about 2 seconds.
-    float time_last_seen;
-    //float prev_pos_update;
-    float time_between_updates;
+    double time_last_seen;
+    //double prev_pos_update;
+    double time_between_updates;
     std::queue<point_t> pos_queue;
-    std::queue<float> orientation_queue;
+    std::queue<double> orientation_queue;
 
-    float speed;
+    bool side_camera;
+
+    double speed;
     bool visible;
     bool wasInteractedWith;
-    cv::Mat F;//(3,3,DataType<float>::type);
+    cv::Mat F;//(3,3,DataType<double>::type);
     cv::Mat H;
     cv::Mat P_k_k;
     cv::Mat P_k_km1;
@@ -41,9 +43,9 @@ private:
     cv::Mat x_hat_km1;
     cv::Mat R_k;
     cv::Mat Q_k;
-    float t_k;
-    float t_km1;
-    float dt;
+    double t_k;
+    double t_km1;
+    double dt;
 
     double xMeasCovar;
     double yMeasCovar;
@@ -63,7 +65,7 @@ public:
     
     Plank plank;
 
-    static bool robotsAtTurnTime(float elapsed_time);
+    static bool robotsAtTurnTime(double elapsed_time);
 
     /**
     @brief Get the index associated with the robot instance.
@@ -71,7 +73,7 @@ public:
     */
     int getIndex();
 
-    float getTimeLastSeen();
+    double getTimeLastSeen();
 
     /**
     @brief Get the current position for the robot.
@@ -83,19 +85,19 @@ public:
     @brief Get the robots current orientation relative to the grid.
     @return Orientation of the robot
     */
-    float getOrientation();
+    double getOrientation();
 
     /**
     @brief Get the elapsed time passed since it last started turning/rotating.
     @return Time passed since last turn started
     */
-    float getTimeAfterTurn();
+    double getTimeAfterTurn();
 
     /**
     @brief Get the current speed of the Robot
     @return Current speed of the Robot
     */
-    float getSpeed();
+    double getSpeed();
 
     /**
     @brief Get the current plank of the Robot
@@ -112,19 +114,23 @@ public:
 
     void setIndex(int index);
 
+    bool getSideCamera();
+
+    void setSideCamera(bool value);
+    
+    /**
+    @brief check if robot is approaching a point
+    @param a point_t point
+    */
+    bool approaching(point_t point);
+    
+    bool isInArena();
+    
     /**
     @brief Set the visibility of the Robot
     bool setVisibility();
     @param visibility Boolean value representing if the robot is visible or not
     */
-
-    bool approaching(point_t point);
-    /**
-    @brief check if robot is approaching a point
-    @param a point_t point
-    */
-    
-
     void setVisibility(bool visible);
 
     /**
@@ -132,18 +138,18 @@ public:
     @param position Point struct of the new position
     @param q The new orientational angle in radians
     */
-    void setPositionOrientation(point_t position, float q);
+    void setPositionOrientation(point_t position, double q);
 
     /**
     @brief Add time to the robots time 
     @param time Time to add to robots elapsed time since the last turn started
     */
-    void addToTimer(float time);
+    void addToTimer(double time);
 
     /**
     The kalman filter assumes that this is updated frequently (at least once a second, but preferably more often)
     */
-    void update(int index, point_t position,float q, float elapsed_time, bool visible);
+    void update(int index, point_t position,double q, double elapsed_time, bool visible);
     void update(Robot robot);
     /**
     @brief Checks if the Robot is moving. Is often equivalent to the robot turning.
@@ -167,13 +173,13 @@ public:
      * @param[in]  elapsed_time  The elapsed time
      * @return     The robot position at time.
      */
-    Robot getRobotPositionAtTime(float elapsed_time);
+    Robot getRobotPositionAtTime(double elapsed_time);
 
-    void kalmanStep(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
-    void kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
-    void kalmanMeasurementUpdate(point_t new_Position, float new_Orientation, float elapsed_time, bool visible);
+    void kalmanStep(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
+    void kalmanPredict(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
+    void kalmanMeasurementUpdate(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
 
-    void kalmanStepNoObservation(float elapsed_time);
+    void kalmanStepNoObservation(double elapsed_time);
 
     void setPositionToKalmanPosition();
 

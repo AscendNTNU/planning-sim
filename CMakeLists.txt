@@ -27,6 +27,8 @@ catkin_package(
 add_library(libAI src/AI/World.cpp src/AI/Plank.cpp src/AI/Robot.cpp src/AI/Drone.cpp src/AI/Observation.cpp src/AI/AI.cpp src/AI/AIController.cpp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
+## set(CMAKE_BUILD_TYPE Debug)
+
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(planning src/planning.cpp)
@@ -42,9 +44,8 @@ if(NOT ($ENV{ASCEND_ENV} MATCHES "^production$"))
   add_executable(benchmark_perception_control src/benchmark_perception_control.cpp) 
   target_link_libraries(benchmark_perception_control ${catkin_LIBRARIES}) 
   add_dependencies(benchmark_perception_control planning_ros_sim_generate_messages_cpp) 
-endif() 
+endif()
 
-#include <opencv2/opencv.hpp>
 add_executable(fuser src/fuser.cpp)
 target_link_libraries(fuser libAI ${catkin_LIBRARIES})
 add_dependencies(fuser planning_ros_sim_generate_messages_cpp

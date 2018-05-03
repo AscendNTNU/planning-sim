@@ -144,8 +144,8 @@ int main(int argc, char** argv) {
     robot_marker.action = visualization_msgs::Marker::ADD;
 
     //COMMENT: Future suggestion: Set these values in a configuration file.
-    robot_marker.scale.x = 0.2;
-    robot_marker.scale.y = 0.2;
+    robot_marker.scale.x = 0.34;
+    robot_marker.scale.y = 0.34;
     robot_marker.scale.z = 0.05;
     robot_marker.color.a = 1.0;
     robot_marker.lifetime = ros::Duration(ros_rate);
@@ -156,8 +156,8 @@ int main(int argc, char** argv) {
 	direction_marker.ns = "basic_shapes";
 	direction_marker.type = visualization_msgs::Marker::CYLINDER;
 	direction_marker.action = visualization_msgs::Marker::ADD;
-	direction_marker.scale.x = 0.1;
-	direction_marker.scale.y = 0.01;
+	direction_marker.scale.x = 0.2;
+	direction_marker.scale.y = 0.1;
 	direction_marker.scale.z = 0.05;
 	direction_marker.color.a = 1.0;
 	direction_marker.color.r = 1.0;
@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
 		for(int i=0; i<fused_robots_g.size(); i++){
 			//First reset the previously added markers
 		    robot_marker.color.r = 1.0;
-		    robot_marker.color.g = 0.0;
+		    robot_marker.color.g = 0.5;
 		    robot_marker.color.b = 0.0;
 
 			DetectedRobot& robot = fused_robots_g.at(i);
@@ -187,7 +187,7 @@ int main(int argc, char** argv) {
 
 		for(int i=0; i<fused_obstacles_g.size(); i++){
 			//First reset the previously added markers
-			robot_marker.color.r = 0.5;
+			robot_marker.color.r = 0.0;
 			robot_marker.color.g = 0.5;
 			robot_marker.color.b = 1.0;
 
