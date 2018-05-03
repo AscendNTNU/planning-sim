@@ -35,7 +35,7 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
 
 int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_indices) {
 
-    double min_distance = 40;
+    double min_distance = 3;
     int index = -1;
     int not_visible_index = -1;
     int counter = 0;

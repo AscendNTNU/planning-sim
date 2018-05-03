@@ -119,12 +119,16 @@ action_t AIController::positioningState() {
     int target_id = this->planned_action_.target;
     Robot target = this->observation.getRobot(target_id);
 
+    if(!target.getVisible()){
+        this->transitionTo(idle);
+        return empty_action;  
+    }
+
     if(!target.isMoving()) { // if robot is in a state when we can't / shouldnt interact with it
         return empty_action;
     }
 
     if (target.getCurrentPlank().willExitGreen()) {
-        std::cout << "<--current plank will exit green-->" << std::endl;
         this->transitionTo(idle);
         return empty_action;
     }
@@ -144,7 +148,7 @@ action_t AIController::positioningState() {
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;
 
-        } else if (this->planned_action_.type == land_in_front_of && static_cast<int>(this->observation.getTimeStamp()) % 20 > 15 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
+        } else if (this->planned_action_.type == land_in_front_of && static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
             this->transitionTo(land_in_front);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;  

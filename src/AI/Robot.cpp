@@ -15,6 +15,8 @@ Robot::Robot(int index) {
     this->time_after_turn_start = 0;
     this->wasInteractedWith = false;
     this->visible = false;
+
+    this->side_camera = false;
     //this->prev_pos_update = 0;
     this->time_between_updates = 1;
     
@@ -52,7 +54,7 @@ Robot::Robot(int index) {
     this->xMeasCovar          = 1; //TODO: Tune!
     this->yMeasCovar          = 1; //TODO: Tune!
     this->thMeasCovar_downCam = 1;  //TODO: Tune!
-    this->thMeasCovar_sideCam = 10; //TODO: Tune!
+    this->thMeasCovar_sideCam = 1; //TODO: Tune!
     this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                            0, this->yMeasCovar, 0, 
                                            0, 0, this->thMeasCovar_sideCam);
@@ -136,6 +138,14 @@ bool Robot::getVisible() {
     return this->visible;
 }
 
+bool Robot::getSideCamera(){
+    return this->side_camera;
+}
+
+void Robot::setSideCamera(bool value){
+    this->side_camera = value;
+}
+
 bool Robot::approaching(point_t point) {
     float old_dist = pow(pow(point.x - this->old_Position.x,2) + pow(point.y - this->old_Position.y,2), 0.5);
     float new_dist = pow(pow(point.x - this->position.x,2) + pow(point.y - this->position.y,2), 0.5);
@@ -157,6 +167,17 @@ void Robot::setInteractedWithTrue() {
 
 void Robot::setVisible(bool set_value){
     this->visible = set_value;
+}
+
+bool Robot::isInArena(){
+    float out_limit = 0.3;
+    if(this->position.x < 0 - out_limit  || this->position.x > 20 + out_limit){
+        return false;
+    }
+    else if(this->position.y > 20 + out_limit || this->position.y < 0 - out_limit){
+        return false;
+    }
+    return true;
 }
 
 bool Robot::isMoving() {
@@ -196,7 +217,7 @@ void Robot::update(int index, point_t new_Position, float new_Orientation, float
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);
     this->time_last_seen = elapsed_time;
-    this->visible = visible;   
+    this->visible = visible;
 
     if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
@@ -211,7 +232,15 @@ void Robot::update(Robot robot){
     this->old_Position = this->position;
     this->old_Orientation = this->orientation;
     this->position = robot.getPosition();
-    this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
+    this->side_camera = robot.getSideCamera();
+
+    if(this->side_camera){
+        this->orientation = atan2(this->old_Position.y-this->position.y,this->old_Position.x-this->position.x);
+    }
+    else{
+        this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
+    }
+
 
     this->time_after_turn_start = robot.getTimeAfterTurn();
     this->time_last_seen = robot.getTimeLastSeen();
@@ -257,7 +286,7 @@ void Robot::kalmanStep(point_t new_Position, float new_Orientation, float elapse
 
     //get state estimate and covariance to the state ready for the next update
     this->P_km1_km1 = this->P_k_k;
-    this->x_hat_km1 = this->x_hat_k;
+    // this->x_hat_km1 = this->x_hat_k;
 }
 
 void Robot::kalmanStepNoObservation(float elapsed_time) {
@@ -268,7 +297,7 @@ void Robot::kalmanStepNoObservation(float elapsed_time) {
 
 void Robot::kalmanPredict(point_t new_Position, float new_Orientation, float elapsed_time, bool visible) {
     double time_After_Turn_Start = fmod(elapsed_time, 20);
-    double th_km1 = this->x_hat_km1.at<double>(4,0);
+    double th_km1 = this->x_hat_k.at<double>(4,0);
     
     //spinning
     if(time_After_Turn_Start < 2.5 && elapsed_time>2.5) { 
