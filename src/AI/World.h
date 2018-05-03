@@ -50,9 +50,10 @@ public:
     @param y - The y position on the field
     @return the points value at the (x, y) position given
 	*/
+
+	int angleToAngleIndex(double angle);
+
 	float getGridValue(float X, float Y);
 
-	double getGridValue(int X, int Y, int T);
-
-	action_Type_t getAction(int X, int Y, int T);
+	action_t getAction(double X, double Y, double T);
 };

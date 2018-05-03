@@ -6,6 +6,8 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from math import sin, cos, pi
 
 
+# Angles are 0 degrees when to the right
+
 from datetime import datetime
 print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
@@ -114,6 +116,7 @@ def showGrid(grid, zmin = -1000, zmax = 2000): # prints out 3d grid
 	plt.gca().invert_yaxis()
 	plt.show()
 
+
 def posAfterPlank(y, x, theta):
 	#asumes robot is at start of plank.
 	#parameter: robot position and angle
@@ -173,9 +176,9 @@ def writeToFile(grid, filename): # will print actiongrid and valuegrid
 	# array_str = np.array2string(grid)
 	# myfile.write(array_str)
 	myfile.write(" { ")
-	for x in range(1, len(grid) - 1):
+	for y in range(1, len(grid) - 1):
 		myfile.write(" ( ")
-		for y in range(1, len(grid) - 1):
+		for x in range(1, len(grid) - 1):
 			myfile.write(" [ ")
 			for t in range(12):
 				myfile.write(str(grid[x][y][t]))
@@ -192,12 +195,12 @@ def valueiteration(): # valueiteration for robots and drone actions (valueiterat
 	numiter = 1000
 	for i in range(numiter): # number of iterations
 		print("Iteration " + str(i+1) + " out of " + str(numiter), end="\r")
-		for x in range(1, len(valuegrid) - 1):
-			for y in range(1, len(valuegrid) - 1):
+		for y in range(1, len(valuegrid) - 1):
+			for x in range(1, len(valuegrid) - 1):
 				for t in range(0,12): # robot angles
 					theta = t*pi/6
-					y0, x0, theta1 = doNothing(y, x, theta) #make numbers match action type in strucs.h
-					y1, x1, theta2 = landOnTop(y, x, theta)
+					y0, x0, theta1 = doNothing(y, x, theta) # DONOTHING == 1
+					y1, x1, theta2 = landOnTop(y, x, theta) # LANDONTOP == 2
 					y2, x2, theta3 = landInFront(y, x, theta)
 
 					t0 = indexClosestTheta(theta1)
@@ -219,7 +222,7 @@ def valueiteration(): # valueiteration for robots and drone actions (valueiterat
 						elif maxvalue == value1:
 							actiongrid[y][x][t] = 2 #landontop 45degrees (shows blue in jupyter)
 						elif maxvalue == value2:
-							actiongrid[y][x][t] = 3 # landinfront 180degrees (shows red in jupyter)
+							actiongrid[y][x][t] = 3 #landinfront 180degrees (shows red in jupyter)
 
 	print()
 	print()

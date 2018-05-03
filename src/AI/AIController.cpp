@@ -99,8 +99,10 @@ void AIController::noInputDataState(){
 void AIController::idleState(){
     printf("Idle state\n");
     this->planned_action_ = ai_.getBestGeneralAction(this->observation);
+    std::cout << "got action " << std::endl;
     
     if(this->planned_action_.type == no_command){
+        std::cout << "no command..." << std::endl;
         // This is triggered when we do not have any targets
         int target_id = this->planned_action_.target;
         bool target_visibility = this->observation.getRobot(target_id).getVisibility();
@@ -116,6 +118,7 @@ void AIController::idleState(){
         return;
     }
 	
+    std::cout << "gonna go to positioning" << std::endl;
     this->transitionTo(positioning);
 	return;
 }

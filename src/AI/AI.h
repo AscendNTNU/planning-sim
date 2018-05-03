@@ -12,6 +12,8 @@ This class handles all AI functions. This includes the choice of target and the 
 #include "Plank.h"
 #include <stack>
 
+extern World world;
+
 class AI{
 
 public:

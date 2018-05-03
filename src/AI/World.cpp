@@ -42,14 +42,14 @@ void World::readGrids(std::string value_file, std::string action_file) {
     while(valuefile >> state_value && actionfile >> action) {
         //std::cout << state_value << std::endl;
         if (state_value == "}") {
-            x = 0;
-        }
-        if (state_value == ")") {
-            x++;
             y = 0;
         }
-        else if (state_value == "]") {
+        if (state_value == ")") {
             y++;
+            x = 0;
+        }
+        else if (state_value == "]") {
+            x++;
             t = 0;
         }
         else if (state_value == ",") {
@@ -60,8 +60,8 @@ void World::readGrids(std::string value_file, std::string action_file) {
             std::cout << "Placing value " << state_value;
             std::cout << " at (x,y,t) = (" << x << "," << y << "," << t << ")" << std::endl;
             std::cout << "Where the best action is " << action << std::endl;
-            valuegrid3d[x][y][t] = std::stod(state_value);
-            actiongrid3d[x][y][t] = std::stod(action);
+            valuegrid3d[y][x][t] = std::stod(state_value);
+            actiongrid3d[y][x][t] = std::stod(action);
         }
     }
 
@@ -69,29 +69,52 @@ void World::readGrids(std::string value_file, std::string action_file) {
     valuefile.close();
 
         // printing out grid
-/*    for (int x = 0; x < 20; x++) {
-        for (int y = 0; y < 20; y++) {
-            for (int t = 0; t < 12; t++) {
-                std::cout << actiongrid3d[x][y][t] << std::endl;
-            }
+    for (int y = 19; y >= 0; y--) {
+        for (int x = 0; x < 20; x++) {
+            std::cout << actiongrid3d[y][x][6];
         }
-    }*/
-}
-
-double World::getGridValue(int X, int Y, double T) { // T is the angle given in radians
-    return valuegrid3d[X][Y][static_cast<int>(T)];
-}
-
-action_Type_t World::getAction(int X, int Y, double T) {
-    int action = static_cast<int>(actiongrid3d[X][Y][static_cast<int>(T)]); // will output values where 1:landontop, 2:donothing, 3:landinfront
-    switch(action) {
-        case 1:
-            return land_on_top_of;
-        case 2:
-            return land_in_front_of;
-        case 3:
-            return no_command;
+        std::cout << std::endl;
     }
+}
+
+int World::angleToAngleIndex(double angle) { // angle in radians
+    return static_cast<int>(round(angle*12 /(2*3.141593))); // asuming 12 angle indexes
+}
+
+action_t World::getAction(double X, double Y, double T) { // T angle given in radians'
+    int t = angleToAngleIndex(T);
+    action_t action = empty_action;
+    point_t point = point_Zero;
+    point.x = X;
+    point.y = Y;
+
+    int X_i = static_cast<int>(round(X));
+    int Y_i = static_cast<int>(round(Y));
+
+    action.where_To_Act = point;
+    action.reward = valuegrid3d[Y_i][X_i][t];
+
+    int action_grid_value = static_cast<int>(actiongrid3d[Y_i][X_i][t]); // will output values where 1:landontop, 2:donothing, 3:landinfront    
+    switch(action_grid_value) {
+        case 1:
+            action.type = no_command;
+            break;
+        case 2:
+            action.type = land_on_top_of;
+            break;
+        case 3:
+            action.type = land_in_front_of;
+            break;
+    }
+
+    std::cout << "-----------------" << std::endl;
+    std::cout << actiongrid3d[10][10][0] << std::endl;
+    std::cout << actiongrid3d[5][5][0]<< std::endl;
+    std::cout << actiongrid3d[5][10][0]<< std::endl;
+    std::cout << actiongrid3d[10][5][0]<< std::endl;
+    std::cout << "-----------------" << std::endl;
+
+    return action;
 }
 
 

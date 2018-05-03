@@ -74,16 +74,15 @@ action_t AI::chooseAction(Robot target) {
 
     // Check if we have a visible target
     if (target.getIndex() != -1) {
-        best_Action.reward = target.getCurrentPlank().getReward();
+        best_Action = world.getAction(target.getPosition().x, target.getPosition().y, target.getOrientation());
 
+        std::cout << best_Action << std::endl;
         action_t step_Action;
 
         for (int i = 2; i < target.current_Plank.getNumPlankPoints() - 2; i++) {
-            // std::cout << "Plank point " << i << ": " << target.current_Plank.getPoint(i).point.x << ", " << target.current_Plank.getPoint(i).point.y << std::endl;
-
             plank_point_t step_point = target.current_Plank.getPoint(i);
             if (step_point.point.y < 19.5) { // not outside of green
-                step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
+                step_Action = world.getAction(step_point.point.x, step_point.point.y, target.getOrientation());
 
                 if (step_Action.reward > best_Action.reward) {
                     best_Action = step_Action;
