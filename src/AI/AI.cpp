@@ -78,7 +78,7 @@ action_t AI::chooseAction(Robot target) {
 
         action_t step_Action;
 
-        for (int i = 3; i < target.plank.getNumPlankPoints() - 3; i++) {
+        for (int i = 2; i < target.plank.getNumPlankPoints() - 2; i++) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
             plank_point_t step_point = target.plank.getPoint(i);
@@ -114,13 +114,13 @@ action_t AI::getBestActionAtPosition(double target_orientation, plank_point_t po
 
 action_t AI::actionWithMaxReward(double reward_On_Top, double reward_In_Front, action_t action) {
 
-    // if (reward_On_Top > reward_In_Front) {
-    //     action.type = land_on_top_of;
-    //     action.reward = reward_On_Top;
-    // } else {
-    action.type = land_in_front_of;
-    action.reward = reward_In_Front;
-    // }
+    if (reward_On_Top > reward_In_Front) {
+        action.type = land_on_top_of;
+        action.reward = reward_On_Top;
+    } else {
+        action.type = land_in_front_of;
+        action.reward = reward_In_Front;
+    }
 
     return action;
 }
