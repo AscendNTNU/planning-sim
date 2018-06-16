@@ -21,15 +21,12 @@ struct point_t{
 	double x;
 	double y;
 	double z;
-};
 
-inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
-    strm << "--- Action ---" << std::endl
-    << "Target: " << action.target << std::endl
-    << "Type: " << actionTypeToString(action.type) << std::endl
-    << "Reward: " << action.reward << std::endl
-    << "Where to act: " << action.where_To_Act << std::endl;
-    return strm;
+    point_t(double x, double y, double z):x(x), y(y), z(z);
+
+    point_t& operator+(const pos& right) const{
+        return point_t(x+right.x, y+right.y, z+right.z);
+    }
 };
 
 /**
@@ -49,7 +46,6 @@ static point_t point_zero = {
 	.x = 0.0,
 	.y = 0.0,
 	.z = 0.0,
-	.travel_Time = 0.0
 };
 
 inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
