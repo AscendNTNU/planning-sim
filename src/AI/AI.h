@@ -71,3 +71,5 @@ public:
     */
     action_t getBestAction(Robot target);
 };
+
+bool pointInSafeZone(plank_point_t plank_point);

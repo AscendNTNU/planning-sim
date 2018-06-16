@@ -239,14 +239,14 @@ action_t AIController::noVisibleRobotsState(){
     bounds_t bounds = world.getBounds();
 
     point_t track_center = point_zero;
-    track_center.x = bounds.x_Max / 2.0;
-    track_center.y = bounds.y_Max / 2.0;
+    track_center.x = bounds.x_max / 2.0;
+    track_center.y = bounds.y_max / 2.0;
     double padding = 5.0;
 
     // The drone flies in a triangle path in a clockwise order
     if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
         next_search_point.x = padding;
-        next_search_point.y = bounds.y_Max - padding;
+        next_search_point.y = bounds.y_max - padding;
     } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
         next_search_point.x = track_center.x;
         next_search_point.y = track_center.y;
@@ -257,8 +257,8 @@ action_t AIController::noVisibleRobotsState(){
         next_search_point.x = track_center.x;
         next_search_point.y = track_center.y;
     } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
-        next_search_point.x = bounds.x_Max - padding;
-        next_search_point.y = bounds.y_Max - padding;
+        next_search_point.x = bounds.x_max - padding;
+        next_search_point.y = bounds.y_max - padding;
     }
 
     search_Action.type = search;
