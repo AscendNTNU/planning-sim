@@ -1,7 +1,7 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 10;
+const int NUMBER_OF_ROBOTS = 2;
 const double MAX_VISIBILITY_RADIUS = 2;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
@@ -76,19 +76,27 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
     std::vector<Robot> robots_seen_in_one_message;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
+
+
+        // header.stamp.sec == 0 if not set
+        // If header.stamp is not set, the filter will fail
+        if(msg->header.stamp.sec < 1){
+            continue;
+        }
+
         Robot robot;
 
         point_t position;
         position.x = msg->global_robot_position.at(i).x;
         position.y = msg->global_robot_position.at(i).y;
-
         double q = msg->direction.at(i);
-        double time = (msg->header.stamp-start_time).toSec();
-        std::cout << "Robot time is: " << time << std::endl;
+        double time = ros::Time::now().toSec() - start_time.toSec();
+
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
         robots_seen_in_one_message.push_back(robot);
+        
         if(msg->robot_color.at(i)!=3){
                 robots_seen_in_one_message.push_back(robot);
         }else{
@@ -261,7 +269,6 @@ int main(int argc, char **argv){
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
     ros::Rate rate(20);
-    start_time = ros::Time::now();
     while (ros::ok()) {
         ros::spinOnce();
 
