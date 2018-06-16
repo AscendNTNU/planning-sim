@@ -16,13 +16,20 @@ static const double MAXDIST_ACTIONPOINTS = 200; // essentially how much the AI w
 @param x X coordinate
 @param y Y coordinate
 @param z Z coordinate
-@param travel_Time Travel time to the point
 */
 struct point_t{
 	double x;
 	double y;
 	double z;
-	double travel_Time;
+};
+
+inline std::ostream& operator<<(std::ostream &strm, const action_t &action) {
+    strm << "--- Action ---" << std::endl
+    << "Target: " << action.target << std::endl
+    << "Type: " << actionTypeToString(action.type) << std::endl
+    << "Reward: " << action.reward << std::endl
+    << "Where to act: " << action.where_To_Act << std::endl;
+    return strm;
 };
 
 /**
