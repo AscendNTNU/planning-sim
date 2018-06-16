@@ -93,6 +93,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.x = msg->global_robot_position.at(i).x;
         position.y = msg->global_robot_position.at(i).y;
         double q = msg->direction.at(i);
+
         double time = ros::Time::now().toSec() - start_time.toSec();
 
         bool visible = true;
@@ -129,8 +130,8 @@ void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
 }
 
 void globalOffsetCallback(geometry_msgs::PoseStamped::ConstPtr msg){
-    global_offset.x = msg.position.x;
-    global_offset.y = msg.position.y;
+    global_offset.x = msg->pose.position.x;
+    global_offset.y = msg->pose.position.y;
 }
 
 //Helper functions
@@ -224,8 +225,8 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
         ascend_msgs::GRState robot;
         robots_in_memory.at(i).setPositionToKalmanPosition();
         robot.x = robots_in_memory.at(i).getPosition().x + global_offset.x;
-        robot.y = robots_in_memory.at(i).getPosition().y + global_offset.y;
-        robot.theta = robots_in_memory.at(i).getOrientation();
+        robot.y = robots_in_memory.at(i).getPosition().y + global_offset.y
+;        robot.theta = robots_in_memory.at(i).getOrientation();
 
         
         if(robots_in_memory.at(i).getVisible()){
@@ -274,8 +275,8 @@ int main(int argc, char **argv){
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
 
-    ros::Subscriber global_pos_offset = node.subscribe("/global_position_offset/offset", globalOffsetCallback)
-
+    ros::Subscriber global_offset_sub = node.subscribe("/global_position_offset/offset", 1, globalOffsetCallback);
+    
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
     ros::Rate rate(20);

@@ -22,12 +22,16 @@ struct point_t{
 	double y;
 	double z;
 
-    point_t(double x, double y, double z):x(x), y(y), z(z);
+    point_t(double x=0, double y=0, double z=0)
+        :x(x), y(y), z(z){
+        }    
 
-    point_t& operator+(const pos& right) const{
+    point_t operator+(const point_t& right) const{
         return point_t(x+right.x, y+right.y, z+right.z);
     }
 };
+
+static point_t point_zero = point_t();
 
 /**
 @brief Struct describing a point on a plank.
@@ -42,11 +46,6 @@ struct plank_point_t{
     double time_since_start_turn;
 };
 
-static point_t point_zero = {
-	.x = 0.0,
-	.y = 0.0,
-	.z = 0.0,
-};
 
 inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
     strm << "[" << point.x << ", " << point.y << "]";

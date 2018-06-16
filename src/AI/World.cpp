@@ -1,5 +1,6 @@
 #include "World.h"
 
+#include "structs.h"
 
 //Constructors
 /*
