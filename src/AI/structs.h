@@ -56,8 +56,8 @@ inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
 @param y Y coordinate
 */
 struct bounds_t{
-	int x_Max;
-	int y_Max;
+	int x_max;
+	int y_max;
 };
 
 /**
