@@ -3,7 +3,7 @@
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 2;
 const double MAX_VISIBILITY_RADIUS = 2;
-const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
+const double TIMEOUT_ROBOT_NOT_VISIBLE = 5;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
 

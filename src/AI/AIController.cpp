@@ -241,7 +241,7 @@ action_t AIController::noVisibleRobotsState(){
     point_t track_center = point_zero;
     track_center.x = bounds.x_Max / 2.0;
     track_center.y = bounds.y_Max / 2.0;
-    double padding = 5.0;
+    double padding = 2.5;
 
     // The drone flies in a triangle path in a clockwise order
     if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
