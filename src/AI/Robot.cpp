@@ -347,6 +347,8 @@ void Robot::kalmanPredict(point_t new_Position, double new_Orientation, double e
 }
 
 void Robot::setPositionToKalmanPosition() {
+    this->old_Position.x = this->position.x;
+    this->old_Position.y = this->position.y;
     this->position.x = this->x_hat_k_k.at<double>(0,0);
     this->position.y = this->x_hat_k_k.at<double>(2,0);
     this->orientation = this->x_hat_k_k.at<double>(4,0);
@@ -364,18 +366,18 @@ void Robot::kalmanMeasurementUpdate(point_t new_Position, double new_Orientation
                                           0, 0, 0, 0, 1, 0,
                                           0, 0, 0, 0, 0, 1
                                                     );
-    double delta_x = this->x_hat_k_km1.at<double>(0,0)- this->x_hat_km1_km1.at<double>(0,0);
-    double delta_y = this->x_hat_k_km1.at<double>(2,0) - this->x_hat_km1_km1.at<double>(2,0);
+    double delta_x = this->x_hat_km1_km1.at<double>(0,0) - this->old_Position.x;
+    double delta_y = this->x_hat_km1_km1.at<double>(0,0) - this->old_Position.y;
 
     if(visible) {
         double th_meas;
         if(this->side_camera) {
-            if(fabs(delta_x) < 0.001 && fabs(delta_y) < 0.001) {
-                th_meas = this->x_hat_k_km1.at<double>(4,0);
-            }
-            else {
+//            if(fabs(delta_x) < 0.001 && fabs(delta_y) < 0.001) {
+//                th_meas = this->x_hat_k_km1.at<double>(4,0);
+//            }
+//            else {
                 th_meas = atan2(delta_y, delta_x); //TODO: this should probably be the measurements, right?
-            }
+//            }
             this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                    0, this->yMeasCovar, 0, 
                                                    0, 0, this->thMeasCovar_sideCam);
