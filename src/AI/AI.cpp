@@ -114,13 +114,13 @@ action_t AI::getBestActionAtPosition(double target_orientation, plank_point_t po
 
 action_t AI::actionWithMaxReward(double reward_On_Top, double reward_In_Front, action_t action) {
 
-    if (reward_On_Top > reward_In_Front) {
-        action.type = land_on_top_of;
-        action.reward = reward_On_Top;
-    } else {
-        action.type = land_in_front_of;
-        action.reward = reward_In_Front;
-    }
+    // if (reward_On_Top > reward_In_Front) {
+    //     action.type = land_on_top_of;
+    //     action.reward = reward_On_Top;
+    // } else {
+    action.type = land_in_front_of;
+    action.reward = reward_In_Front;
+    // }
 
     return action;
 }
