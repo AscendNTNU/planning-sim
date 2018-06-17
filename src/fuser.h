@@ -35,19 +35,19 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
 
-int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_indices) {
+int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_indices, bool robot_in_safe_vis_radius) {
 
     double min_distance = 3;
+
     int index = -1;
     int not_visible_index = -1;
     int counter = 0;
 
     //Loop through our robot memory
-    for(auto it = memory.begin(); it != memory.end(); it++){
+    for(auto it = memory.begin(); it != memory.end(); it++, counter++){
 
         //If we already have updated this robot in memory, skip
         if(free_indices.find(counter) == free_indices.end()){
-            counter++;
             continue;
         }
 
@@ -69,13 +69,11 @@ int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_i
         else{
             not_visible_index = counter;
         }
-
-        counter++;
     }
 
     //If we found no matching robot, return the index to a not visible robot in memory to
     // replace with the new observation.
-    if(index == -1){
+    if(index == -1 && robot_in_safe_vis_radius){
         return not_visible_index;
     }
 

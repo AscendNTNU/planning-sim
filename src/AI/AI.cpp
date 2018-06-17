@@ -121,7 +121,7 @@ action_t AI::actionWithMaxReward(double reward_On_Top, double reward_In_Front, a
     action.type = land_in_front_of;
     action.reward = reward_In_Front;
     // }
-    
+
     return action;
 }
 
