@@ -1,11 +1,10 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 2;
-const double MAX_VISIBILITY_RADIUS = 2;
+const int NUMBER_OF_ROBOTS = 10;
+const double SAFE_VISIBILITY_RADIUS = 4;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
-
 
 std::set<int> set_of_indices;
 
@@ -161,7 +160,10 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     std::set<int> not_updated_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices);
+
+        bool robot_in_safe_vis_radius = (getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS);
+
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
         if(nearest_robot_index >= 0){
             memory.at(nearest_robot_index).update(new_robot_observation);
             not_updated_indices.erase(nearest_robot_index);
@@ -172,15 +174,21 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
 void fuser_tick(std::vector<Robot>& memory, double current_time){
     std::set<int> not_observed_indices = set_of_indices;
+
     for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
+
             std::set<int> updated_indices;
             std::set<int> not_updated_indices = updateRobots(*it, robots_in_memory, current_time);
+
             std:set_intersection(not_observed_indices.begin(), not_observed_indices.end(),
                                  not_updated_indices.begin(), not_updated_indices.end(),
                                  std::inserter(updated_indices, updated_indices.begin()));
+
             not_observed_indices = updated_indices;
     }
+
     if(not_observed_indices.size() > 0){
+
         for(auto it = not_observed_indices.begin(); it != not_observed_indices.end(); it++){
             memory.at(*it).kalmanStepNoObservation(current_time);
         }
@@ -193,9 +201,10 @@ bool isModelStillReliable(Robot robot, point_t drone_position, double current_ti
 
     double timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
-    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
+    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS){
         timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
     }
+
     if(current_time - robot.getTimeLastSeen() > timeout){
         return false;
     }
@@ -223,6 +232,7 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
 
         if(robots_in_memory.at(i).getVisible()){
             bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
+
             robots_in_memory.at(i).setVisible(is_reliable);
         }
         
@@ -283,23 +293,29 @@ int main(int argc, char **argv){
 
         }
         else{
+
             int i = 0;
             if(observed_robots.size() != 0){
                 std::vector<Robot> last_observation = *observed_robots.begin();
-                for(auto it = last_observation.begin(); it != last_observation.end(); it++){
+                
+                for(auto it = last_observation.begin(); it != last_observation.end(); it++, i++){
+                    
+                    if(i >= NUMBER_OF_ROBOTS){
+                        break;
+                    }
+
                     robots_in_memory.at(i).update(*it);
-                    i++;
                 }
             }
 
-            i = 0;
-            if(observed_obstacle_robots.size() != 0){
-                std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
-                for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
-                    obstacle_robots_in_memory.at(i).update(*it);
-                    i++;
-                }
-            }
+            // i = 0;
+            // if(observed_obstacle_robots.size() != 0){
+            //     std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
+            //     for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
+            //         obstacle_robots_in_memory.at(i).update(*it);
+            //         i++;
+            //     }
+            // }
         }
 
         observed_robots.clear();

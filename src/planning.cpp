@@ -16,8 +16,6 @@
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
-//geometry_msgs::Pose2D Drone;
-
 World world = World(0);
 AIController ai_controller = AIController();
 
@@ -137,7 +135,6 @@ int main(int argc, char **argv) {
                 rate.sleep();
                 continue;
             }
-
         }
 
         GoalState action_state = client.getState();
