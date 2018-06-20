@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../AI/Robot.h"
+#include "../AI/KalmanRobot.h"
 #include "../fuser.h"
 
 World world = World(0);
