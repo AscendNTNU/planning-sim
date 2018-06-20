@@ -13,11 +13,12 @@
 #include "ascend_msgs/AIWorldObservation.h"
 
 #include "AI/Robot.h"
+#include "AI/KalmanRobot.h"
 #include "AI/World.h"
 
-extern std::vector<Robot> robots_in_memory;
+extern std::vector<KalmanRobot> robots_in_memory;
 extern std::vector<std::vector<Robot>> observed_robots;
-extern std::vector<Robot> obstacle_robots_in_memory;
+extern std::vector<KalmanRobot> obstacle_robots_in_memory;
 extern std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg);
@@ -28,14 +29,14 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs);
 double calcCurrentTime(double seconds);
 
 void initializeFuser();
-std::set<int> updateRobots(std::vector<Robot> robots_in_single_message,std::vector<Robot> &memory, double current_time);
-void fuser_tick(std::vector<Robot>& memory, double current_time);
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message,std::vector<KalmanRobot> &memory, double current_time);
+void fuser_tick(std::vector<KalmanRobot>& memory, double current_time);
 
 double distanceBetweenRobots(Robot r1, Robot r2) {
     return sqrt(pow(r1.getPosition().x - r2.getPosition().x,2)+pow(r1.getPosition().y - r2.getPosition().y,2));
 }
 
-int nearestNeighbor(Robot robot, std::vector<Robot> memory, std::set<int> free_indices, bool robot_in_safe_vis_radius) {
+int nearestNeighbor(Robot robot, std::vector<KalmanRobot> memory, std::set<int> free_indices, bool robot_in_safe_vis_radius) {
 
     double min_distance = 3;
 

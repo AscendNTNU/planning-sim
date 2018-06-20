@@ -8,9 +8,9 @@ const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
 std::set<int> set_of_indices;
 
-std::vector<Robot> robots_in_memory;
+std::vector<KalmanRobot> robots_in_memory;
 std::vector<std::vector<Robot>> observed_robots;
-std::vector<Robot> obstacle_robots_in_memory (4);
+std::vector<KalmanRobot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 World world = World(0);
@@ -40,7 +40,7 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             float q = it->theta;   
             float time = simulation_time; 
             bool visible = true;   
-            robot.setSideCamera(false);
+            robot.setSideCamera(true);
             robot.update(i, position, q , time, visible);  
             robots_seen_in_one_message.push_back(robot);   
         }  
@@ -133,7 +133,7 @@ void initializeFuser(){
     for(int i=0;i<NUMBER_OF_ROBOTS;i++){
         // The robots spawn in a circle,
         // but at an initial radius of 1 meters.
-        robots_in_memory.push_back(Robot(i));
+        robots_in_memory.push_back(KalmanRobot(i));
 
         double t = 3.14*2.0 * i / (double)robots_in_memory.size();
         point_t point;
@@ -143,25 +143,25 @@ void initializeFuser(){
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
     }
 
-    for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
-        double t =3.14*2.0 * i / (double)obstacle_robots_in_memory.size();
+    // for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
+    //     double t =3.14*2.0 * i / (double)obstacle_robots_in_memory.size();
 
-        // The obstacles are also spawned in a circle,
-        // but at an initial radius of 5 meters.
-        point_t point;
-        point.x = 10.0f + 5 * cosf(t);
-        point.y = 10.0f + 5 * sinf(t);
-        double orientation = t;
-        obstacle_robots_in_memory.at(i).update(i, point, orientation, 0, false);
-    }
+    //     // The obstacles are also spawned in a circle,
+    //     // but at an initial radius of 5 meters.
+    //     point_t point;
+    //     point.x = 10.0f + 5 * cosf(t);
+    //     point.y = 10.0f + 5 * sinf(t);
+    //     double orientation = t;
+    //     obstacle_robots_in_memory.at(i).update(i, point, orientation, 0, false);
+    // }
 }
 
-std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, double current_time){
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<KalmanRobot> &memory, double current_time){
     std::set<int> not_updated_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
 
-        bool robot_in_safe_vis_radius = (getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS);
+        bool robot_in_safe_vis_radius = true;//(getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS);
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
         if(nearest_robot_index >= 0){
@@ -172,7 +172,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     return not_updated_indices;
 }
 
-void fuser_tick(std::vector<Robot>& memory, double current_time){
+void fuser_tick(std::vector<KalmanRobot>& memory, double current_time){
     std::set<int> not_observed_indices = set_of_indices;
 
     for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
@@ -227,8 +227,6 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
         robot.x = robots_in_memory.at(i).getPosition().x;
         robot.y = robots_in_memory.at(i).getPosition().y;
         robot.theta = robots_in_memory.at(i).getOrientation();
-
-        
 
         if(robots_in_memory.at(i).getVisible()){
             bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
@@ -289,8 +287,9 @@ int main(int argc, char **argv){
         double current_time = calcCurrentTime(ros::Time::now());
 
         if(USE_FUSER){
+            std::cout << "TICK STARTED" << std::endl;
             fuser_tick(robots_in_memory, current_time);
-
+            std::cout << "TICK DONE" << std::endl;
         }
         else{
 
