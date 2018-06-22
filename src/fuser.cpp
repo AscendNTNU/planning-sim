@@ -165,6 +165,14 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
         if(nearest_robot_index >= 0){
+
+            if(new_robot_observation.getSideCamera() == true){
+                point_t point_old = memory.at(nearest_robot_index).getPosition();
+                point_t point_new = new_robot_observation.getPosition();
+                
+                float angle = atan2(point_new.x-point_old.x, point_new.y-point_old.y);
+            }
+
             memory.at(nearest_robot_index).update(new_robot_observation);
             not_updated_indices.erase(nearest_robot_index);
         }

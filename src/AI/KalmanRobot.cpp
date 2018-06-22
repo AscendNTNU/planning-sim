@@ -277,28 +277,28 @@ void KalmanRobot::kalmanMeasurementUpdate(point_t new_Position, double new_Orien
     if(visible) {
 
         double th_meas;
-        if(this->side_camera) {
-            if(fabs(delta_x) < 0.001 && fabs(delta_y) < 0.001) {
-                th_meas = this->x_hat_k_km1.at<double>(4,0);
-                std::cout << "damn" << std::endl;
-            }
-            else {
-                th_meas = atan2(delta_y, delta_x); //TODO: this should probably be the measurements, right?
-                std::cout << "angle: " << th_meas << std::endl;
-            }
-            this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
-                                                   0, this->yMeasCovar, 0, 
-                                                   0, 0, this->thMeasCovar_sideCam);
-            // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
-        }
-        else { //downCamera
-        	std::cout << "Hmmm" << std::endl;
+        // if(this->side_camera) {
+        //     if(fabs(delta_x) < 0.001 && fabs(delta_y) < 0.001) {
+        //         th_meas = this->x_hat_k_km1.at<double>(4,0);
+        //         std::cout << "damn" << std::endl;
+        //     }
+        //     else {
+        //         th_meas = atan2(delta_y, delta_x); //TODO: this should probably be the measurements, right?
+        //         std::cout << "angle: " << th_meas << std::endl;
+        //     }
+        //     this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
+        //                                            0, this->yMeasCovar, 0, 
+        //                                            0, 0, this->thMeasCovar_sideCam);
+        //     // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
+        // }
+        // else { //downCamera
+        	// std::cout << "Hmmm" << std::endl;
             th_meas = new_Orientation;
             this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                    0, this->yMeasCovar, 0, 
                                                    0, 0, this->thMeasCovar_downCam);
             // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
-        }
+        // }
 
         z_k = (cv::Mat_<double>(3,1) << double(new_Position.x), double(new_Position.y), th_meas);   
         
