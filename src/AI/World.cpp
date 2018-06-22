@@ -10,7 +10,7 @@
 World::World(double orientation){
 	this->origin = point_zero;
 	this->orientation = orientation;
-	this->bounds = (bounds_t){.x_max = 20, .y_max = 20}; 
+	this->bounds = (bounds_t){.x_max = 10, .y_max = 10}; 
 }
 
 //Get

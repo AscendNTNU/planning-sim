@@ -80,12 +80,6 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
     for(int i = 0; i < (int)msg->count; i++) {
 
 
-        // header.stamp.sec == 0 if not set
-        // If header.stamp is not set, the filter will fail
-        if(msg->header.stamp.sec < 1){
-            continue;
-        }
-
         Robot robot;
 
         point_t position;
@@ -105,12 +99,12 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
                 obstacle_robots_seen_in_one_message.push_back(robot);
         }
 
-        if(msg->camera_type.at(i) == 0){
-            robot.setSideCamera(false);
-        }
-        else{
+//        if(msg->camera_type.at(i) == 0){
+ //           robot.setSideCamera(false);
+//        }
+   //     else{
             robot.setSideCamera(true);
-        }
+     //   }
     }
     
     observed_robots.push_back(robots_seen_in_one_message);

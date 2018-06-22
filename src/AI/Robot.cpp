@@ -89,11 +89,14 @@ void Robot::setVisible(bool set_value){
 }
 
 bool Robot::isInArena(){
+
+    bounds_t bounds = world.getBounds();
+
     double out_limit = 0.3;
-    if(this->position.x < 0 - out_limit  || this->position.x > 20 + out_limit){
+    if(this->position.x < 0 - out_limit  || this->position.x > bounds.x_max + out_limit){
         return false;
     }
-    else if(this->position.y > 20 + out_limit || this->position.y < 0 - out_limit){
+    else if(this->position.y > bounds.y_max + out_limit || this->position.y < 0 - out_limit){
         return false;
     }
     return true;
