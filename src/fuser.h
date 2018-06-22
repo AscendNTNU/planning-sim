@@ -73,8 +73,9 @@ int nearestNeighbor(Robot robot, std::vector<KalmanRobot> memory, std::set<int> 
     }
 
     //If we found no matching robot, return the index to a not visible robot in memory to
-    // replace with the new observation.
-    if(index == -1 && robot_in_safe_vis_radius){
+    // replace with the new observation. Only do this if the robot came from the side camera
+    // and is relatively close to the drone.
+    if(index == -1 && robot_in_safe_vis_radius && robot.getSideCamera()){
         return not_visible_index;
     }
 

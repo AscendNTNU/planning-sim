@@ -41,8 +41,11 @@ void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){
             float time = simulation_time; 
             bool visible = true;   
             robot.setSideCamera(true);
-            robot.update(i, position, q , time, visible);  
-            robots_seen_in_one_message.push_back(robot);   
+            robot.update(i, position, q , time, visible);
+            
+            if(robot.isInArena()){  
+                robots_seen_in_one_message.push_back(robot);
+            }
         }  
     }  
     observed_robots.push_back(robots_seen_in_one_message); 
@@ -206,7 +209,6 @@ void fuser_tick(std::vector<KalmanRobot>& memory, double current_time){
 bool isModelStillReliable(Robot robot, point_t drone_position, double current_time){
 
     //Different timeouts depending on if our model says the robot should be in sight or not
-
     double timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
     if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS){
@@ -218,7 +220,6 @@ bool isModelStillReliable(Robot robot, point_t drone_position, double current_ti
     }
 
     // If a robot is out of the  arena, it should be removed
-    
     if(!robot.isInArena()){
         return false;
     }
