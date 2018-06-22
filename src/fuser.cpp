@@ -99,12 +99,12 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
                 obstacle_robots_seen_in_one_message.push_back(robot);
         }
 
-//        if(msg->camera_type.at(i) == 0){
- //           robot.setSideCamera(false);
-//        }
-   //     else{
+       if(msg->camera_type.at(i) == 0){
+           robot.setSideCamera(false);
+       }
+       else{
             robot.setSideCamera(true);
-     //   }
+       }
     }
     
     observed_robots.push_back(robots_seen_in_one_message);
