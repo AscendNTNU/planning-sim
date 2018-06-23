@@ -137,6 +137,8 @@ public:
     */
     void setVisibility(bool visible);
 
+    
+    void setOrientation(float angle);
     /**
     @brief Set the position and orientation of the Robot
     @param position Point struct of the new position

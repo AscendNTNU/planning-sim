@@ -168,6 +168,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
                 point_t point_new = new_robot_observation.getPosition();
                 
                 float angle = atan2(point_new.x-point_old.x, point_new.y-point_old.y);
+		new_robot_observation.setOrientation(angle);
             }
 
             memory.at(nearest_robot_index).update(new_robot_observation);

@@ -175,7 +175,6 @@ void KalmanRobot::kalmanStep(point_t new_Position, double new_Orientation, doubl
     // Kalman filter stuff
     this->t_km1 = this->t_k;
     this->t_k = elapsed_time;
-    std::cout << elapsed_time << std::endl;
     this->dt = this->t_k-this->t_km1;
     
     // std::cout << "Index: " << this->index << std::endl;
@@ -190,8 +189,6 @@ void KalmanRobot::kalmanStep(point_t new_Position, double new_Orientation, doubl
 
     //get state estimate and covariance to the state ready for the next update
     this->P_km1_km1 = this->P_k_k;
-    std::cout << "KM1: " << this->x_hat_km1_km1 << std::endl;
-    std::cout << "KM2: " << this->x_hat_km2_km2 << std::endl;
     this->x_hat_km2_km2 = this->x_hat_km1_km1;
     this->x_hat_km1_km1 = this->x_hat_k_k;
 
@@ -243,7 +240,6 @@ void KalmanRobot::kalmanPredict(point_t new_Position, double new_Orientation, do
                                         0, 0, 0,     0, 1, this->dt,
                                         0, 0, 0,     0, 0, 1);
     // std::cout << "F = " << std::endl << this->F << std::endl; 
-    std::cout << "time diff is " << this->dt << std::endl;
     this->x_hat_k_km1 = this->F*this->x_hat_km1_km1;
 
     this->P_k_km1 = this->F*this->P_km1_km1*this->F.t() + this->Q_k;
