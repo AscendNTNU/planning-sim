@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
         double elapsed_time = ai_controller.observation.getTimeStamp();
         // printf("%f\n", elapsed_time);
         if(elapsed_time > 600 && elapsed_time != 0.0) {
-          break;
+            break;
         }
 
         if(ready_for_new_action) {

@@ -1,6 +1,6 @@
 <launch>
-    <node name="planning" pkg="planning_ros_sim" type="planning"/>
-    <node name="fuser" pkg="planning_ros_sim" type="fuser" output="screen"/>
+    <node name="planning" pkg="planning_ros_sim" type="planning" output="screen"/>
+    <node name="fuser" pkg="planning_ros_sim" type="fuser"/>
     <node name="visualizer" pkg="planning_ros_sim" type="visualizer"/>
      <node name="perception_control" pkg="planning_ros_sim" type="perception_control"/>
 </launch>
