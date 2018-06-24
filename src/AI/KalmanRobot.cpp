@@ -144,6 +144,7 @@ void KalmanRobot::update(int index, point_t new_Position, double new_Orientation
     this->time_last_seen = elapsed_time;
     this->visible = visible;
 
+
     if (this->time_after_turn_start < ROBOT_TURN_TIME) {
         estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
         this->plank.updatePlank(this->position, estimated_orientation, this->time_after_turn_start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
@@ -273,28 +274,22 @@ void KalmanRobot::kalmanMeasurementUpdate(point_t new_Position, double new_Orien
     if(visible) {
 
         double th_meas;
-        // if(this->side_camera) {
-        //     if(fabs(delta_x) < 0.001 && fabs(delta_y) < 0.001) {
-        //         th_meas = this->x_hat_k_km1.at<double>(4,0);
-        //         std::cout << "damn" << std::endl;
-        //     }
-        //     else {
-        //         th_meas = atan2(delta_y, delta_x); //TODO: this should probably be the measurements, right?
-        //         std::cout << "angle: " << th_meas << std::endl;
-        //     }
-        //     this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
-        //                                            0, this->yMeasCovar, 0, 
-        //                                            0, 0, this->thMeasCovar_sideCam);
-        //     // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
-        // }
-        // else { //downCamera
-        	// std::cout << "Hmmm" << std::endl;
+
+        float angle_diff = angleDiff(new_Orientation, this->orientation);
+
+        // If we get a single outlier ignore it, otherwise update with the new theta obs
+        if(angle_diff > MATH_PI*1/3 && this->outlier_observed == false){
+            this->outlier_observed = true;
+            th_meas = this->orientation;
+        }
+        else{
+            this->outlier_observed = false;
             th_meas = new_Orientation;
-            this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
-                                                   0, this->yMeasCovar, 0, 
-                                                   0, 0, this->thMeasCovar_downCam);
-            // std::cout << "R_k = " << std::endl << this->R_k << std::endl;
-        // }
+        }
+
+        this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
+                                               0, this->yMeasCovar, 0, 
+                                               0, 0, this->thMeasCovar_downCam);
 
         z_k = (cv::Mat_<double>(3,1) << double(new_Position.x), double(new_Position.y), th_meas);   
         
@@ -329,5 +324,20 @@ void KalmanRobot::kalmanMeasurementUpdate(point_t new_Position, double new_Orien
 
     // std::cout << "x_hat_k_k = " << std::endl << this->x_hat_k_k << std::endl; 
         
+
+}
+
+
+float angleDiff(float a, float b){
+    a = fmod(a, 2*MATH_PI);
+    b = fmod(b, 2*MATH_PI);
+
+    float dif = fmod(b - a + 180, 360);
+
+    if (dif < 0){
+        dif += 360.0;
+    }
+    return dif - 180.0;
+
 
 }

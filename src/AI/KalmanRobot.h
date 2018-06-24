@@ -40,6 +40,8 @@ private:
     bool firstTimeTurning;
     bool firstTimeDriving;
 
+    bool outlier_observed;
+
     
 public:
     KalmanRobot();
@@ -62,3 +64,5 @@ public:
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
+
+float angleDiff(float a, float b);

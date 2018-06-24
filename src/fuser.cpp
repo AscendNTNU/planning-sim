@@ -311,14 +311,6 @@ int main(int argc, char **argv){
                 }
             }
 
-            // i = 0;
-            // if(observed_obstacle_robots.size() != 0){
-            //     std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
-            //     for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
-            //         obstacle_robots_in_memory.at(i).update(*it);
-            //         i++;
-            //     }
-            // }
         }
 
         observed_robots.clear();
