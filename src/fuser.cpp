@@ -13,6 +13,8 @@ std::vector<std::vector<Robot>> observed_robots;
 std::vector<KalmanRobot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
 
+point_t global_offset = point_zero;
+
 World world = World(0);
 
 ros::Time start_time(0.0);
@@ -86,6 +88,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.x = msg->global_robot_position.at(i).x;
         position.y = msg->global_robot_position.at(i).y;
         double q = msg->direction.at(i);
+
         double time = ros::Time::now().toSec() - start_time.toSec();
 
         bool visible = true;
@@ -119,6 +122,11 @@ void dronePositionCallback(geometry_msgs::PoseStamped::ConstPtr msg){
     drone_position.x = msg->pose.position.x;
     drone_position.y = msg->pose.position.y;
     drone_position.z = msg->pose.position.z;
+}
+
+void globalOffsetCallback(geometry_msgs::PoseStamped::ConstPtr msg){
+    global_offset.x = msg->pose.position.x;
+    global_offset.y = msg->pose.position.y;
 }
 
 //Helper functions
@@ -228,9 +236,9 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     for(int i=0; i<robots_in_memory.size(); i++){
         ascend_msgs::GRState robot;
         robots_in_memory.at(i).setPositionToKalmanPosition();
-        robot.x = robots_in_memory.at(i).getPosition().x;
-        robot.y = robots_in_memory.at(i).getPosition().y;
-        robot.theta = robots_in_memory.at(i).getOrientation();
+        robot.x = robots_in_memory.at(i).getPosition().x + global_offset.x;
+        robot.y = robots_in_memory.at(i).getPosition().y + global_offset.y
+;        robot.theta = robots_in_memory.at(i).getOrientation();
 
         if(robots_in_memory.at(i).getVisible()){
             bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
@@ -243,8 +251,9 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     }
 
     geometry_msgs::Point32 drone;
-    drone.x = drone_position.x;
-    drone.y = drone_position.y;
+
+    drone.x = drone_position.x + global_offset.x;
+    drone.y = drone_position.y + global_offset.y;
     drone.z = drone_position.z;
     observation.drone_position = drone;
     observation.header.seq = 1;
@@ -278,6 +287,8 @@ int main(int argc, char **argv){
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
 
+    ros::Subscriber global_offset_sub = node.subscribe("/global_position_offset/offset", 1, globalOffsetCallback);
+    
     ros::Publisher observation_pub = node.advertise<ascend_msgs::AIWorldObservation>("AIWorldObservation", 1);
 
     ros::Rate rate(20);

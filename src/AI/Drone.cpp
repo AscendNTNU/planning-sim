@@ -94,7 +94,6 @@ point_t Drone::getInterceptPoint(Robot robot) {
 	intersection.x = x_bf;
 	intersection.y = y_bf;
 	double t = t1+t2;
-	intersection.travel_Time = t;
 
 	return intersection;
 }

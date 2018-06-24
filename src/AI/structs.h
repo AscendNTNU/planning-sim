@@ -16,14 +16,22 @@ static const double MAXDIST_ACTIONPOINTS = 200; // essentially how much the AI w
 @param x X coordinate
 @param y Y coordinate
 @param z Z coordinate
-@param travel_Time Travel time to the point
 */
 struct point_t{
 	double x;
 	double y;
 	double z;
-	double travel_Time;
+
+    point_t(double x=0, double y=0, double z=0)
+        :x(x), y(y), z(z){
+        }    
+
+    point_t operator+(const point_t& right) const{
+        return point_t(x+right.x, y+right.y, z+right.z);
+    }
 };
+
+static point_t point_zero = point_t();
 
 /**
 @brief Struct describing a point on a plank.
@@ -38,12 +46,6 @@ struct plank_point_t{
     double time_since_start_turn;
 };
 
-static point_t point_zero = {
-	.x = 0.0,
-	.y = 0.0,
-	.z = 0.0,
-	.travel_Time = 0.0
-};
 
 inline std::ostream& operator<<(std::ostream &strm, const point_t &point) {
     strm << "[" << point.x << ", " << point.y << "]";
