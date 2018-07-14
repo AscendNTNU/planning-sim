@@ -2,7 +2,7 @@
 
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
-const double SAFE_VISIBILITY_RADIUS = 2;
+const double SAFE_VISIBILITY_RADIUS = 3;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
@@ -41,20 +41,20 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
 
         robot.update(i, position, q , time, visible);
         
-        if(msg->robot_color.at(i)!=3){
-            robots_seen_in_one_message.push_back(robot);
-        }else{
-            obstacle_robots_seen_in_one_message.push_back(robot);
-        }
-
         if(msg->camera_type.at(i) == 0){
             robot.setSideCamera(false);
         }
         else{
             robot.setSideCamera(true);
         }
+
+        // if(msg->robot_color.at(i)!=3){
         robots_seen_in_one_message.push_back(robot);
-        
+        // }else{
+        //     obstacle_robots_seen_in_one_message.push_back(robot);
+        // }
+
+
     }
     
     observed_robots.push_back(robots_seen_in_one_message);
@@ -96,7 +96,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
 
-        bool robot_in_safe_vis_radius = true;//(getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS);
+        bool robot_in_safe_vis_radius = true;//getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
 
@@ -106,7 +106,8 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
                 point_t point_old = memory.at(nearest_robot_index).getPosition();
                 point_t point_new = new_robot_observation.getPosition();
 
-                float angle = atan2(point_new.x-point_old.x, point_new.y-point_old.y);
+                float angle = atan2(point_new.y-point_old.y, point_new.x-point_old.x);
+
 		        new_robot_observation.setOrientation(angle);
             }
 
