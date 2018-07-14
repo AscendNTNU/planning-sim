@@ -193,7 +193,7 @@ action_t AIController::landOnTopState(){
 action_t AIController::landInFrontState(){
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
-    double time_landed = 3.5;
+    double time_landed = 4;
 
     if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
