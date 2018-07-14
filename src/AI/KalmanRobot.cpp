@@ -278,14 +278,14 @@ void KalmanRobot::kalmanMeasurementUpdate(point_t new_Position, double new_Orien
         float angle_diff = angleDiff(new_Orientation, this->orientation);
 
         // If we get a single outlier ignore it, otherwise update with the new theta obs
-        if(angle_diff > MATH_PI*1/3 && this->outlier_observed == false){
-            this->outlier_observed = true;
-            th_meas = this->orientation;
-        }
-        else{
-            this->outlier_observed = false;
-            th_meas = new_Orientation;
-        }
+        // if(angle_diff > MATH_PI*1/2 && this->outlier_observed == false){
+        //     this->outlier_observed = true;
+        //     th_meas = this->orientation;
+        // }
+        // else{
+        this->outlier_observed = false;
+        th_meas = new_Orientation;
+        // }
 
         this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                                0, this->yMeasCovar, 0, 
