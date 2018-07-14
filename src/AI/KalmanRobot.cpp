@@ -278,8 +278,7 @@ void KalmanRobot::kalmanMeasurementUpdate(point_t new_Position, double new_Orien
         float angle_diff = angleDiff(new_Orientation, this->orientation);
 
         // If we get a single outlier ignore it, otherwise update with the new theta obs
-        if(this->side_camera && 
-            angle_diff > MATH_PI*1/3 && 
+        if(angle_diff > MATH_PI*1/3 && 
             this->outlier_observed == false){
 
             this->outlier_observed = true;
