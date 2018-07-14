@@ -2,7 +2,7 @@
 
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
-const double SAFE_VISIBILITY_RADIUS = 1.5;
+const double SAFE_VISIBILITY_RADIUS = 2;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
@@ -100,13 +100,13 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
         if(nearest_robot_index >= 0){
-
             if(new_robot_observation.getSideCamera() == true){
                 point_t point_old = memory.at(nearest_robot_index).getPosition();
                 point_t point_new = new_robot_observation.getPosition();
-                
+                std::cout << "POSITION OLD " << point_old.x << std::endl;
+                std::cout << "POSITION NEW" << point_new.x << std::endl; 
                 float angle = atan2(point_new.x-point_old.x, point_new.y-point_old.y);
-		new_robot_observation.setOrientation(angle);
+		        new_robot_observation.setOrientation(angle);
             }
 
             memory.at(nearest_robot_index).update(new_robot_observation);
