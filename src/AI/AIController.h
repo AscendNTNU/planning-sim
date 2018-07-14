@@ -16,7 +16,8 @@ enum ai_state_t{
     no_input_data, ///Starting state with no input data.
     idle, ///Nothing happening, AI waiting to find the next best action.
     positioning, /// Combo of fly_to and waiting
-    land_in_front,
+    land,
+    landed_in_front,
     land_on_top,
     mission_complete,
     no_visible_robots, /// No targets available, find them!
@@ -31,8 +32,10 @@ inline std::string stateToString(ai_state_t state) {
             return "Idle state";
         case positioning:
             return "Positioning state";
-        case land_in_front:
-            return "Land in front state";
+        case land:
+            return "Landed in front state";
+        case landed_in_front:
+            return "Landed in front state";
         case land_on_top:
             return "Land on top state";
         case mission_complete:
@@ -105,11 +108,13 @@ public:
     */
     action_t landOnTopState();
     
+    void landState();
+
     /**
     @brief Sends out the action and returns to idle state.
     @return A robot interaction action.This state waits for the target to reach the action point and updates the action
     */
-    action_t landInFrontState();
+    action_t landedInFrontState();
 
     action_t missionCompleteState();
 
