@@ -29,7 +29,6 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
     std::vector<Robot> obstacle_robots_seen_in_one_message;
     for(int i = 0; i < (int)msg->count; i++) {
 
-
         Robot robot;
 
         point_t position;
