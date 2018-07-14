@@ -190,6 +190,15 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     return observation;
 }
 
+
+double calcCurrentTime(ros::Time seconds){
+    if(simulation_time == 0.0){
+        return (seconds-start_time).toSec(); 
+    }
+    return simulation_time;
+}
+
+
 int main(int argc, char **argv){
 
     int counter = 0;
@@ -200,8 +209,6 @@ int main(int argc, char **argv){
 
     ros::NodeHandle node;
     std_msgs::Float32 time_msg;
-
-    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
@@ -247,11 +254,4 @@ int main(int argc, char **argv){
 
     return 0;
 
-}
-
-double calcCurrentTime(ros::Time seconds){
-    if(simulation_time == 0.0){
-        return (seconds-start_time).toSec(); 
-    }
-    return simulation_time;
 }
