@@ -40,7 +40,6 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         bool visible = true;
 
         robot.update(i, position, q , time, visible);
-        robots_seen_in_one_message.push_back(robot);
         
         if(msg->robot_color.at(i)!=3){
             robots_seen_in_one_message.push_back(robot);
@@ -48,12 +47,14 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
             obstacle_robots_seen_in_one_message.push_back(robot);
         }
 
-       if(msg->camera_type.at(i) == 0){
-           robot.setSideCamera(false);
-       }
-       else{
+        if(msg->camera_type.at(i) == 0){
+            robot.setSideCamera(false);
+        }
+        else{
             robot.setSideCamera(true);
-       }
+        }
+        robots_seen_in_one_message.push_back(robot);
+        
     }
     
     observed_robots.push_back(robots_seen_in_one_message);
@@ -98,12 +99,13 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
         bool robot_in_safe_vis_radius = true;//(getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS);
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
+
         if(nearest_robot_index >= 0){
             if(new_robot_observation.getSideCamera() == true){
+                
                 point_t point_old = memory.at(nearest_robot_index).getPosition();
                 point_t point_new = new_robot_observation.getPosition();
-                std::cout << "POSITION OLD " << point_old.x << std::endl;
-                std::cout << "POSITION NEW" << point_new.x << std::endl; 
+
                 float angle = atan2(point_new.x-point_old.x, point_new.y-point_old.y);
 		        new_robot_observation.setOrientation(angle);
             }
