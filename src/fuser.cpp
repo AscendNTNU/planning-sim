@@ -104,7 +104,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
             if(new_robot_observation.getSideCamera() == true){
                 
-                float angle = memory.at(nearest_robot_index).getAverageOrientationFromPositionHistory();
+                float angle = memory.at(nearest_robot_index).getOrientationFromPositionHistory();
 
 		        new_robot_observation.setOrientation(angle);
             }

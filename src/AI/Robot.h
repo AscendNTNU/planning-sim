@@ -182,7 +182,7 @@ public:
     Robot getRobotPositionAtTime(double elapsed_time);
 
 
-    float getAverageOrientationFromPositionHistory();
+    float getOrientationFromPositionHistory();
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };
