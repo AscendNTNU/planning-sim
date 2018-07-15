@@ -186,6 +186,13 @@ void Robot::addToTimer(double time) {
     this->time_after_turn_start += time;
 }
 
+float Robot::getOrientationFromPositionHistory(){
+    return atan2(postion.y-old_Position.y, position.x-old_Position.x);
+
+}
+
+
+
 std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
     strm << "--- Robot ---" << std::endl
     << "Index: "            << robot.index                 << std::endl
