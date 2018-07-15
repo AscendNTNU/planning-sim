@@ -13,7 +13,7 @@ pipeline:
       - ASCEND_ENV=production
     commands:
       - cd /catkin_ws
-      - /ros_entrypoint.sh catkin_make run_tests
+      - /ros_entrypoint.sh catkin_make
   build-only:
     image: ascendntnu/ros-kinetic:1.4
     when:
