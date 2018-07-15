@@ -103,9 +103,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
         if(nearest_robot_index >= 0){
 
             if(new_robot_observation.getSideCamera() == true){
-                
                 float angle = memory.at(nearest_robot_index).getOrientationFromPositionHistory();
-
 		        new_robot_observation.setOrientation(angle);
             }
 

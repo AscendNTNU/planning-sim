@@ -17,8 +17,6 @@ KalmanRobot::KalmanRobot(int index) {
     this->visible = false;
 
     this->side_camera = false;
-    //this->prev_pos_update = 0;
-    this->time_between_updates = 1;
     
     //Kalman parameters
     this->F = (cv::Mat_<double>(6,6) << 1, 0, 0, 0, 0, 0,

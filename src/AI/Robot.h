@@ -26,7 +26,7 @@ protected:
                                  ///< Remember that the robot turns for about 2 seconds.
     double time_last_seen;
     //double prev_pos_update;
-    double time_between_updates;
+    float robot_history_duration;
     std::queue<point_t> pos_queue;
     std::queue<double> orientation_queue;
 

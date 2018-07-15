@@ -18,7 +18,7 @@ Robot::Robot(int index) {
 
     this->side_camera = false;
     //this->prev_pos_update = 0;
-    this->time_between_updates = 1;
+    this->robot_history_duration = 2;
 }
 
 // Static function
@@ -107,14 +107,10 @@ bool Robot::isInArena(){
 }
 
 bool Robot::isMoving() {
-    double dist_threshold = this->speed * this->time_between_updates - 0.1; // distance normally driven in 1sec
+    double dist_threshold = this->speed * this->robot_history_duration - 0.2; // distance normally driven in 1sec
     double dist = pow(pow(this->position.x - this->old_Position.x,2) + pow(this->position.y - this->old_Position.y,2), 0.5);
     
-    //std::cout << "dist_threshold: " << dist_threshold << std::endl;
-    //std::cout << "dist: " << dist << std::endl;
-
     if (dist < dist_threshold) {
-        //std::cout << "ROBOT " << index << " TURNING" << std::endl;
         return false;
     }
     else {
@@ -129,7 +125,7 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
     this->pos_queue.push(new_Position); // push_back
     this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
 
-    if (pos_queue.size() >= planning_ros_rate * this->time_between_updates) {
+    if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
         this->old_Position = pos_queue.front();
         this->pos_queue.pop(); // pop_front
         this->old_Orientation = orientation_queue.front();
