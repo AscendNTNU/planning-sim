@@ -136,8 +136,6 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
         this->orientation_queue.pop(); // pop_front
     }
 
-
-
     this->position = pos_queue.back();
 
     this->orientation = orientation_queue.back();

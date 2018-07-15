@@ -34,6 +34,12 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         point_t position;
         position.x = msg->global_robot_position.at(i).x;
         position.y = msg->global_robot_position.at(i).y;
+
+        // QUICK FIX TODO
+        if(position.y>19.0){
+            continue;
+        }
+
         double q = msg->direction.at(i);
         double time = ros::Time::now().toSec() - start_time.toSec();
 
@@ -107,7 +113,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
                 point_t point_new = new_robot_observation.getPosition();
 
                 float angle = atan2(point_new.y-point_old.y, point_new.x-point_old.x);
-		new_robot_observation.setOrientation(angle);
+            		new_robot_observation.setOrientation(angle);
             }
 
             memory.at(nearest_robot_index).update(new_robot_observation);
