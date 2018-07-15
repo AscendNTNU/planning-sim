@@ -142,17 +142,22 @@ action_t AIController::positioningState() {
     double robot_to_point_dist = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
  
     // Is the drone and the robot at the rendezvous point
-    if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && robot_to_point_dist < MAXDIST_ROBOT_TO_POINT && !target.getSideCamera()) {
+    if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && 
+        robot_to_point_dist < MAXDIST_ROBOT_TO_POINT && 
+        target.recentlySeen(observation.time_Stamp)) {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
 
-        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // robot NOT too close + robot IS approaching drone ==> land in front of  
+        } else if (this->planned_action_.type == land_in_front_of && 
+                !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && 
+                this->observation.getRobot(target_id).approaching(drone_pos)) { // robot NOT too close + robot IS approaching drone ==> land in front of  
             this->transitionTo(land);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;
 
-        } else if (this->planned_action_.type == land_in_front_of && static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
+        } else if (this->planned_action_.type == land_in_front_of &&
+                static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
             this->transitionTo(land);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;  

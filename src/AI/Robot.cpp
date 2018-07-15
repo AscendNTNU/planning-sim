@@ -136,6 +136,8 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
         this->orientation_queue.pop(); // pop_front
     }
 
+
+
     this->position = pos_queue.back();
 
     this->orientation = orientation_queue.back();
@@ -184,6 +186,17 @@ void Robot::setPositionOrientation(point_t position, double q) {
 // misleading, except when correcting for drift.
 void Robot::addToTimer(double time) {
     this->time_after_turn_start += time;
+}
+
+float Robot::getOrientationFromPositionHistory(){
+    return atan2(position.y-old_Position.y, position.x-old_Position.x);
+}
+
+bool Robot::recentlySeen(float time){
+    if time-time_last_seen < 0.5{
+        return true;
+    }
+    return false
 }
 
 std::ostream& operator<<(std::ostream &strm, const Robot &robot) {

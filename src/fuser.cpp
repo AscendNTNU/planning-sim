@@ -2,8 +2,8 @@
 
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
-const double SAFE_VISIBILITY_RADIUS = 3;
-const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
+const double SAFE_VISIBILITY_RADIUS = 1.5;
+const double TIMEOUT_ROBOT_NOT_VISIBLE = 50;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
 std::set<int> set_of_indices;

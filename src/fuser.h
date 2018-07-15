@@ -38,7 +38,7 @@ double distanceBetweenRobots(Robot r1, Robot r2) {
 
 int nearestNeighbor(Robot robot, std::vector<KalmanRobot> memory, std::set<int> free_indices, bool robot_in_safe_vis_radius) {
 
-    double min_distance = 3;
+    double min_distance = 1.5;
 
     int index = -1;
     int not_visible_index = -1;
