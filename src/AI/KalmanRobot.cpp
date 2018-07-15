@@ -114,50 +114,14 @@ KalmanRobot::KalmanRobot(int index) {
 
 }
 void KalmanRobot::update(int index, point_t new_Position, double new_Orientation, double elapsed_time, bool visible) {
-    double estimated_orientation = 0;
-    int planning_ros_rate = 20;
 
-    this->pos_queue.push(new_Position); // push_back
-    this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
-    this->old_Position = pos_queue.front();
-
-    if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
-        this->pos_queue.pop(); // pop_front
-        this->old_Orientation = orientation_queue.front();
-        this->orientation_queue.pop(); // pop_front
-    }
-
-    this->position = pos_queue.back();
-
-    this->orientation = orientation_queue.back();
-
-    this->index = index;
-    this->time_after_turn_start = fmod(elapsed_time, 20);
-    this->time_last_seen = elapsed_time;
-    this->visible = visible;
-
-
-    if (this->time_after_turn_start < ROBOT_TURN_TIME) {
-        estimated_orientation = fmod(this->orientation - MATH_PI, 2*MATH_PI);
-        this->plank.updatePlank(this->position, estimated_orientation, this->time_after_turn_start, ROBOT_TURN_TIME); // Will this make Plank construct a plank which the robot never will follow?
-    } else {
-        this->plank.updatePlank(this->position, this->orientation, this->time_after_turn_start, ROBOT_TURN_TIME);
-    }
-
+    Robot::update(index, new_Position, new_Orientation, elapsed_time, visible);
     kalmanStep(new_Position, new_Orientation, elapsed_time, visible);
 }
 
 void KalmanRobot::update(Robot robot){
 
-    this->old_Position = this->position;
-    this->old_Orientation = this->orientation;
-    this->position = robot.getPosition();
-    this->side_camera = robot.getSideCamera();
-    this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
-
-    this->time_after_turn_start = robot.getTimeAfterTurn();
-    this->time_last_seen = robot.getTimeLastSeen();
-    this->visible =  robot.getVisible();
+    Robot::update(robot);
 
     kalmanStep(robot.getPosition(), fmod(robot.getOrientation(), 2*MATH_PI), robot.getTimeLastSeen(), robot.getVisible());
 }

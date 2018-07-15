@@ -124,16 +124,16 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
 
     this->pos_queue.push(new_Position); // push_back
     this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+
     this->old_Position = pos_queue.front();
+    this->old_Orientation = orientation_queue.front();
 
     if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
         this->pos_queue.pop(); // pop_front
-        this->old_Orientation = orientation_queue.front();
         this->orientation_queue.pop(); // pop_front
     }
 
     this->position = pos_queue.back();
-
     this->orientation = orientation_queue.back();
 
     this->index = index;
@@ -150,17 +150,27 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
 }
 
 void Robot::update(Robot robot){
+    double estimated_orientation = 0;
+    int planning_ros_rate = 20;
 
-    this->old_Position = this->position;
-    this->old_Orientation = this->orientation;
-    this->position = robot.getPosition();
+    this->pos_queue.push(robot.getPosition()); // push_back
+    this->orientation_queue.push(fmod(robot.getOrientation(), 2*MATH_PI));
+    
+    this->old_Position = pos_queue.front();
+    this->old_Orientation = orientation_queue.front();
+
+    if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
+        this->pos_queue.pop(); // pop_front
+        this->orientation_queue.pop(); // pop_front
+    }
+
+    this->position = pos_queue.back();
+    this->orientation = orientation_queue.back();
     this->side_camera = robot.getSideCamera();
-    this->orientation = fmod(robot.getOrientation(), 2*MATH_PI);
 
     this->time_after_turn_start = robot.getTimeAfterTurn();
     this->time_last_seen = robot.getTimeLastSeen();
     this->visible =  robot.getVisible();
-
 }
 
 Robot Robot::getRobotPositionAtTime(double elapsed_time){
