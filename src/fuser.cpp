@@ -22,7 +22,7 @@ point_t drone_position = point_zero;
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     
     if(drone_position.z < 0.4){
-       return; 
+        return; 
     }
 
     std::vector<Robot> robots_seen_in_one_message;
@@ -101,10 +101,10 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
 
         if(nearest_robot_index >= 0){
-
             if(new_robot_observation.getSideCamera() == true){
                 float angle = memory.at(nearest_robot_index).getOrientationFromPositionHistory();
 		        new_robot_observation.setOrientation(angle);
+		new_robot_observation.setOrientation(angle);
             }
 
             memory.at(nearest_robot_index).update(new_robot_observation);

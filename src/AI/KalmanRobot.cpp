@@ -66,7 +66,7 @@ KalmanRobot::KalmanRobot(int index) {
     this->xMeasCovar          = 10; //TODO: Tune!
     this->yMeasCovar          = 10; //TODO: Tune!
     this->thMeasCovar_downCam = 10;  //TODO: Tune!
-    this->thMeasCovar_sideCam = 10; //TODO: Tune!
+    this->thMeasCovar_sideCam = 0.1; //TODO: Tune!
     this->R_k = (cv::Mat_<double>(3,3) << this->xMeasCovar, 0, 0, 
                                            0, this->yMeasCovar, 0, 
                                            0, 0, this->thMeasCovar_sideCam);

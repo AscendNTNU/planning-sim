@@ -8,7 +8,7 @@ static const double MATH_PI = 3.141592653589793238;
 static const double SIMILARITY_THRESHOLD = 1.5;
 
 static const double MAXDIST_DRONE_TO_POINT = 0.2;
-static const double MAXDIST_ROBOT_TO_POINT = 2; 
+static const double MAXDIST_ROBOT_TO_POINT = 3; 
 static const double MAXDIST_ACTIONPOINTS = 200; // essentially how much the AI will change its mind (high number = frequent action reconsiderations)
 
 /**
