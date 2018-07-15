@@ -117,25 +117,19 @@ void KalmanRobot::update(int index, point_t new_Position, double new_Orientation
     double estimated_orientation = 0;
     int planning_ros_rate = 20;
 
-    // this->pos_queue.push(new_Position); // push_back
-    // this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+    this->pos_queue.push(new_Position); // push_back
+    this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+    this->old_Position = pos_queue.front();
 
-    // if (pos_queue.size() >= planning_ros_rate * this->time_between_updates) {
-    //     this->old_Position = pos_queue.front();
-    //     this->pos_queue.pop(); // pop_front
+    if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
+        this->pos_queue.pop(); // pop_front
+        this->old_Orientation = orientation_queue.front();
+        this->orientation_queue.pop(); // pop_front
+    }
 
-    //     this->old_Orientation = orientation_queue.front();
-    //     this->orientation_queue.pop(); // pop_front
-    // }
+    this->position = pos_queue.back();
 
-    // this->position = pos_queue.back();
-
-    // this->orientation = orientation_queue.back();
-    this->old_Position = this->position;
-    this->old_Orientation = this->orientation;
-    this->position = new_Position;
-    // this->side_camera = robot.getSideCamera();
-    this->orientation = fmod(new_Orientation, 2*MATH_PI);
+    this->orientation = orientation_queue.back();
 
     this->index = index;
     this->time_after_turn_start = fmod(elapsed_time, 20);

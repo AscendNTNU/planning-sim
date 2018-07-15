@@ -18,7 +18,7 @@ Robot::Robot(int index) {
 
     this->side_camera = false;
     //this->prev_pos_update = 0;
-    this->robot_history_duration = 2;
+    this->robot_history_duration = 1;
 }
 
 // Static function
@@ -124,9 +124,9 @@ void Robot::update(int index, point_t new_Position, double new_Orientation, doub
 
     this->pos_queue.push(new_Position); // push_back
     this->orientation_queue.push(fmod(new_Orientation, 2*MATH_PI));
+    this->old_Position = pos_queue.front();
 
     if (pos_queue.size() >= planning_ros_rate * this->robot_history_duration) {
-        this->old_Position = pos_queue.front();
         this->pos_queue.pop(); // pop_front
         this->old_Orientation = orientation_queue.front();
         this->orientation_queue.pop(); // pop_front
