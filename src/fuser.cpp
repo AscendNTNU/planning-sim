@@ -21,8 +21,8 @@ point_t drone_position = point_zero;
 
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     
-    if(drone_position.z < 0.4){
-       return; 
+    if(drone_position.z < 0.8){
+        return; 
     }
 
     std::vector<Robot> robots_seen_in_one_message;
@@ -107,8 +107,7 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
                 point_t point_new = new_robot_observation.getPosition();
 
                 float angle = atan2(point_new.y-point_old.y, point_new.x-point_old.x);
-
-		        new_robot_observation.setOrientation(angle);
+		new_robot_observation.setOrientation(angle);
             }
 
             memory.at(nearest_robot_index).update(new_robot_observation);

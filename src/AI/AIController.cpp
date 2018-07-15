@@ -144,7 +144,7 @@ action_t AIController::positioningState() {
     // Is the drone and the robot at the rendezvous point
     if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && 
         robot_to_point_dist < MAXDIST_ROBOT_TO_POINT && 
-        target.recentlySeen(observation.time_Stamp)) {
+        target.recentlySeen(observation.getTimeStamp())) {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);

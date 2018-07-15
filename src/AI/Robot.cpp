@@ -193,10 +193,10 @@ float Robot::getOrientationFromPositionHistory(){
 }
 
 bool Robot::recentlySeen(float time){
-    if time-time_last_seen < 0.5{
+    if(time-time_last_seen < 0.5){
         return true;
     }
-    return false
+    return false;
 }
 
 std::ostream& operator<<(std::ostream &strm, const Robot &robot) {
