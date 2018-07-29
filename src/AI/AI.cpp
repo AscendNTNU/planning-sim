@@ -128,7 +128,7 @@ action_t AI::actionWithMaxReward(double reward_On_Top, double reward_In_Front, a
 bool pointInSafeZone(plank_point_t plank_point){
 
     point_t point = plank_point.point;
-    float padding = 2;
+    float padding = 1;
     bounds_t bounds = world.getBounds();
 
     if(point.x < (bounds.x_max-padding) && 
