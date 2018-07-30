@@ -1,17 +1,16 @@
 #include "fuser.h"
 
 const bool USE_FUSER = true;
-const int NUMBER_OF_ROBOTS = 2;
-const double MAX_VISIBILITY_RADIUS = 2;
-const double TIMEOUT_ROBOT_NOT_VISIBLE = 40;
+const int NUMBER_OF_ROBOTS = 10;
+const double SAFE_VISIBILITY_RADIUS = 1.7;
+const double TIMEOUT_ROBOT_NOT_VISIBLE = 50;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
-
 
 std::set<int> set_of_indices;
 
-std::vector<Robot> robots_in_memory;
+std::vector<KalmanRobot> robots_in_memory;
 std::vector<std::vector<Robot>> observed_robots;
-std::vector<Robot> obstacle_robots_in_memory (4);
+std::vector<KalmanRobot> obstacle_robots_in_memory (4);
 std::vector<std::vector<Robot>> observed_obstacle_robots;
 
 World world = World(0);
@@ -134,7 +133,7 @@ void initializeFuser(){
     for(int i=0;i<NUMBER_OF_ROBOTS;i++){
         // The robots spawn in a circle,
         // but at an initial radius of 1 meters.
-        robots_in_memory.push_back(Robot(i));
+        robots_in_memory.push_back(KalmanRobot(i));
 
         double t = 3.14*2.0 * i / (double)robots_in_memory.size();
         point_t point;
@@ -143,26 +142,27 @@ void initializeFuser(){
         double orientation = t;
         robots_in_memory.at(i).update(i,point,orientation, 0, false);
     }
-
-    for (unsigned int i = 0; i < obstacle_robots_in_memory.size(); i++){
-        double t =3.14*2.0 * i / (double)obstacle_robots_in_memory.size();
-
-        // The obstacles are also spawned in a circle,
-        // but at an initial radius of 5 meters.
-        point_t point;
-        point.x = 10.0f + 5 * cosf(t);
-        point.y = 10.0f + 5 * sinf(t);
-        double orientation = t;
-        obstacle_robots_in_memory.at(i).update(i, point, orientation, 0, false);
-    }
 }
 
-std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<Robot> &memory, double current_time){
+std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vector<KalmanRobot> &memory, double current_time){
     std::set<int> not_updated_indices = set_of_indices;
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
-        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices);
+
+        bool robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
+
+        int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
+
         if(nearest_robot_index >= 0){
+            if(new_robot_observation.getSideCamera() == true){
+                
+                point_t point_old = memory.at(nearest_robot_index).getPosition();
+                point_t point_new = new_robot_observation.getPosition();
+
+                float angle = atan2(point_new.y-point_old.y, point_new.x-point_old.x);
+            		new_robot_observation.setOrientation(angle);
+            }
+
             memory.at(nearest_robot_index).update(new_robot_observation);
             not_updated_indices.erase(nearest_robot_index);
         }
@@ -170,17 +170,23 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     return not_updated_indices;
 }
 
-void fuser_tick(std::vector<Robot>& memory, double current_time){
+void fuser_tick(std::vector<KalmanRobot>& memory, double current_time){
     std::set<int> not_observed_indices = set_of_indices;
+
     for(auto it = observed_robots.begin(); it != observed_robots.end(); it++){
+
             std::set<int> updated_indices;
             std::set<int> not_updated_indices = updateRobots(*it, robots_in_memory, current_time);
+
             std:set_intersection(not_observed_indices.begin(), not_observed_indices.end(),
                                  not_updated_indices.begin(), not_updated_indices.end(),
                                  std::inserter(updated_indices, updated_indices.begin()));
+
             not_observed_indices = updated_indices;
     }
+
     if(not_observed_indices.size() > 0){
+
         for(auto it = not_observed_indices.begin(); it != not_observed_indices.end(); it++){
             memory.at(*it).kalmanStepNoObservation(current_time);
         }
@@ -190,18 +196,17 @@ void fuser_tick(std::vector<Robot>& memory, double current_time){
 bool isModelStillReliable(Robot robot, point_t drone_position, double current_time){
 
     //Different timeouts depending on if our model says the robot should be in sight or not
-
     double timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
-    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < MAX_VISIBILITY_RADIUS){
+    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS){
         timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
     }
+
     if(current_time - robot.getTimeLastSeen() > timeout){
         return false;
     }
 
     // If a robot is out of the  arena, it should be removed
-    
     if(!robot.isInArena()){
         return false;
     }
@@ -219,13 +224,10 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
         robot.y = robots_in_memory.at(i).getPosition().y;
         robot.theta = robots_in_memory.at(i).getOrientation();
 
-        
-
         if(robots_in_memory.at(i).getVisible()){
             bool is_reliable = isModelStillReliable(robots_in_memory.at(i), drone_position, current_time);
             robots_in_memory.at(i).setVisible(is_reliable);
         }
-        
         robot.visible = robots_in_memory.at(i).getVisible();
         observation.ground_robots.at(i) = robot;
     }
@@ -242,12 +244,14 @@ ascend_msgs::AIWorldObservation createObservation(double current_time){
     return observation;
 }
 
+
 double calcCurrentTime(ros::Time seconds){
     if(simulation_time == 0.0){
         return (seconds-start_time).toSec(); 
     }
     return simulation_time;
 }
+
 
 int main(int argc, char **argv){
 
@@ -259,8 +263,6 @@ int main(int argc, char **argv){
 
     ros::NodeHandle node;
     std_msgs::Float32 time_msg;
-
-    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback);
 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
@@ -280,24 +282,18 @@ int main(int argc, char **argv){
 
         if(USE_FUSER){
             fuser_tick(robots_in_memory, current_time);
-
         }
+
         else{
             int i = 0;
             if(observed_robots.size() != 0){
                 std::vector<Robot> last_observation = *observed_robots.begin();
-                for(auto it = last_observation.begin(); it != last_observation.end(); it++){
+                
+                for(auto it = last_observation.begin(); it != last_observation.end(); it++, i++){       
+                    if(i >= NUMBER_OF_ROBOTS){
+                        break;
+                    }
                     robots_in_memory.at(i).update(*it);
-                    i++;
-                }
-            }
-
-            i = 0;
-            if(observed_obstacle_robots.size() != 0){
-                std::vector<Robot> last_obstacle_observation = *observed_obstacle_robots.begin();
-                for(auto it = last_obstacle_observation.begin(); it != last_obstacle_observation.end(); it++){
-                    obstacle_robots_in_memory.at(i).update(*it);
-                    i++;
                 }
             }
         }

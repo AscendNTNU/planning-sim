@@ -16,8 +16,6 @@
 using ClientType = actionlib::SimpleActionClient<ascend_msgs::ControlFSMAction>;
 using GoalState = actionlib::SimpleClientGoalState;
 
-//geometry_msgs::Pose2D Drone;
-
 World world = World(0);
 AIController ai_controller = AIController();
 
@@ -108,7 +106,7 @@ int main(int argc, char **argv) {
     std::__cxx11::basic_string<char> current_action_state = "None";
     // --------------------------------
 
-    ros::Rate rate(10);
+    ros::Rate rate(20);
     while (ros::ok()) {
         ros::spinOnce();
 
@@ -137,7 +135,6 @@ int main(int argc, char **argv) {
                 rate.sleep();
                 continue;
             }
-
         }
 
         GoalState action_state = client.getState();
@@ -191,7 +188,6 @@ int main(int argc, char **argv) {
     for(int i = 0; i < 10; i++) {
         printf("Robot %d: (%f, %f)\n", i, ai_controller.observation.getRobot(i).getPosition().x, ai_controller.observation.getRobot(i).getPosition().y);
         printf("Robot %d: was interacted with? %d \n", i, ai_controller.observation.getRobot(i).getWasInteractedWith()); // ? "" : "not"
-        // printf(ai_controller.observation.getRobot(i));
         if(ai_controller.observation.getRobot(i).getPosition().y>20 && ai_controller.observation.getRobot(i).getWasInteractedWith()) {
             numOut += 1;
         }

@@ -119,6 +119,7 @@ int main(int argc, char **argv)
 
     ros::Rate rate(20.0);
     while (ros::ok()){
+      
         ros::spinOnce();
         // Collect new observation
         sim_recv_state(&state);
@@ -136,7 +137,7 @@ int main(int argc, char **argv)
             robot.x = state.target_x[i];
             robot.y = state.target_y[i];
             robot.theta = state.target_q[i];
-            robot.visible = state.target_in_view[i];
+            robot.visible = true;//state.target_in_view[i];
             observation.ground_robots[i] = robot;
         }
 
@@ -154,6 +155,7 @@ int main(int argc, char **argv)
         if(state.drone_cmd_done && server.isActive()) {
             server.setSucceeded();
         }
+
         observation.header.seq = 0;
         ai_sim_pub.publish(observation);
         rate.sleep();

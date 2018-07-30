@@ -16,7 +16,7 @@ This class handles all Robot functions. This includes getters and setters and ch
 const double ROBOT_TURN_TIME = 2.5;
 
 class Robot{
-private:
+protected:
     int index;
     point_t position;
     double orientation;
@@ -137,6 +137,8 @@ public:
     */
     void setVisibility(bool visible);
 
+    
+    void setOrientation(float angle);
     /**
     @brief Set the position and orientation of the Robot
     @param position Point struct of the new position
@@ -179,13 +181,10 @@ public:
      */
     Robot getRobotPositionAtTime(double elapsed_time);
 
-    void kalmanStep(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
-    void kalmanPredict(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
-    void kalmanMeasurementUpdate(point_t new_Position, double new_Orientation, double elapsed_time, bool visible);
 
-    void kalmanStepNoObservation(double elapsed_time);
+    float getOrientationFromPositionHistory();
 
-    void setPositionToKalmanPosition();
+    bool recentlySeen(float time);
 
     friend std::ostream& operator<<(std::ostream &strm, const Robot &robot);
 };

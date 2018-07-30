@@ -53,8 +53,12 @@ action_t AIController::stateHandler(){
             action = this->positioningState();
             break;
 
-        case land_in_front:
-            action = this->landInFrontState();
+        case land:
+            this->landState();
+            break;
+
+        case landed_in_front:
+            action = this->landedInFrontState();
             break;
 
         case land_on_top:
@@ -138,18 +142,22 @@ action_t AIController::positioningState() {
     double robot_to_point_dist = getDistanceBetweenPoints(target.getPosition(), this->planned_action_.where_To_Act); 
  
     // Is the drone and the robot at the rendezvous point
-    if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && robot_to_point_dist < MAXDIST_ROBOT_TO_POINT) {
+    if(drone_to_point_dist < MAXDIST_DRONE_TO_POINT && 
+        robot_to_point_dist < MAXDIST_ROBOT_TO_POINT) {
 
         if (this->planned_action_.type == land_on_top_of) {
             this->transitionTo(land_on_top);
 
-        } else if (this->planned_action_.type == land_in_front_of && !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && this->observation.getRobot(target_id).approaching(drone_pos)) { // robot NOT too close + robot IS approaching drone ==> land in front of  
-            this->transitionTo(land_in_front);
+        } else if (this->planned_action_.type == land_in_front_of && 
+                !too_close(this->observation.getDrone().getPosition(), target.getPosition()) && 
+                this->observation.getRobot(target_id).approaching(drone_pos)) { // robot NOT too close + robot IS approaching drone ==> land in front of  
+            this->transitionTo(land);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;
 
-        } else if (this->planned_action_.type == land_in_front_of && static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
-            this->transitionTo(land_in_front);
+        } else if (this->planned_action_.type == land_in_front_of &&
+                static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
+            this->transitionTo(land);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;  
         }
@@ -190,10 +198,15 @@ action_t AIController::landOnTopState(){
     return this->planned_action_;
 }
 
-action_t AIController::landInFrontState(){
+void AIController::landState(){
+    this->transitionTo(landed_in_front);
+    return;
+}
+
+action_t AIController::landedInFrontState(){
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
-    double time_landed = 3.5;
+    double time_landed = 3;
 
     if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
@@ -239,14 +252,14 @@ action_t AIController::noVisibleRobotsState(){
     bounds_t bounds = world.getBounds();
 
     point_t track_center = point_zero;
-    track_center.x = bounds.x_Max / 2.0;
-    track_center.y = bounds.y_Max / 2.0;
-    double padding = 5.0;
+    track_center.x = bounds.x_max / 2.0;
+    track_center.y = bounds.y_max / 2.0;
+    double padding = 2.5;
 
     // The drone flies in a triangle path in a clockwise order
     if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
         next_search_point.x = padding;
-        next_search_point.y = bounds.y_Max - padding;
+        next_search_point.y = bounds.y_max - padding;
     } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
         next_search_point.x = track_center.x;
         next_search_point.y = track_center.y;
@@ -257,8 +270,8 @@ action_t AIController::noVisibleRobotsState(){
         next_search_point.x = track_center.x;
         next_search_point.y = track_center.y;
     } else if (x < track_center.x && y > track_center.y) { // 4. til 1.
-        next_search_point.x = bounds.x_Max - padding;
-        next_search_point.y = bounds.y_Max - padding;
+        next_search_point.x = bounds.x_max - padding;
+        next_search_point.y = bounds.y_max - padding;
     }
 
     search_Action.type = search;
