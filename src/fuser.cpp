@@ -22,7 +22,7 @@ point_t drone_position = point_zero;
 // Callbacks
 void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){ 
    
-    simulation_time = obs->elapsed_time;  
+    simulation_time = obs->elapsed_time;
    
     drone_position.x = obs->drone_position.x;  
     drone_position.y = obs->drone_position.y;  
@@ -263,7 +263,7 @@ int main(int argc, char **argv){
 
     ros::NodeHandle node;
     std_msgs::Float32 time_msg;
-
+    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback); 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
@@ -294,7 +294,7 @@ int main(int argc, char **argv){
                         break;
                     }
                     robots_in_memory.at(i).update(*it);
-                }
+                }   
             }
         }
 
