@@ -155,12 +155,12 @@ action_t AIController::positioningState() {
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;
 
-        } else if (this->planned_action_.type == land_in_front_of &&
+        }/* else if (this->planned_action_.type == land_in_front_of &&
                 static_cast<int>(this->observation.getTimeStamp()) % 20 > 17 ) { // Will land in front of if drone is too close BUT robot is also soon going to turn  
             this->transitionTo(land);
             this->planned_action_.type = land_at_point; // land
             return this->planned_action_;  
-        }
+        }*/
 
         return empty_action;
 
