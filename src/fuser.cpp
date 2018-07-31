@@ -102,7 +102,11 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
     for(auto it = robots_in_single_message.begin(); it != robots_in_single_message.end(); it++){
         Robot new_robot_observation = *it;
 
-        bool robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
+        bool robot_in_safe_vis_radius = true;
+
+        if(new_robot_observation.getSideCamera() == true){
+            robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
+        }
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
 
