@@ -23,7 +23,7 @@ Robot::Robot(int index) {
 
 // Static function
 bool Robot::robotsAtTurnTime(double elapsed_time) {
-    double time_drift = 1.0;//(elapsed_time * 3.0)/600.0;
+    double time_drift = 2;//(elapsed_time * 3.0)/600.0;
     double rest = fmod(elapsed_time, 20); 
     if (rest < ROBOT_TURN_TIME + time_drift) {
         return true;
