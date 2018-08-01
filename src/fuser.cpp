@@ -2,7 +2,7 @@
 
 const bool USE_FUSER = true;
 const int NUMBER_OF_ROBOTS = 10;
-const double SAFE_VISIBILITY_RADIUS = 4;
+const double SAFE_VISIBILITY_RADIUS = 1.5;
 const double TIMEOUT_ROBOT_NOT_VISIBLE = 50;
 const double TIMEOUT_ROBOT_SHOULD_BE_VISIBLE = 5;
 
@@ -104,9 +104,9 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
         bool robot_in_safe_vis_radius = true;
 
-        if(new_robot_observation.getSideCamera() == true){
-            robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
-        }
+        // if(new_robot_observation.getSideCamera() == true){
+        //     robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
+        // }
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
 
