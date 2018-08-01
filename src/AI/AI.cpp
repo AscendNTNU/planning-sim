@@ -82,7 +82,7 @@ action_t AI::chooseAction(Robot target) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
             plank_point_t step_point = target.plank.getPoint(i);
-            if (pointInSafeZone(step_point) && pointNotByObstacles(step_point)) { // Restriction from control
+            if (pointInSafeZone(step_point)) { // Restriction from control, add && pointNotByObstacles(step_point) to avoid obstacles
                 step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 
                 if (step_Action.reward > best_Action.reward) {
