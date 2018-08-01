@@ -36,7 +36,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.y = msg->global_robot_position.at(i).y;
 
         // QUICK FIX TODO
-        if(position.y>19.0){
+        if(position.y>18.0){
             continue;
         }
 

@@ -256,11 +256,14 @@ action_t AIController::noVisibleRobotsState(){
     track_center.y = bounds.y_max / 2.0;
     double padding = 2.5;
 
-    // The drone flies in a triangle path in a clockwise order
-    if (this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
+    // The drone flies in a triangle path in a clockwise order, special case for beginning
+    if (this->observation.getTimeStamp() < 5){
+        next_search_point.x = 10;
+        next_search_point.y = 17;
+    } else if(this->observation.getDrone().getDistanceToPoint(track_center) < 3) {
         next_search_point.x = padding;
         next_search_point.y = bounds.y_max - padding;
-    } else if (x > track_center.x && y > track_center.y) { // fra 1. til 2. kvadr
+    } else if (x > track_center.x && y > track_center.y) { // fra 1. til mid
         next_search_point.x = track_center.x;
         next_search_point.y = track_center.y;
     } else if (x > track_center.x && y < track_center.y) { // 2. til mid
