@@ -27,6 +27,11 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
 
     std::vector<Robot> robots_seen_in_one_message;
     std::vector<Robot> obstacle_robots_seen_in_one_message;
+
+    if((int)msg->count > 3 && msg->camera_type.at(0) == 0) {
+        return;
+    }
+
     for(int i = 0; i < (int)msg->count; i++) {
 
         Robot robot;
@@ -36,7 +41,7 @@ void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr ms
         position.y = msg->global_robot_position.at(i).y;
 
         // QUICK FIX TODO
-        if(position.y>18.0){
+        if(position.y>18.5){
             continue;
         }
 
