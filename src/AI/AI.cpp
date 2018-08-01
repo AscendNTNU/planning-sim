@@ -153,7 +153,7 @@ bool pointNotByObstacles(plank_point_t plank_point){
 
     float padding = 0.5;
     float distance_from_center = pow(pow(point.x,2) + pow(point.y,2), .5);
-    if(distance_from_center < (5-padding) &&
+    if(distance_from_center < (5-padding) ||
         distance_from_center > (5+padding)){
         return true;
     }
