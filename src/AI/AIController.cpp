@@ -20,7 +20,7 @@ double similarity(action_t action1 ,action_t action2) {
 bool too_close(point_t current_Where_To_Act, point_t target) {
     double land_time = 3; // after checking once
     double robot_speed = 0.3333; 
-    double min_dist = robot_speed*land_time; // 0.333m/s * 2s = 0.8m  (2sek being landing time)
+    double min_dist = robot_speed*land_time; // 0.333m/s * 3s = 1m  (2sek being landing time)
   
     double x1 = current_Where_To_Act.x;  
     double y1 = current_Where_To_Act.y; 

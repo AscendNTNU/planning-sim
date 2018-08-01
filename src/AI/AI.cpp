@@ -82,7 +82,7 @@ action_t AI::chooseAction(Robot target) {
             // std::cout << "Plank point " << i << ": " << target.plank.getPoint(i).point.x << ", " << target.plank.getPoint(i).point.y << std::endl;
 
             plank_point_t step_point = target.plank.getPoint(i);
-            if (pointInSafeZone(step_point)) { // Restriction from control
+            if (pointInSafeZone(step_point) && pointNotByObstacles(step_point)) { // Restriction from control
                 step_Action = getBestActionAtPosition(target.getOrientation(), step_point);
 
                 if (step_Action.reward > best_Action.reward) {
@@ -140,5 +140,23 @@ bool pointInSafeZone(plank_point_t plank_point){
     }
 
     return false;
+}
 
+
+bool pointNotByObstacles(plank_point_t plank_point){
+    point_t point = plank_point.point;
+    bounds_t bounds = world.getBounds();
+
+    // Center origin to 10,10
+    point.x -= bounds.x_max/2;
+    point.y -= bounds.y_max/2;
+
+    float padding = 0.5;
+    float distance_from_center = pow(pow(point.x,2) + pow(point.y,2), .5);
+    if(distance_from_center < (5-padding) &&
+        distance_from_center > (5+padding)){
+        return true;
+    }
+
+    return false;
 }

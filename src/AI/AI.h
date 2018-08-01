@@ -73,3 +73,4 @@ public:
 };
 
 bool pointInSafeZone(plank_point_t plank_point);
+bool pointNotByObstacles(plank_point_t plank_point);
