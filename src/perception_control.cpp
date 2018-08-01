@@ -124,7 +124,6 @@ int main(int argc, char **argv)
         // Collect new observation
         sim_recv_state(&state);
 
-
         ascend_msgs::AIWorldObservation observation;
         observation.elapsed_time = state.elapsed_time;
 

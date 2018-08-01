@@ -19,6 +19,53 @@ ros::Time start_time(0.0);
 double simulation_time = 0.0; // This is set by a callback if we are using ai-sim
 point_t drone_position = point_zero;
 
+// Callbacks
+void aiSimCallback(ascend_msgs::AIWorldObservation::ConstPtr obs){ 
+   
+    simulation_time = obs->elapsed_time;
+   
+    drone_position.x = obs->drone_position.x;  
+    drone_position.y = obs->drone_position.y;  
+    drone_position.z = obs->drone_position.z;  
+   
+    int i = 0; 
+    std::vector<Robot> robots_seen_in_one_message; 
+    for(auto it = obs->ground_robots.begin(); it != obs->ground_robots.end(); it++, i++) { 
+        if(it->visible){   
+            Robot robot;   
+   
+            point_t position;  
+            position.x = it->x;    
+            position.y = it->y;    
+            float q = it->theta;   
+            float time = simulation_time; 
+            bool visible = true;   
+            robot.setSideCamera(false);
+            robot.update(i, position, q , time, visible);  
+            robots_seen_in_one_message.push_back(robot);   
+        }  
+    }  
+    observed_robots.push_back(robots_seen_in_one_message); 
+   
+    i = 0; 
+    std::vector<Robot> obstacle_robots_seen_in_one_message;    
+    for(auto it = obs->obstacle_robots.begin(); it != obs->obstacle_robots.end(); it++, i++){  
+        if(it->visible){   
+            Robot robot;   
+            point_t position;  
+            position.x = it->x;    
+            position.y = it->y;    
+            float q = it->theta;   
+            float time = simulation_time; 
+            bool visible = true;   
+   
+            robot.update(i, position, q , time, visible);  
+            obstacle_robots_seen_in_one_message.push_back(robot);  
+        }  
+    }  
+    observed_obstacle_robots.push_back(obstacle_robots_seen_in_one_message);   
+}
+
 void groundRobotCallback(ascend_msgs::DetectedRobotsGlobalPositions::ConstPtr msg){
     
     if(drone_position.z < 0.8){
@@ -220,7 +267,7 @@ int main(int argc, char **argv){
 
     ros::NodeHandle node;
     std_msgs::Float32 time_msg;
-
+    ros::Subscriber sim_sub = node.subscribe("/ai/sim", 1, aiSimCallback); 
     ros::Subscriber tracker_sub = node.subscribe("globalGroundRobotPosition", 10, groundRobotCallback);
     ros::Subscriber start_time_sub = node.subscribe("/time_chatter/start_time", 1, startTimeCallback);
     ros::Subscriber drone_sub = node.subscribe("/mavros/local_position/pose", 1, dronePositionCallback);
