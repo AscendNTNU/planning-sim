@@ -18,7 +18,7 @@ double similarity(action_t action1 ,action_t action2) {
 }
 
 bool too_close(point_t current_Where_To_Act, point_t target) {
-    double land_time = 2; // after checking once
+    double land_time = 3; // after checking once
     double robot_speed = 0.3333; 
     double min_dist = robot_speed*land_time; // 0.333m/s * 2s = 0.8m  (2sek being landing time)
   
@@ -206,7 +206,7 @@ void AIController::landState(){
 action_t AIController::landedInFrontState(){
     int target_id = this->planned_action_.target;
     point_t drone_pos = this->observation.getDrone().getPosition();
-    double time_landed = 3;
+    double time_landed = 4;
 
     if (this->observation.getTimeStamp() - prev_transition_timestamp > time_landed) { // hvis drone har stått på bakken i 'time landed' tid
             this->planned_action_.type = take_off; // fly
