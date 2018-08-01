@@ -151,9 +151,9 @@ std::set<int> updateRobots(std::vector<Robot> robots_in_single_message, std::vec
 
         bool robot_in_safe_vis_radius = true;
 
-        if(new_robot_observation.getSideCamera() == true){
-            robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
-        }
+        // if(new_robot_observation.getSideCamera() == true){
+        //     robot_in_safe_vis_radius = getDistanceBetweenPoints(new_robot_observation.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS;
+        // }
 
         int nearest_robot_index = nearestNeighbor(new_robot_observation, memory, not_updated_indices, robot_in_safe_vis_radius);
 
@@ -202,9 +202,9 @@ bool isModelStillReliable(Robot robot, point_t drone_position, double current_ti
     //Different timeouts depending on if our model says the robot should be in sight or not
     double timeout = TIMEOUT_ROBOT_NOT_VISIBLE;
 
-    if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS){
-        timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
-    }
+    // if(getDistanceBetweenPoints(robot.getPosition(), drone_position) < SAFE_VISIBILITY_RADIUS){
+    //     timeout = TIMEOUT_ROBOT_SHOULD_BE_VISIBLE;
+    // }
 
     if(current_time - robot.getTimeLastSeen() > timeout){
         return false;
